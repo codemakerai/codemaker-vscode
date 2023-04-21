@@ -1,0 +1,111 @@
+{
+  "name": "codemakerai",
+  "displayName": "CodeMaker AI",
+  "description": "CodeMaker AI VS Code Plugin",
+  "icon": "icon.png",
+  "version": "0.0.1",
+  "publisher": "codemakerai",
+  "engines": {
+    "vscode": "^1.77.0"
+  },
+  "categories": [
+    "Snippets",
+    "Testing",
+    "Programming Languages",
+    "Machine Learning",
+    "Other"
+  ],
+  "keywords": [
+    "ai",
+    "codemakerai",
+    "codemaker"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "CodeMaker AI",
+      "properties": {
+        "codemaker.apiKey": {
+          "type": "string",
+          "description": "API Key"
+        }
+      }
+    },
+    "menus": {
+      "editor/context": [
+        {
+          "submenu": "codemaker.submenu",
+          "group": "1_modification"
+        }
+      ],
+      "explorer/context": [
+        {
+          "submenu": "codemaker.submenu",
+          "group": "7_modification"
+        }
+      ],
+      "codemaker.submenu": [
+        {
+          "submenu": "codemaker.submenu.generate",
+          "group": "navigation"
+        }
+      ],
+      "codemaker.submenu.generate": [
+        {
+          "command": "extension.ai.codemaker.generate.doc",
+          "group": "navigation"
+        },
+        {
+          "command": "extension.ai.codemaker.generate.code",
+          "group": "navigation"
+        }
+      ]
+    },
+    "submenus": [
+      {
+        "id": "codemaker.submenu",
+        "label": "CodeMaker AI"
+      },
+      {
+        "id": "codemaker.submenu.generate",
+        "label": "Generate"
+      }
+    ],
+    "commands": [
+      {
+        "command": "extension.ai.codemaker.generate.doc",
+        "title": "Documentation"
+      },
+      {
+        "command": "extension.ai.codemaker.generate.code",
+        "title": "Code"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "webpack --watch",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "dependencies": {
+    "axios": "^0.24.0"
+  },
+  "devDependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "16.x",
+    "@types/vscode": "^1.77.0",
+    "@typescript-eslint/eslint-plugin": "^5.56.0",
+    "@typescript-eslint/parser": "^5.56.0",
+    "@vscode/test-electron": "^2.3.0",
+    "axios-logger": "^2.6.2",
+    "eslint": "^8.36.0",
+    "glob": "^8.1.0",
+    "mocha": "^10.2.0",
+    "typescript": "^4.9.5"
+  }
+}
