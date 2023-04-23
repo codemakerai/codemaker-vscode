@@ -22,7 +22,7 @@ class Client {
             headers: {
                 'Authorization': `Bearer ${this.apiKey}`,
                 'Content-type': 'application/json',
-                'User-Agent': 'CodeMakerSDKJavaScript/1.0.0'
+                'User-Agent': 'CodeMakerSDKJavaScript/1.1.0'
             },
         });
     }
