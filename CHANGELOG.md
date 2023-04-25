@@ -2,9 +2,13 @@
 
 All notable changes to the "CodeMaker" extension will be documented in this file.
 
-## Version: 0.0.1
+## Version: 1.0.0
 
 Key Features:
 
 * Context-aware source code generation.
 * Generating source code documentation.
+
+## Version: 1.0.1
+
+Updated extension description
