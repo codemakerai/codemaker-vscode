@@ -20,7 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('extension.ai.codemaker.generate.doc', (uri) => {
 		vscode.window.showInformationMessage(`Generating documentation for ${uri ? uri.path : 'null'}`);
 		if (uri) {
-			codeMakerService.generateDocumentation(uri.path)
+			codeMakerService.generateDocumentation(vscode.Uri.parse(uri.path))
 				.then(() => {
 					vscode.window.showInformationMessage(`Documentation generated for ${uri ? uri.path : 'null'}`);
 				})
@@ -38,7 +38,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('extension.ai.codemaker.generate.code', (uri) => {
 		vscode.window.showInformationMessage(`Generating code for ${uri ? uri.path : 'null'}`);
 		if (uri) {
-			codeMakerService.generateCode(uri.path)
+			codeMakerService.generateCode(vscode.Uri.parse(uri.path))
 				.then(() => {
 					vscode.window.showInformationMessage(`Code generated for ${uri ? uri.path : 'null'}`);
 				})

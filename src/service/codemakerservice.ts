@@ -1,10 +1,13 @@
 // Copyright 2023 CodeMaker AI Inc. All rights reserved.
 
-import * as fs from 'fs';
-import * as path from 'path';
+import * as vscode from 'vscode';
+import { TextDecoder, TextEncoder } from 'util';
 import Client from '../sdk/Client';
 import {Language, Mode, Status} from '../sdk/model/Model';
 
+/**
+ * Service to modify source code.
+ */
 class CodemakerService {
 
     private readonly client;
@@ -18,18 +21,8 @@ class CodemakerService {
      *
      * @param path file or directory path.
      */
-    public async generateDocumentation(path: string) {
-        return this.walkFiles(path, (filePath: string): Promise<void> => {
-            const source = fs.readFileSync(filePath, 'utf8');
-            const ext = this.langFromFileExtension(filePath);
-            if (!ext) {
-                return Promise.resolve();
-            }
-            return this.process(Mode.document, ext, source)
-                .then((output) => {
-                    fs.writeFileSync(filePath, output);
-                });
-        });
+    public async generateDocumentation(path: vscode.Uri) {
+        return this.walkFiles(path, this.getProcessor(Mode.document));
     }
 
     /**
@@ -37,31 +30,37 @@ class CodemakerService {
      *
      * @param path file or directory path.
      */
-    public async generateCode(path: string) {
-        return this.walkFiles(path, (filePath: string): Promise<void> => {
-            const source = fs.readFileSync(filePath, 'utf8');
+    public async generateCode(path: vscode.Uri) {
+        return this.walkFiles(path,this.getProcessor(Mode.code));
+    }
+
+    private getProcessor(mode: Mode) {
+        return async (filePath: vscode.Uri): Promise<void> => {
+            const sourceEncoded = await vscode.workspace.fs.readFile(filePath);
+            const source = new TextDecoder('utf-8').decode(sourceEncoded);
             const ext = this.langFromFileExtension(filePath);
             if (!ext) {
                 return Promise.resolve();
             }
-            return this.process(Mode.code, ext, source)
-                .then((output) => {
-                    fs.writeFileSync(filePath, output);
+            return this.process(mode, ext, source)
+                .then(async (output) => {
+                    await vscode.workspace.fs.writeFile(filePath, new TextEncoder().encode(output));
                 });
-        });
+        };
     }
 
-    private async walkFiles(root: string, processor: (filePath: string) => Promise<void>) {
-        if (fs.statSync(root).isFile()) {
+    private async walkFiles(root: vscode.Uri, processor: (filePath: vscode.Uri) => Promise<void>) {
+        const type = await vscode.workspace.fs.stat(root);
+        if(type.type === vscode.FileType.File) {
             return await processor(root);
         }
-        for (const file of fs.readdirSync(root)) {
-            const filePath = path.join(root, file);
-            const stats = fs.statSync(filePath);
-            if (fs.statSync(filePath).isFile()) {
-                await processor(filePath);
-            } else if (stats.isDirectory()) {
-                await this.walkFiles(filePath, processor);
+        for (const [name, type] of await vscode.workspace.fs.readDirectory(root)) {
+            if (type === vscode.FileType.File) {
+                await processor(vscode.Uri.joinPath(root, name));
+            } else if (type === vscode.FileType.Directory) {
+                await this.walkFiles(vscode.Uri.joinPath(root, name), processor);
+            } else {
+                console.error('Unsupported file type');
             }
         }
     }
@@ -118,8 +117,8 @@ class CodemakerService {
     }
 
     // TODO move to config file
-    private langFromFileExtension(fileName: string): Language | null {
-        const ext = fileName.split('.').pop();
+    private langFromFileExtension(fileName: vscode.Uri): Language | null {
+        const ext = fileName.path.split('.').pop();
         if (ext === 'java') {
             return Language.java;
         }
