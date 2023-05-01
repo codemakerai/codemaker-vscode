@@ -11,4 +11,13 @@ Key Features:
 
 ## Version: 1.0.1
 
-Updated extension description
+Updated extension description.
+
+## Version: 1.1.0
+
+~Added VS Code for Web support~
+
+## Version: 1.2.0
+
+* Fixed unpersist change conflict with code generation.
+* Added Javascript support.
