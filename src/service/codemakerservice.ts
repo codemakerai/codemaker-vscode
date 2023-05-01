@@ -36,6 +36,13 @@ class CodemakerService {
 
     private getProcessor(mode: Mode) {
         return async (filePath: vscode.Uri): Promise<void> => {
+
+            // Save the underlying file if there are unpersisted changes
+            const textDocument = await vscode.workspace.openTextDocument(filePath);
+            if (textDocument.isDirty) {
+                await textDocument.save();
+            }
+
             const sourceEncoded = await vscode.workspace.fs.readFile(filePath);
             const source = new TextDecoder('utf-8').decode(sourceEncoded);
             const ext = this.langFromFileExtension(filePath);
@@ -119,11 +126,15 @@ class CodemakerService {
     // TODO move to config file
     private langFromFileExtension(fileName: vscode.Uri): Language | null {
         const ext = fileName.path.split('.').pop();
-        if (ext === 'java') {
-            return Language.java;
+        switch (ext) {
+            case 'java':
+                return Language.java;
+            case 'js':
+                return Language.javascript;
+            default:
+                console.info("unsupported language: " + ext);
+                return null;
         }
-        console.info("unsupported language: " + ext);
-        return null;
     }
 }
 
