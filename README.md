@@ -16,6 +16,9 @@ Fallowing operations are supported:
 Following programming languages are supported:
 
 * Java
+* Javascript
+
+More language support is comming soon.
 
 ## Getting started
 
