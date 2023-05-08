@@ -21,3 +21,7 @@ Updated extension description.
 
 * Fixed unpersist change conflict with code generation.
 * Added Javascript support.
+
+## Version: 1.3.0
+
+* Added Kotlin support.

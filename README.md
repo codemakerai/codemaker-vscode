@@ -17,6 +17,7 @@ Following programming languages are supported:
 
 * Java
 * Javascript
+* Kotlin
 
 More language support is comming soon.
 

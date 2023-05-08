@@ -48,7 +48,8 @@ export enum Mode {
 
 export enum Language {
     java = "JAVA",
-    javascript="JAVASCRIPT"
+    javascript="JAVASCRIPT",
+    kotlin="KOTLIN",
 };
 
 export enum Status {

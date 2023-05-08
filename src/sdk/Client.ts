@@ -9,7 +9,7 @@ import {
     GetProcessStatusRequest,
     GetProcessStatusResponse
 } from './model/Model';
-import AuthenticationError from './AuthenticationError';
+import { AuthenticationError } from './Errors';
 
 class Client {
     private static readonly apiEndpoint = 'https://api.codemaker.ai';
