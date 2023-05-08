@@ -4,6 +4,7 @@ import * as vscode from 'vscode';
 import { TextDecoder, TextEncoder } from 'util';
 import Client from '../sdk/Client';
 import {Language, Mode, Status} from '../sdk/model/Model';
+import { UnsupportedLanguageError } from '../sdk/Errors';
 
 /**
  * Service to modify source code.
@@ -46,9 +47,6 @@ class CodemakerService {
             const sourceEncoded = await vscode.workspace.fs.readFile(filePath);
             const source = new TextDecoder('utf-8').decode(sourceEncoded);
             const ext = this.langFromFileExtension(filePath);
-            if (!ext) {
-                return Promise.resolve();
-            }
             return this.process(mode, ext, source)
                 .then(async (output) => {
                     await vscode.workspace.fs.writeFile(filePath, new TextEncoder().encode(output));
@@ -119,21 +117,23 @@ class CodemakerService {
 
     private createProcessOutputRequest(taskId: string) {
         return {
-            id: taskId
+            id: taskId,
         };
     }
 
     // TODO move to config file
-    private langFromFileExtension(fileName: vscode.Uri): Language | null {
+    private langFromFileExtension(fileName: vscode.Uri): Language {
         const ext = fileName.path.split('.').pop();
         switch (ext) {
             case 'java':
                 return Language.java;
             case 'js':
                 return Language.javascript;
+            case 'kt':
+                return Language.kotlin;
             default:
                 console.info("unsupported language: " + ext);
-                return null;
+                throw new UnsupportedLanguageError(ext);
         }
     }
 }

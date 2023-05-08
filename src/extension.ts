@@ -4,7 +4,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import CodemakerService from './service/codemakerservice';
-import AuthenticationError from './sdk/AuthenticationError';
+import { AuthenticationError, UnsupportedLanguageError } from './sdk/Errors';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -27,6 +27,8 @@ export function activate(context: vscode.ExtensionContext) {
 				.catch(err => {
 					if (err instanceof AuthenticationError) {
 						vscode.window.showInformationMessage(`Invalid token`);
+					} else if (err instanceof UnsupportedLanguageError) {
+						vscode.window.showInformationMessage(err.message);
 					} else {
 						console.error(err);
 						vscode.window.showInformationMessage(`Documentation generation failed`);
@@ -45,6 +47,8 @@ export function activate(context: vscode.ExtensionContext) {
 				.catch(err => {
 					if (err instanceof AuthenticationError) {
 						vscode.window.showInformationMessage(`Invalid token`);
+					} else if (err instanceof UnsupportedLanguageError) {
+						vscode.window.showInformationMessage(err.message);
 					} else {
 						console.error(err);
 						vscode.window.showInformationMessage(`Code generation failed`);
