@@ -9,7 +9,9 @@ Integrates CodeMaker Code Generation capabilities and directly offers them as ID
 Fallowing operations are supported:
 
 * Context-aware source code generation.
+* Context-aware source code replacement.
 * Generating source code documentation.
+* Replacing source code documentation.
 
 ## Supported languages
 
@@ -40,6 +42,10 @@ More language support is comming soon.
 ## Documentation generation
 
 ![Documentation generation](./img/doc-gen.gif)
+
+## Source code & documentation replacement
+
+![Source code & documentation replacement](./img/replacement.gif)
 
 ## License
 

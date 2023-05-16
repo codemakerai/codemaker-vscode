@@ -25,3 +25,7 @@ Updated extension description.
 ## Version: 1.3.0
 
 * Added Kotlin support.
+
+## Version: 1.4.0
+
+* Supported code and documentation replacement.
