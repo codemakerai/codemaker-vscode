@@ -3,7 +3,7 @@
 import * as vscode from 'vscode';
 import { TextDecoder, TextEncoder } from 'util';
 import Client from '../sdk/Client';
-import {Language, Mode, Status} from '../sdk/model/Model';
+import {Language, Mode, Modify, Status} from '../sdk/model/Model';
 import { UnsupportedLanguageError } from '../sdk/Errors';
 
 /**
@@ -32,10 +32,28 @@ class CodemakerService {
      * @param path file or directory path.
      */
     public async generateCode(path: vscode.Uri) {
-        return this.walkFiles(path,this.getProcessor(Mode.code));
+        return this.walkFiles(path, this.getProcessor(Mode.code));
     }
 
-    private getProcessor(mode: Mode) {
+    /**
+     * Replace documentation for given source files.
+     *
+     * @param path file or directory path.
+     */
+    public async replaceDocumentation(path: vscode.Uri) {
+        return this.walkFiles(path, this.getProcessor(Mode.document, Modify.replace));
+    }
+
+    /**
+     * Replace code for given source files.
+     *
+     * @param path file or directory path.
+     */
+    public async replaceCode(path: vscode.Uri) {
+        return this.walkFiles(path, this.getProcessor(Mode.code, Modify.replace));
+    }
+
+    private getProcessor(mode: Mode, modify: Modify = Modify.none) {
         return async (filePath: vscode.Uri): Promise<void> => {
 
             // Save the underlying file if there are unpersisted changes
@@ -47,7 +65,7 @@ class CodemakerService {
             const sourceEncoded = await vscode.workspace.fs.readFile(filePath);
             const source = new TextDecoder('utf-8').decode(sourceEncoded);
             const ext = this.langFromFileExtension(filePath);
-            return this.process(mode, ext, source)
+            return this.process(mode, ext, source, modify)
                 .then(async (output) => {
                     await vscode.workspace.fs.writeFile(filePath, new TextEncoder().encode(output));
                 });
@@ -71,8 +89,8 @@ class CodemakerService {
     }
 
     // TODO: add error handling
-    private async process(mode: Mode, lang: Language, source: string) {
-        const processTask = await this.client.createProcess(this.createProcessRequest(mode, lang, source));
+    private async process(mode: Mode, lang: Language, source: string, modify: Modify) {
+        const processTask = await this.client.createProcess(this.createProcessRequest(mode, lang, source, modify));
 
         const taskId = processTask.data.id;
         let status = Status.inProgress;
@@ -97,14 +115,17 @@ class CodemakerService {
         return processOutput.data.output.source;
     }
 
-    private createProcessRequest(mode: Mode, lang: Language, source: string) {
+    private createProcessRequest(mode: Mode, lang: Language, source: string, modify: Modify) {
         return {
             process: {
                 mode: mode,
                 language: lang,
                 input: {
                     source: source,
-                }
+                },
+                options: {
+                    modify: modify,
+                },
             }
         };
     }

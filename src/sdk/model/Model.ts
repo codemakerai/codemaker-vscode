@@ -38,18 +38,22 @@ export type Output = {
     readonly source: string
 };
 
+export type Options = {
+    readonly modify: Modify
+};
+
 export enum Mode {
     code = "CODE",
     document = "DOCUMENT",
     unitTest = "UNIT_TEST",
     migrateSyntax = "MIGRATE_SYNTAX",
-    refactorNaming = "REFACTOR_NAMING",
+    refactorNaming = "REFACTOR_NAMING"
 };
 
 export enum Language {
     java = "JAVA",
     javascript="JAVASCRIPT",
-    kotlin="KOTLIN",
+    kotlin="KOTLIN"
 };
 
 export enum Status {
@@ -57,4 +61,9 @@ export enum Status {
     completed = "COMPLETED",
     failed = "FAILED",
     timedOut = "TIMED_OUT"
+};
+
+export enum Modify {
+    none = "NONE",
+    replace = "REPLACE"
 };
