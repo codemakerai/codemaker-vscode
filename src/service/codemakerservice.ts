@@ -149,6 +149,7 @@ class CodemakerService {
             case 'java':
                 return Language.java;
             case 'js':
+            case 'jsx':
                 return Language.javascript;
             case 'kt':
                 return Language.kotlin;
