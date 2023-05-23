@@ -29,3 +29,7 @@ Updated extension description.
 ## Version: 1.4.0
 
 * Supported code and documentation replacement.
+
+## Version: 1.4.1
+
+* Added jsx support.
