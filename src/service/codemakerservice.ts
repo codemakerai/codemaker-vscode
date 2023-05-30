@@ -153,6 +153,8 @@ class CodemakerService {
                 return Language.javascript;
             case 'kt':
                 return Language.kotlin;
+            case 'go':
+                return Language.go;    
             default:
                 console.info("unsupported language: " + ext);
                 throw new UnsupportedLanguageError(ext);

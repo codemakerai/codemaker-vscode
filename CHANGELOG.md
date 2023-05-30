@@ -33,3 +33,7 @@ Updated extension description.
 ## Version: 1.4.1
 
 * Added jsx support.
+
+## Version: 1.5.0
+
+* Added golang support.
