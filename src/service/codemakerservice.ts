@@ -3,13 +3,16 @@
 import * as vscode from 'vscode';
 import { TextDecoder, TextEncoder } from 'util';
 import Client from '../sdk/Client';
-import {Language, Mode, Modify, Status} from '../sdk/model/Model';
-import { UnsupportedLanguageError } from '../sdk/Errors';
+import { CreateProcessRequest, Language, Mode, Modify, Status } from '../sdk/model/Model';
+import { langFromFileExtension } from '../Utils';
 
 /**
  * Service to modify source code.
  */
 class CodemakerService {
+
+    private readonly defaultPollingInterval: number = 1000
+    private readonly completionPollingInterval: number = 100
 
     private readonly client;
 
@@ -33,6 +36,18 @@ class CodemakerService {
      */
     public async generateCode(path: vscode.Uri) {
         return this.walkFiles(path, this.getProcessor(Mode.code));
+    }
+
+    /**
+     * Complete comment for given line comment
+     * 
+     * @param source source file
+     * @param lang language
+     * @param offset offset of current cursor
+     */
+    public async complete(source: string, lang: Language, offset: number) {
+        const request = this.createCompletionProcessRequest(lang, source, offset);
+        return this.process(request, this.completionPollingInterval);
     }
 
     /**
@@ -64,8 +79,9 @@ class CodemakerService {
 
             const sourceEncoded = await vscode.workspace.fs.readFile(filePath);
             const source = new TextDecoder('utf-8').decode(sourceEncoded);
-            const ext = this.langFromFileExtension(filePath);
-            return this.process(mode, ext, source, modify)
+            const ext = langFromFileExtension(filePath.path);
+            const request = this.createProcessRequest(mode, ext, source, modify);
+            return this.process(request)
                 .then(async (output) => {
                     await vscode.workspace.fs.writeFile(filePath, new TextEncoder().encode(output));
                 });
@@ -88,9 +104,8 @@ class CodemakerService {
         }
     }
 
-    // TODO: add error handling
-    private async process(mode: Mode, lang: Language, source: string, modify: Modify) {
-        const processTask = await this.client.createProcess(this.createProcessRequest(mode, lang, source, modify));
+    private async process(request: CreateProcessRequest, pollingInterval = this.defaultPollingInterval) {
+        const processTask = await this.client.createProcess(request);
 
         const taskId = processTask.data.id;
         let status = Status.inProgress;
@@ -104,7 +119,7 @@ class CodemakerService {
                 success = true;
                 break;
             }
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await new Promise(resolve => setTimeout(resolve, pollingInterval));
         }
 
         if (!success) {
@@ -130,6 +145,21 @@ class CodemakerService {
         };
     }
 
+    private createCompletionProcessRequest(lang: Language, source: string, offset: number) {
+        return {
+            process: {
+                mode: Mode.completion,
+                language: lang,
+                input: {
+                    source: source,
+                },
+                options: {
+                    codePath: '@' + offset
+                }
+            }
+        };
+    }
+
     private createProcessStatusRequest(taskId: string) {
         return {
             id: taskId,
@@ -140,25 +170,6 @@ class CodemakerService {
         return {
             id: taskId,
         };
-    }
-
-    // TODO move to config file
-    private langFromFileExtension(fileName: vscode.Uri): Language {
-        const ext = fileName.path.split('.').pop();
-        switch (ext) {
-            case 'java':
-                return Language.java;
-            case 'js':
-            case 'jsx':
-                return Language.javascript;
-            case 'kt':
-                return Language.kotlin;
-            case 'go':
-                return Language.go;    
-            default:
-                console.info("unsupported language: " + ext);
-                throw new UnsupportedLanguageError(ext);
-        }
     }
 }
 

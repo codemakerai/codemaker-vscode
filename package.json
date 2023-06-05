@@ -20,7 +20,9 @@
     "codemakerai",
     "codemaker"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "*"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "configuration": {

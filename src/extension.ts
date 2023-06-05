@@ -5,10 +5,11 @@
 import * as vscode from 'vscode';
 import CodemakerService from './service/codemakerservice';
 import { AuthenticationError, UnsupportedLanguageError } from './sdk/Errors';
+import InlineCompletionItemProvider from './InlineCompletionItemProvider';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
 
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
@@ -16,6 +17,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 	const token = vscode.workspace.getConfiguration().get('codemaker.apiKey') as string;
 	const codeMakerService = new CodemakerService(token);
+
+	await init(context, codeMakerService);
 
 	context.subscriptions.push(vscode.commands.registerCommand('extension.ai.codemaker.generate.doc', (uri) => {
 		vscode.window.showInformationMessage(`Generating documentation for ${uri ? uri.path : 'null'}`);
@@ -75,3 +78,12 @@ export function activate(context: vscode.ExtensionContext) {
 
 // This method is called when your extension is deactivated
 export function deactivate() {}
+
+async function init(context: vscode.ExtensionContext, service: CodemakerService) {
+
+	const provider: vscode.InlineCompletionItemProvider = new InlineCompletionItemProvider(service);
+	context.subscriptions.push(
+		vscode.languages.registerInlineCompletionItemProvider({ pattern: '**' }, 
+		new InlineCompletionItemProvider(service)), 
+	);
+}
