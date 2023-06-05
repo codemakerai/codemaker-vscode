@@ -44,6 +44,7 @@ export enum Mode {
     unitTest = "UNIT_TEST",
     migrateSyntax = "MIGRATE_SYNTAX",
     refactorNaming = "REFACTOR_NAMING",
+    completion = "COMPLETION"
 };
 
 export enum Language {
