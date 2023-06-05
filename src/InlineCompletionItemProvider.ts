@@ -8,7 +8,7 @@ import {
 
 export default class InlineCompletionItemProvider implements vscode.InlineCompletionItemProvider {
 
-    private readonly completionDelay: number = 500;
+    private readonly completionDelay: number = 300;
     private readonly newLine: string = '\n';
 
     private completionOutput: string = ""
