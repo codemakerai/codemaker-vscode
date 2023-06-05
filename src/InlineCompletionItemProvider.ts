@@ -69,9 +69,7 @@ export default class InlineCompletionItemProvider implements vscode.InlineComple
         if (autocompleteDisabled
             || !isComment(position)
             || !checkLineLength(position)
-            || !isEndOfLine(document, position)
-            // TODO remove. Today only support java doc completion.
-            || langFromFileExtension(document.fileName) !== Language.java) {
+            || !isEndOfLine(document, position)) {
 
             return true;
         }
