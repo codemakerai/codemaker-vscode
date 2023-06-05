@@ -35,8 +35,8 @@ More language support is comming soon.
 5. To enable inline autocompletion > Code > Settings > CodeMaker AI > Extension Settings > uncheck Disable Autocomplete.
 6. Have fun.
 
-## Context-aware inline autocompletion
-![Context-aware inline autocompletion](./img/completion-demo.gif)
+## Context-aware inline autocomplete
+![Context-aware inline autocomplete](./img/autocomplete-demo.gif)
 
 ## Context-aware source code generation
 
