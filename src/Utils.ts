@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { Language } from './sdk/model/Model';
 import { UnsupportedLanguageError } from './sdk/Errors';
 
-const minimumLineLength: number = 10;
+const minimumLineLength: number = 5;
 const END_OF_LINE_REGEX = new RegExp("^\\s*[)}\\]\"'`]*\\s*[:{;,]?\\s*$");
 
 export function langFromFileExtension(fileName: string): Language {

@@ -3,14 +3,12 @@ import CodemakerService from './service/codemakerservice';
 import {
     checkLineLength,
     isEndOfLine,
-    isComment,
     langFromFileExtension
 } from './Utils';
-import { Language } from './sdk/model/Model';
 
 export default class InlineCompletionItemProvider implements vscode.InlineCompletionItemProvider {
 
-    private readonly completionDelay: number = 800;
+    private readonly completionDelay: number = 500;
     private readonly newLine: string = '\n';
 
     private completionOutput: string = ""
@@ -67,7 +65,6 @@ export default class InlineCompletionItemProvider implements vscode.InlineComple
         const autocompleteDisabled = vscode.workspace.getConfiguration().get('codemaker.disableAutocomplete') as boolean;
 
         if (autocompleteDisabled
-            || !isComment(position)
             || !checkLineLength(position)
             || !isEndOfLine(document, position)) {
 
@@ -101,6 +98,6 @@ export default class InlineCompletionItemProvider implements vscode.InlineComple
         if (output === '' || output.startsWith('\n')) {
             return '';
         }
-        return output.split(this.newLine).pop()!;
+        return output.split(this.newLine)[0];
     }
 }
