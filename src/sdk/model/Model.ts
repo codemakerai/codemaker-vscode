@@ -38,6 +38,10 @@ export type Output = {
     readonly source: string
 };
 
+export type Options = {
+    readonly modify: Modify
+};
+
 export enum Mode {
     code = "CODE",
     document = "DOCUMENT",
@@ -49,8 +53,9 @@ export enum Mode {
 
 export enum Language {
     java = "JAVA",
-    javascript="JAVASCRIPT",
-    kotlin="KOTLIN",
+    javascript = "JAVASCRIPT",
+    kotlin = "KOTLIN",
+    go = "GO"
 };
 
 export enum Status {
@@ -58,4 +63,9 @@ export enum Status {
     completed = "COMPLETED",
     failed = "FAILED",
     timedOut = "TIMED_OUT"
+};
+
+export enum Modify {
+    none = "NONE",
+    replace = "REPLACE"
 };

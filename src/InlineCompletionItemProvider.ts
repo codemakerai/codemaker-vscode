@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import CodemakerService from './service/codemakerservice';
 import { 
     checkLineLength, 
-    hasNonWhiteSpaceCharactersAfterCursor, 
+    isEndOfLine, 
     isComment, 
     langFromFileExtension 
 } from './Utils';
@@ -65,7 +65,7 @@ export default class InlineCompletionItemProvider implements vscode.InlineComple
     private shouldSkip(document: vscode.TextDocument, position: vscode.Position): boolean {
         if (!isComment(position) 
         || !checkLineLength(position) 
-        || !hasNonWhiteSpaceCharactersAfterCursor(document, position) 
+        || !isEndOfLine(document, position) 
         // TODO remove. Today only support java doc completion.
         || langFromFileExtension(document.fileName) !== Language.java) {
             return true;

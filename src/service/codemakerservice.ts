@@ -3,7 +3,7 @@
 import * as vscode from 'vscode';
 import { TextDecoder, TextEncoder } from 'util';
 import Client from '../sdk/Client';
-import { CreateProcessRequest, Language, Mode, Status } from '../sdk/model/Model';
+import { CreateProcessRequest, Language, Mode, Modify, Status } from '../sdk/model/Model';
 import { langFromFileExtension } from '../Utils';
 
 /**
@@ -35,11 +35,12 @@ class CodemakerService {
      * @param path file or directory path.
      */
     public async generateCode(path: vscode.Uri) {
-        return this.walkFiles(path,this.getProcessor(Mode.code));
+        return this.walkFiles(path, this.getProcessor(Mode.code));
     }
 
     /**
      * Complete comment for given line comment
+     * 
      * @param source source file
      * @param lang language
      * @param offset offset of current cursor
@@ -49,7 +50,25 @@ class CodemakerService {
         return this.process(request, this.completionPollingInterval);
     }
 
-    private getProcessor(mode: Mode) {
+    /**
+     * Replace documentation for given source files.
+     *
+     * @param path file or directory path.
+     */
+    public async replaceDocumentation(path: vscode.Uri) {
+        return this.walkFiles(path, this.getProcessor(Mode.document, Modify.replace));
+    }
+
+    /**
+     * Replace code for given source files.
+     *
+     * @param path file or directory path.
+     */
+    public async replaceCode(path: vscode.Uri) {
+        return this.walkFiles(path, this.getProcessor(Mode.code, Modify.replace));
+    }
+
+    private getProcessor(mode: Mode, modify: Modify = Modify.none) {
         return async (filePath: vscode.Uri): Promise<void> => {
 
             // Save the underlying file if there are unpersisted changes
@@ -61,7 +80,7 @@ class CodemakerService {
             const sourceEncoded = await vscode.workspace.fs.readFile(filePath);
             const source = new TextDecoder('utf-8').decode(sourceEncoded);
             const ext = langFromFileExtension(filePath.path);
-            const request = this.createProcessRequest(mode, ext, source);
+            const request = this.createProcessRequest(mode, ext, source, modify);
             return this.process(request)
                 .then(async (output) => {
                     await vscode.workspace.fs.writeFile(filePath, new TextEncoder().encode(output));
@@ -111,14 +130,17 @@ class CodemakerService {
         return processOutput.data.output.source;
     }
 
-    private createProcessRequest(mode: Mode, lang: Language, source: string) {
+    private createProcessRequest(mode: Mode, lang: Language, source: string, modify: Modify) {
         return {
             process: {
                 mode: mode,
                 language: lang,
                 input: {
                     source: source,
-                }
+                },
+                options: {
+                    modify: modify,
+                },
             }
         };
     }

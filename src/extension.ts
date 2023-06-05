@@ -27,16 +27,7 @@ export async function activate(context: vscode.ExtensionContext) {
 				.then(() => {
 					vscode.window.showInformationMessage(`Documentation generated for ${uri ? uri.path : 'null'}`);
 				})
-				.catch(err => {
-					if (err instanceof AuthenticationError) {
-						vscode.window.showInformationMessage(`Invalid token`);
-					} else if (err instanceof UnsupportedLanguageError) {
-						vscode.window.showInformationMessage(err.message);
-					} else {
-						console.error(err);
-						vscode.window.showInformationMessage(`Documentation generation failed`);
-					}
-				});
+				.catch(err => errorHandling("Documentation generation", err));
 		}
 	}));
 
@@ -47,20 +38,42 @@ export async function activate(context: vscode.ExtensionContext) {
 				.then(() => {
 					vscode.window.showInformationMessage(`Code generated for ${uri ? uri.path : 'null'}`);
 				})
-				.catch(err => {
-					if (err instanceof AuthenticationError) {
-						vscode.window.showInformationMessage(`Invalid token`);
-					} else if (err instanceof UnsupportedLanguageError) {
-						vscode.window.showInformationMessage(err.message);
-					} else {
-						console.error(err);
-						vscode.window.showInformationMessage(`Code generation failed`);
-					}
-				});
+				.catch(err => errorHandling("Code generation", err));
 		}
 	}));
-	
-	
+
+	context.subscriptions.push(vscode.commands.registerCommand('extension.ai.codemaker.replace.doc', (uri) => {
+		vscode.window.showInformationMessage(`Replacing documentation for ${uri ? uri.path : 'null'}`);
+		if (uri) {
+			codeMakerService.replaceDocumentation(vscode.Uri.parse(uri.path))
+				.then(() => {
+					vscode.window.showInformationMessage(`Documentation replaced for ${uri ? uri.path : 'null'}`);
+				})
+				.catch(err => errorHandling("Documentation replacement", err));
+		}
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('extension.ai.codemaker.replace.code', (uri) => {
+		vscode.window.showInformationMessage(`Replacing code for ${uri ? uri.path : 'null'}`);
+		if (uri) {
+			codeMakerService.replaceCode(vscode.Uri.parse(uri.path))
+				.then(() => {
+					vscode.window.showInformationMessage(`Code replaced for ${uri ? uri.path : 'null'}`);
+				})
+				.catch(err => errorHandling("Code replacement", err));
+		}
+	}));
+
+	function errorHandling(action: string, err: any) {
+		if (err instanceof AuthenticationError) {
+			vscode.window.showInformationMessage(`Invalid token`);
+		} else if (err instanceof UnsupportedLanguageError) {
+			vscode.window.showInformationMessage(err.message);
+		} else {
+			console.error(err);
+			vscode.window.showInformationMessage(`${action} failed`);
+		}
+	}
 }
 
 // This method is called when your extension is deactivated
