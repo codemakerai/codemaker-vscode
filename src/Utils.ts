@@ -30,6 +30,7 @@ export function isComment(position: vscode.Position) {
         return;
     }
     let line = document.lineAt(position.line).text.trim();
+    // TODO make comment format for generic for all languages.
     if (!line.startsWith('*/') && 
         (line.startsWith('//') || line.startsWith('/**') || line.startsWith('*'))) {
         return true;

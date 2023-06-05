@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
 import CodemakerService from './service/codemakerservice';
-import { 
-    checkLineLength, 
-    isEndOfLine, 
-    isComment, 
-    langFromFileExtension 
+import {
+    checkLineLength,
+    isEndOfLine,
+    isComment,
+    langFromFileExtension
 } from './Utils';
 import { Language } from './sdk/model/Model';
 
@@ -63,11 +63,16 @@ export default class InlineCompletionItemProvider implements vscode.InlineComple
     }
 
     private shouldSkip(document: vscode.TextDocument, position: vscode.Position): boolean {
-        if (!isComment(position) 
-        || !checkLineLength(position) 
-        || !isEndOfLine(document, position) 
-        // TODO remove. Today only support java doc completion.
-        || langFromFileExtension(document.fileName) !== Language.java) {
+
+        const autocompleteDisabled = vscode.workspace.getConfiguration().get('codemaker.disableAutocomplete') as boolean;
+
+        if (autocompleteDisabled
+            || !isComment(position)
+            || !checkLineLength(position)
+            || !isEndOfLine(document, position)
+            // TODO remove. Today only support java doc completion.
+            || langFromFileExtension(document.fileName) !== Language.java) {
+
             return true;
         }
         return false;

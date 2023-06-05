@@ -31,6 +31,10 @@
         "codemaker.apiKey": {
           "type": "string",
           "description": "API Key"
+        },
+        "codemaker.disableAutocomplete": {
+          "type": "boolean",
+          "default": true
         }
       }
     },
