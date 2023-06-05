@@ -37,3 +37,7 @@ Updated extension description.
 ## Version: 1.5.0
 
 * Added golang support.
+
+## Version: 1.6.0
+
+* Supported inline autocompletion.

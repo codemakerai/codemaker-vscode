@@ -12,6 +12,7 @@ Fallowing operations are supported:
 * Context-aware source code replacement.
 * Generating source code documentation.
 * Replacing source code documentation.
+* Context-aware inline autocompletion.
 
 ## Supported languages
 
@@ -29,9 +30,13 @@ More language support is comming soon.
 
 1. Sign up for the Early Access Program at https://codemaker.ai.
 2. Receive the Early Access Program invitation email. 
-3. Install the extension from [Visual Studio Code Marketplace](https://marketplace.visualstudio.com/items?itemName=codemakerai.codemakerai)
+3. Install the extension from [Visual Studio Code Marketplace](https://marketplace.visualstudio.com/items?itemName=codemakerai.codemakerai).
 4. Configure the API Key in Code > Settings > Extensions > CodeMaker AI.
-5. Run the commands.
+5. To enable inline autocompletion > Code > Settings > CodeMaker AI > Extension Settings > uncheck Disable Autocomplete.
+6. Have fun.
+
+## Context-aware inline autocompletion
+![Context-aware inline autocompletion](./img/completion-demo.gif)
 
 ## Context-aware source code generation
 
