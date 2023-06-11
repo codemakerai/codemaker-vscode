@@ -3,9 +3,9 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import CodemakerService from './service/codemakerservice';
-import { AuthenticationError, UnsupportedLanguageError } from './sdk/Errors';
-import InlineCompletionItemProvider from './InlineCompletionItemProvider';
+import CodemakerService from './service/codemakerService';
+import { AuthenticationError, UnsupportedLanguageError } from './sdk/errors';
+import InlineCompletionItemProvider from './inlineCompletionItemProvider';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed

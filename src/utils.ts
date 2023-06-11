@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
-import { Language } from './sdk/model/Model';
-import { UnsupportedLanguageError } from './sdk/Errors';
+import { Language } from './sdk/model/model';
+import { UnsupportedLanguageError } from './sdk/errors';
 
 const minimumLineLength: number = 5;
 const END_OF_LINE_REGEX = new RegExp("^\\s*[)}\\]\"'`]*\\s*[:{;,]?\\s*$");
@@ -16,7 +16,7 @@ export function langFromFileExtension(fileName: string): Language {
         case 'kt':
             return Language.kotlin;
         case 'go':
-            return Language.go;    
+            return Language.go;
         default:
             console.info("unsupported language: " + ext);
             throw new UnsupportedLanguageError(ext);
@@ -24,14 +24,13 @@ export function langFromFileExtension(fileName: string): Language {
 }
 
 export function isComment(position: vscode.Position) {
-    
-    let document = vscode.window.activeTextEditor?.document;
+    const document = vscode.window.activeTextEditor?.document;
     if (!document) {
         return;
     }
     let line = document.lineAt(position.line).text.trim();
     // TODO make comment format for generic for all languages.
-    if (!line.startsWith('*/') && 
+    if (!line.startsWith('*/') &&
         (line.startsWith('//') || line.startsWith('/**') || line.startsWith('*'))) {
         return true;
     }
@@ -39,8 +38,7 @@ export function isComment(position: vscode.Position) {
 }
 
 export function checkLineLength(position: vscode.Position) {
-    
-    let document = vscode.window.activeTextEditor?.document;
+    const document = vscode.window.activeTextEditor?.document;
     if (!document) {
         return;
     }
@@ -49,8 +47,8 @@ export function checkLineLength(position: vscode.Position) {
 }
 
 export function isEndOfLine(document: vscode.TextDocument, position: vscode.Position) {
-        const suffix = document.getText(
-            new vscode.Range(position, document.lineAt(position.line).range.end)
-        );
-        return END_OF_LINE_REGEX.test(suffix);
+    const suffix = document.getText(
+        new vscode.Range(position, document.lineAt(position.line).range.end)
+    );
+    return END_OF_LINE_REGEX.test(suffix);
 }

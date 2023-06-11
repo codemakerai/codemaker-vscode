@@ -8,8 +8,8 @@ import {
     GetProcessOutputResponse,
     GetProcessStatusRequest,
     GetProcessStatusResponse
-} from './model/Model';
-import { AuthenticationError } from './Errors';
+} from './model/model';
+import { AuthenticationError } from './errors';
 
 class Client {
     private static readonly apiEndpoint = 'https://api.codemaker.ai';

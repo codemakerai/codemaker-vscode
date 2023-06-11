@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import CodemakerService from './service/codemakerservice';
+import CodemakerService from './service/codemakerService';
 import {
     checkLineLength,
     isEndOfLine,

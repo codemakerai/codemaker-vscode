@@ -2,9 +2,9 @@
 
 import * as vscode from 'vscode';
 import { TextDecoder, TextEncoder } from 'util';
-import Client from '../sdk/Client';
-import { CreateProcessRequest, Language, Mode, Modify, Status } from '../sdk/model/Model';
-import { langFromFileExtension } from '../Utils';
+import Client from '../sdk/client';
+import { CreateProcessRequest, Language, Mode, Modify, Status } from '../sdk/model/model';
+import { langFromFileExtension } from '../utils';
 
 /**
  * Service to modify source code.
