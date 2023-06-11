@@ -5,7 +5,7 @@
 import * as vscode from 'vscode';
 import CodemakerService from './service/codemakerService';
 import { AuthenticationError, UnsupportedLanguageError } from './sdk/errors';
-import InlineCompletionItemProvider from './inlineCompletionItemProvider';
+import CompletionProvider from './completion/completionProvider';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -77,13 +77,12 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 // This method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }
 
 async function init(context: vscode.ExtensionContext, service: CodemakerService) {
 
-	const provider: vscode.InlineCompletionItemProvider = new InlineCompletionItemProvider(service);
+	const provider: vscode.InlineCompletionItemProvider = new CompletionProvider(service);
 	context.subscriptions.push(
-		vscode.languages.registerInlineCompletionItemProvider({ pattern: '**' }, 
-		new InlineCompletionItemProvider(service)), 
+		vscode.languages.registerInlineCompletionItemProvider({ pattern: '**' }, provider)
 	);
 }
