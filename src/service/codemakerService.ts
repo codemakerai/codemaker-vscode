@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 import { TextDecoder, TextEncoder } from 'util';
 import Client from '../sdk/client';
 import { CreateProcessRequest, Language, Mode, Modify, Status } from '../sdk/model/model';
-import { langFromFileExtension } from '../utils';
+import { langFromFileExtension } from '../utils/languageUtils';
 
 /**
  * Service to modify source code.

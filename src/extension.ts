@@ -16,72 +16,74 @@ export async function activate(context: vscode.ExtensionContext) {
 	console.log('Congratulations, your extension "CodeMaker" is now active!');
 
 	const token = vscode.workspace.getConfiguration().get('codemaker.apiKey') as string;
-	const codeMakerService = new CodemakerService(token);
+	const codemakerService = new CodemakerService(token);
+	
+	registerActions(context, codemakerService);
+	registerCompletionProvider(context, codemakerService);
+}
 
-	await init(context, codeMakerService);
+// This method is called when your extension is deactivated
+export function deactivate() { }
 
+function errorHandler(action: string, err: any) {
+	if (err instanceof AuthenticationError) {
+		vscode.window.showInformationMessage(`Invalid token`);
+	} else if (err instanceof UnsupportedLanguageError) {
+		vscode.window.showInformationMessage(err.message);
+	} else {
+		console.error(err);
+		vscode.window.showInformationMessage(`${action} failed`);
+	}
+}
+
+function registerActions(context: vscode.ExtensionContext, codemakerService: CodemakerService) {
 	context.subscriptions.push(vscode.commands.registerCommand('extension.ai.codemaker.generate.doc', (uri) => {
 		vscode.window.showInformationMessage(`Generating documentation for ${uri ? uri.path : 'null'}`);
 		if (uri) {
-			codeMakerService.generateDocumentation(vscode.Uri.parse(uri.path))
+			codemakerService.generateDocumentation(vscode.Uri.parse(uri.path))
 				.then(() => {
 					vscode.window.showInformationMessage(`Documentation generated for ${uri ? uri.path : 'null'}`);
 				})
-				.catch(err => errorHandling("Documentation generation", err));
+				.catch(err => errorHandler("Documentation generation", err));
 		}
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('extension.ai.codemaker.generate.code', (uri) => {
 		vscode.window.showInformationMessage(`Generating code for ${uri ? uri.path : 'null'}`);
 		if (uri) {
-			codeMakerService.generateCode(vscode.Uri.parse(uri.path))
+			codemakerService.generateCode(vscode.Uri.parse(uri.path))
 				.then(() => {
 					vscode.window.showInformationMessage(`Code generated for ${uri ? uri.path : 'null'}`);
 				})
-				.catch(err => errorHandling("Code generation", err));
+				.catch(err => errorHandler("Code generation", err));
 		}
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('extension.ai.codemaker.replace.doc', (uri) => {
 		vscode.window.showInformationMessage(`Replacing documentation for ${uri ? uri.path : 'null'}`);
 		if (uri) {
-			codeMakerService.replaceDocumentation(vscode.Uri.parse(uri.path))
+			codemakerService.replaceDocumentation(vscode.Uri.parse(uri.path))
 				.then(() => {
 					vscode.window.showInformationMessage(`Documentation replaced for ${uri ? uri.path : 'null'}`);
 				})
-				.catch(err => errorHandling("Documentation replacement", err));
+				.catch(err => errorHandler("Documentation replacement", err));
 		}
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('extension.ai.codemaker.replace.code', (uri) => {
 		vscode.window.showInformationMessage(`Replacing code for ${uri ? uri.path : 'null'}`);
 		if (uri) {
-			codeMakerService.replaceCode(vscode.Uri.parse(uri.path))
+			codemakerService.replaceCode(vscode.Uri.parse(uri.path))
 				.then(() => {
 					vscode.window.showInformationMessage(`Code replaced for ${uri ? uri.path : 'null'}`);
 				})
-				.catch(err => errorHandling("Code replacement", err));
+				.catch(err => errorHandler("Code replacement", err));
 		}
 	}));
-
-	function errorHandling(action: string, err: any) {
-		if (err instanceof AuthenticationError) {
-			vscode.window.showInformationMessage(`Invalid token`);
-		} else if (err instanceof UnsupportedLanguageError) {
-			vscode.window.showInformationMessage(err.message);
-		} else {
-			console.error(err);
-			vscode.window.showInformationMessage(`${action} failed`);
-		}
-	}
 }
 
-// This method is called when your extension is deactivated
-export function deactivate() { }
-
-async function init(context: vscode.ExtensionContext, service: CodemakerService) {
-
-	const provider: vscode.InlineCompletionItemProvider = new CompletionProvider(service);
+function registerCompletionProvider(context: vscode.ExtensionContext, service: CodemakerService) {
+	const provider = new CompletionProvider(service);
 	context.subscriptions.push(
 		vscode.languages.registerInlineCompletionItemProvider({ pattern: '**' }, provider)
 	);

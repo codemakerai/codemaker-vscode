@@ -1,12 +1,14 @@
 import * as vscode from 'vscode';
 import CodemakerService from '../service/codemakerService';
+import {    
+    langFromFileExtension
+} from '../utils/languageUtils';
 import {
     checkLineLength,
-    isEndOfLine,
-    langFromFileExtension
-} from '../Utils';
+    isEndOfLine
+} from '../utils/editorUtils';
 
-export default class InlineCompletionItemProvider implements vscode.InlineCompletionItemProvider {
+export default class CompletionProvider implements vscode.InlineCompletionItemProvider {
 
     private readonly completionDelay: number = 300;
     private readonly newLine: string = '\n';
