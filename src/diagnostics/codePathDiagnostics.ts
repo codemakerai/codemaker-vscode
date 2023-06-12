@@ -1,11 +1,11 @@
 import * as vscode from 'vscode';
+import { Configuration } from '..//configuration/configuration';
 import { isFileSupported } from '../utils/languageUtils';
 
 export const CODE_PATH = 'code_path';
 
 export async function refreshDiagnostics(document: vscode.TextDocument, diagnosticCollection: vscode.DiagnosticCollection) {
-    const isCodeActionsEnabled = vscode.workspace.getConfiguration().get('codemaker.enableCodeActions') as boolean;
-    if (!isCodeActionsEnabled) {
+    if (!Configuration.isCodeActionsEnabled()) {
         return;
     }
 

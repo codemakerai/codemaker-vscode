@@ -8,6 +8,7 @@ import { AuthenticationError, UnsupportedLanguageError } from './sdk/errors';
 import CompletionProvider from './completion/completionProvider';
 import { findCodePath } from './utils/codePathUtils';
 import { CODE_PATH, subscribeToDocumentChanges } from './diagnostics/codePathDiagnostics';
+import { Configuration } from './configuration/configuration';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -17,7 +18,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "CodeMaker" is now active!');
 
-	const apiKey = vscode.workspace.getConfiguration().get('codemaker.apiKey') as string;
+	const apiKey = Configuration.apiKey()
 	const codemakerService = new CodemakerService(apiKey);
 
 	registerDiagnostics(context);

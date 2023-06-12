@@ -9,6 +9,7 @@ import {
     checkLineLength,
     isEndOfLine
 } from '../utils/editorUtils';
+import { Configuration } from '../configuration/configuration';
 
 export default class CompletionProvider implements vscode.InlineCompletionItemProvider {
 
@@ -65,8 +66,7 @@ export default class CompletionProvider implements vscode.InlineCompletionItemPr
     }
 
     private shouldSkip(document: vscode.TextDocument, position: vscode.Position): boolean {
-        const isAutocompleEnabled = vscode.workspace.getConfiguration().get('codemaker.enableAutocomplete') as boolean;
-        return !isAutocompleEnabled
+        return !Configuration.isAutoCompleteEnabled()
             || !checkLineLength(position)
             || !isEndOfLine(document, position);
     }
