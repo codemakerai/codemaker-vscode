@@ -1,3 +1,5 @@
+// Copyright 2023 CodeMaker AI Inc. All rights reserved.
+
 import * as vscode from 'vscode';
 import CodemakerService from '../service/codemakerService';
 import {    
@@ -63,16 +65,10 @@ export default class CompletionProvider implements vscode.InlineCompletionItemPr
     }
 
     private shouldSkip(document: vscode.TextDocument, position: vscode.Position): boolean {
-
-        const autocompleteDisabled = vscode.workspace.getConfiguration().get('codemaker.disableAutocomplete') as boolean;
-
-        if (autocompleteDisabled
+        const isAutocompleEnabled = vscode.workspace.getConfiguration().get('codemaker.enableAutocomplete') as boolean;
+        return !isAutocompleEnabled
             || !checkLineLength(position)
-            || !isEndOfLine(document, position)) {
-
-            return true;
-        }
-        return false;
+            || !isEndOfLine(document, position);
     }
 
     private shouldInvokeCompletion(currLineBeforeCursor: string) {

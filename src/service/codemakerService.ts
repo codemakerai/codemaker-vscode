@@ -16,8 +16,8 @@ class CodemakerService {
 
     private readonly client;
 
-    constructor(private readonly token: string) {
-        this.client = new Client(token);
+    constructor(private readonly apiKey: string) {
+        this.client = new Client(apiKey);
     }
 
     /**
@@ -55,8 +55,8 @@ class CodemakerService {
      *
      * @param path file or directory path.
      */
-    public async replaceDocumentation(path: vscode.Uri) {
-        return this.walkFiles(path, this.getProcessor(Mode.document, Modify.replace));
+    public async replaceDocumentation(path: vscode.Uri, codePath?: string) {
+        return this.walkFiles(path, this.getProcessor(Mode.document, Modify.replace, codePath));
     }
 
     /**
@@ -64,11 +64,11 @@ class CodemakerService {
      *
      * @param path file or directory path.
      */
-    public async replaceCode(path: vscode.Uri) {
-        return this.walkFiles(path, this.getProcessor(Mode.code, Modify.replace));
+    public async replaceCode(path: vscode.Uri, codePath?: string) {
+        return this.walkFiles(path, this.getProcessor(Mode.code, Modify.replace, codePath));
     }
 
-    private getProcessor(mode: Mode, modify: Modify = Modify.none) {
+    private getProcessor(mode: Mode, modify: Modify = Modify.none, codePath?: string) {
         return async (filePath: vscode.Uri): Promise<void> => {
 
             // Save the underlying file if there are unpersisted changes
@@ -80,7 +80,7 @@ class CodemakerService {
             const sourceEncoded = await vscode.workspace.fs.readFile(filePath);
             const source = new TextDecoder('utf-8').decode(sourceEncoded);
             const ext = langFromFileExtension(filePath.path);
-            const request = this.createProcessRequest(mode, ext, source, modify);
+            const request = this.createProcessRequest(mode, ext, source, modify, codePath);
             return this.process(request)
                 .then(async (output) => {
                     await vscode.workspace.fs.writeFile(filePath, new TextEncoder().encode(output));
@@ -130,7 +130,7 @@ class CodemakerService {
         return processOutput.data.output.source;
     }
 
-    private createProcessRequest(mode: Mode, lang: Language, source: string, modify: Modify) {
+    private createProcessRequest(mode: Mode, lang: Language, source: string, modify: Modify, codePath?: string) {
         return {
             process: {
                 mode: mode,
@@ -140,6 +140,7 @@ class CodemakerService {
                 },
                 options: {
                     modify: modify,
+                    codePath: codePath
                 },
             }
         };

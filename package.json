@@ -29,10 +29,16 @@
       "title": "CodeMaker AI",
       "properties": {
         "codemaker.apiKey": {
-          "type": "string",
-          "description": "API Key"
+          "description": "API Key",
+          "type": "string"          
         },
-        "codemaker.disableAutocomplete": {
+        "codemaker.enableAutocomplete": {
+          "description": "Enables autocompletion.",
+          "type": "boolean",
+          "default": false
+        },
+        "codemaker.enableCodeActions": {          
+          "description": "Enables code actions",
           "type": "boolean",
           "default": true
         }
@@ -112,6 +118,14 @@
       {
         "command": "extension.ai.codemaker.replace.code",
         "title": "Code"
+      },
+      {
+        "command": "extension.ai.codemaker.replace.method.code",
+        "title": "Replace code"
+      },
+      {
+        "command": "extension.ai.codemaker.replace.method.doc",
+        "title": "Replace documentation"
       }
     ]
   },
