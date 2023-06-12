@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { Configuration } from '..//configuration/configuration';
 import { isFileSupported } from '../utils/languageUtils';
 
-export const CODE_PATH = 'code_path';
+export const CODE_PATH = 'codemkaker.codepath';
 
 export async function refreshDiagnostics(document: vscode.TextDocument, diagnosticCollection: vscode.DiagnosticCollection) {
     if (!Configuration.isCodeActionsEnabled()) {
