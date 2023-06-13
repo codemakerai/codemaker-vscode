@@ -8,7 +8,6 @@ import { AuthenticationError, UnsupportedLanguageError } from './sdk/errors';
 import CompletionProvider from './completion/completionProvider';
 import { findCodePath } from './utils/codePathUtils';
 import { CODE_PATH, subscribeToDocumentChanges } from './diagnostics/codePathDiagnostics';
-import { Configuration } from './configuration/configuration';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -18,13 +17,12 @@ export async function activate(context: vscode.ExtensionContext) {
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "CodeMaker" is now active!');
 
-	const apiKey = Configuration.apiKey()
-	const codemakerService = new CodemakerService(apiKey);
+	const codemakerService = new CodemakerService();
 
 	registerDiagnostics(context);
 	registerActions(context, codemakerService);
 	registerCompletionProvider(context, codemakerService);
-	registerCodeAction(context, codemakerService);	
+	registerCodeAction(context, codemakerService);
 }
 
 // This method is called when your extension is deactivated
@@ -32,7 +30,7 @@ export function deactivate() { }
 
 function errorHandler(action: string, err: any) {
 	if (err instanceof AuthenticationError) {
-		vscode.window.showInformationMessage(`Invalid token`);
+		vscode.window.showInformationMessage(`Invalid API Key. Configure the the API Key in the Settings > Extensions > CodeMaker AI.`);
 	} else if (err instanceof UnsupportedLanguageError) {
 		vscode.window.showInformationMessage(err.message);
 	} else {
@@ -185,7 +183,7 @@ export class ReplaceMethodDocumentationAction implements vscode.CodeActionProvid
 
 	createCommand(diagnostic: vscode.Diagnostic) {
 		const action = new vscode.CodeAction('Replace documentation', vscode.CodeActionKind.QuickFix);
-		action.command = { command: 'extension.ai.codemaker.replace.method.doc', title: 'Replaces documentation', tooltip: 'This will replace documentation.' };		
+		action.command = { command: 'extension.ai.codemaker.replace.method.doc', title: 'Replaces documentation', tooltip: 'This will replace documentation.' };
 		return action;
 	}
 }

@@ -11,24 +11,23 @@ import {
 } from './model/model';
 import { AuthenticationError } from './errors';
 
-class Client {
+export class Client {
     private static readonly apiEndpoint = 'https://api.codemaker.ai';
 
     private client: AxiosInstance;
 
-    constructor(private readonly apiKey: string) {
+    constructor(private readonly apiKeyProvider: () => string) {
         this.client = axios.create({
             baseURL: Client.apiEndpoint,
             headers: {
-                'Authorization': `Bearer ${this.apiKey}`,
                 'Content-type': 'application/json',
-                'User-Agent': 'CodeMakerSDKJavaScript/1.1.0'
+                'User-Agent': 'CodeMakerSDKJavaScript/1.6.0'
             },
         });
     }
 
     createProcess(body: CreateProcessRequest): Promise<AxiosResponse<CreateProcessResponse>> {
-        return this.doPost<CreateProcessResponse>('/process',  body);
+        return this.doPost<CreateProcessResponse>('/process', body);
     }
 
     getProcessStatus(body: GetProcessStatusRequest): Promise<AxiosResponse<GetProcessStatusResponse>> {
@@ -41,7 +40,11 @@ class Client {
 
     async doPost<T>(url: string, body: any): Promise<AxiosResponse<T>> {
         try {
-            return await this.client.post<T>(url, body);
+            return await this.client.post<T>(url, body, {
+                headers: {
+                    'Authorization': `Bearer ${this.apiKeyProvider()}`,
+                }
+            });
         } catch (err) {
             const error = err as AxiosError | Error;
             if (!axios.isAxiosError(error)) {

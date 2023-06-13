@@ -4,6 +4,7 @@ import * as vscode from 'vscode';
 import { TextDecoder, TextEncoder } from 'util';
 import Client from '../sdk/client';
 import { CreateProcessRequest, Language, Mode, Modify, Status } from '../sdk/model/model';
+import { Configuration } from '../configuration/configuration';
 import { langFromFileExtension } from '../utils/languageUtils';
 
 /**
@@ -16,8 +17,8 @@ class CodemakerService {
 
     private readonly client;
 
-    constructor(private readonly apiKey: string) {
-        this.client = new Client(apiKey);
+    constructor() {
+        this.client = new Client(() => Configuration.apiKey());
     }
 
     /**
