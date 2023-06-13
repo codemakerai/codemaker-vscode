@@ -7,6 +7,8 @@ const languages = new Map<string, Language>([
     ["java", Language.java],
     ["js", Language.javascript],
     ["jsx", Language.javascript],
+    ["ts", Language.javascript],
+    ["tsx", Language.javascript],
     ["kt", Language.kotlin],
     ["go", Language.go],
 ])
