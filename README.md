@@ -33,9 +33,13 @@ More language support is comming soon.
 1. Sign up for the Early Access Program at https://codemaker.ai.
 2. Receive the Early Access Program invitation email. 
 3. Install the extension from [Visual Studio Code Marketplace](https://marketplace.visualstudio.com/items?itemName=codemakerai.codemakerai).
-4. Configure the API Key in Code > Settings > Extensions > CodeMaker AI.
-5. To enable inline autocompletion > Code > Settings > CodeMaker AI > Extension Settings > uncheck Disable Autocomplete.
-6. Have fun.
+4. Configure the API Key in Settings > Extensions > CodeMaker AI.
+5. Have fun.
+
+## Enable autocompletion
+
+1. Open Settings > Extensions > CodeMaker AI.
+2. Check the `Enable Autocomplete` checkbox.
 
 ## Context-aware inline autocomplete
 ![Context-aware inline autocomplete](./img/autocomplete-demo.gif)

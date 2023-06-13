@@ -41,3 +41,7 @@ Updated extension description.
 ## Version: 1.6.0
 
 * Supported inline autocomplete.
+
+## Version: 1.7.0
+
+* Added TypeScript support.
