@@ -19,8 +19,10 @@ Fallowing operations are supported:
 Following programming languages are supported:
 
 * Java
-* Javascript
+* JavaScript
 * JSX
+* TypeScript
+* TSX
 * Kotlin
 * Golang
 

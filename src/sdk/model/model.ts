@@ -54,6 +54,7 @@ export enum Mode {
 export enum Language {
     java = "JAVA",
     javascript = "JAVASCRIPT",
+    typescript = "TYPESCRIPT",
     kotlin = "KOTLIN",
     go = "GO"
 };
