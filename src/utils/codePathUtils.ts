@@ -16,7 +16,7 @@ export async function findCodePath(uri: vscode.Uri, position: vscode.Position) {
         if (symbol.range.contains(position)) {
             if (symbol.kind == vscode.SymbolKind.Function) {                
                 const name = callableSignature(symbol.name);                
-                return name;
+                return `${name}(*)`;
             } else if (symbol.kind == vscode.SymbolKind.Class) {
                 if (!symbol.children) {
                     return;
@@ -24,7 +24,7 @@ export async function findCodePath(uri: vscode.Uri, position: vscode.Position) {
                 for (let child of symbol.children) {
                     if (child.range.contains(position) && child.kind == vscode.SymbolKind.Method) {
                         const name = callableSignature(child.name);
-                        return `${symbol.name}.${name}`;
+                        return `${symbol.name}.${name}(*)`;
                     }
                 }
             }
@@ -34,5 +34,5 @@ export async function findCodePath(uri: vscode.Uri, position: vscode.Position) {
 }
 
 function callableSignature(name: string) {
-    return name.replace(/\(.*\)/, '(*)');
+    return name.replace(/\(.*\)/, '');
 }
