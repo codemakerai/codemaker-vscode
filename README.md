@@ -8,11 +8,10 @@ Integrates CodeMaker Code Generation capabilities and directly offers them as ID
 
 Fallowing operations are supported:
 
-* Context-aware source code generation.
-* Context-aware source code replacement.
-* Generating source code documentation.
-* Replacing source code documentation.
+* Context-aware source code generation and replacement.
+* Generating source code documentation and replacement.
 * Context-aware inline autocompletion.
+* Quick fix generations actions for functions and methods.
 
 ## Supported languages
 
