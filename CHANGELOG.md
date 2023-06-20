@@ -45,3 +45,7 @@ Updated extension description.
 ## Version: 1.7.0
 
 * Added TypeScript support.
+
+## Version: 1.8.0
+
+* Added C# support.

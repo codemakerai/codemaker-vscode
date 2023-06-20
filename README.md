@@ -24,6 +24,7 @@ Following programming languages are supported:
 * TSX
 * Kotlin
 * Golang
+* C#
 
 More language support is comming soon.
 
