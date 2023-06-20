@@ -56,7 +56,8 @@ export enum Language {
     javascript = "JAVASCRIPT",
     typescript = "TYPESCRIPT",
     kotlin = "KOTLIN",
-    go = "GO"
+    go = "GO",
+    csharp = "CSHARP",
 };
 
 export enum Status {

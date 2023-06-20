@@ -11,6 +11,7 @@ const languages = new Map<string, Language>([
     ["tsx", Language.typescript],
     ["kt", Language.kotlin],
     ["go", Language.go],
+    ["cs", Language.csharp],
 ])
 
 export function isFileSupported(fileName: string): boolean {
