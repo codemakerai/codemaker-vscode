@@ -7,6 +7,7 @@ import {
 } from '../utils/languageUtils';
 import {
     checkLineLength,
+    getIndentationAtPosition,
     isEndOfLine
 } from '../utils/editorUtils';
 import { Configuration } from '../configuration/configuration';
@@ -49,7 +50,7 @@ export default class CompletionProvider implements vscode.InlineCompletionItemPr
         const needNewRequest = this.shouldInvokeCompletion(currLineBeforeCursor);
         if (needNewRequest) {
             var output = await this.service.complete(document.getText(), langFromFileExtension(document.fileName), offset - 1);
-            output = this.sanitize(output)!;
+            output = this.formatCode(output, position)!;
             if (output === '') {
                 return;
             }
@@ -92,10 +93,15 @@ export default class CompletionProvider implements vscode.InlineCompletionItemPr
         return currLineBeforeCursor.length - currLineBeforeCursor.trimStart().length;
     }
 
-    private sanitize(output: string): string {
-        if (output === '' || output.startsWith('\n')) {
+    private formatCode(output: string, position: vscode.Position): string {
+        if (output === '') {
             return '';
         }
-        return output.split(this.newLine)[0];
+        const indent = getIndentationAtPosition(position);
+        const lines = output.split(this.newLine);
+        for (let i = 1; i < lines.length; i++) {
+            lines[i] = indent + lines[i];
+        }
+        return lines.join(this.newLine);;
     }
 }

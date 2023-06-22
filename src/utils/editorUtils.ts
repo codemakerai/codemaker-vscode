@@ -2,7 +2,7 @@
 
 import * as vscode from 'vscode';
 
-const minimumLineLength: number = 5;
+const minimumLineLength: number = 4;
 const END_OF_LINE_REGEX = new RegExp("^\\s*[)}\\]\"'`]*\\s*[:{;,]?\\s*$");
 
 export function isComment(position: vscode.Position) {
@@ -33,4 +33,12 @@ export function isEndOfLine(document: vscode.TextDocument, position: vscode.Posi
         new vscode.Range(position, document.lineAt(position.line).range.end)
     );
     return END_OF_LINE_REGEX.test(suffix);
+}
+
+export function getIndentationAtPosition(position: vscode.Position) {
+    const document = vscode.window.activeTextEditor?.document;
+    if (!document) {
+        return;
+    }
+    return document.lineAt(position.line).text.match(/^\s*/)?.[0] || '';
 }
