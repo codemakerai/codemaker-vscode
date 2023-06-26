@@ -81,7 +81,7 @@ export class Indenter {
             if (source[i] == '{') {
                 depth++;
             } else if (source[i] == '}') {
-                depth--;
+                depth = Math.max(depth - 1, 0);
             }
             i++;
         }
