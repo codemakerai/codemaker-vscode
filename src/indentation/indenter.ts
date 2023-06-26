@@ -5,12 +5,23 @@ export class Indenter {
         let output = '';
         let i  = 0;
         let depth = 0;
+
+        const processNewLine = () => {
+            const j = this.skipWhitespaces(source, i + 1);
+            let shift = 0;
+            if (j < source.length && source[j] == '}') {
+                shift = -1;
+            }
+            output += this.indentation(depth + shift, whitespace, baseIndentation);
+            i = j - 1;
+        }
         
         while (i < source.length) {            
             output += source[i];
             if (source[i] == '{') {
                 depth++;
             } else if (source[i] == '\n') {
+                processNewLine();
                 break;
             }
             i++;
@@ -22,13 +33,7 @@ export class Indenter {
             output += source[i];
 
             if (source[i] == '\n') {
-                const j = this.skipWhitespaces(source, i + 1);
-                let shift = 0;
-                if (j < source.length && source[j] == '}') {
-                    shift = -1;
-                }
-                output += this.indentation(depth + shift, whitespace, baseIndentation);
-                i = j - 1;
+                processNewLine();
             } else if (source[i] == '{') {
                 depth++;
             } else if (source[i] == '}') {
@@ -37,7 +42,7 @@ export class Indenter {
             i++;
         }
 
-        return source;
+        return output;
     }
 
     private skipWhitespaces(source: string, start: number) {
