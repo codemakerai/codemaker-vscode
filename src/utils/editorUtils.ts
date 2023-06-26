@@ -35,10 +35,10 @@ export function isEndOfLine(document: vscode.TextDocument, position: vscode.Posi
     return END_OF_LINE_REGEX.test(suffix);
 }
 
-export function getIndentationAtPosition(position: vscode.Position) {
+export function getLineAtPosition(position: vscode.Position) {
     const document = vscode.window.activeTextEditor?.document;
     if (!document) {
         return '';
     }
-    return document.lineAt(position.line).text.match(/^\s*/)?.[0] || '';
+    return document.lineAt(position.line).text;
 }

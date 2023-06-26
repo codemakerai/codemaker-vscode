@@ -7,7 +7,7 @@ import {
 } from '../utils/languageUtils';
 import {
     checkLineLength,
-    getIndentationAtPosition,
+    getLineAtPosition,
     isEndOfLine
 } from '../utils/editorUtils';
 import { Configuration } from '../configuration/configuration';
@@ -19,13 +19,11 @@ export default class CompletionProvider implements vscode.InlineCompletionItemPr
     private readonly newLine: string = '\n';
 
     private readonly service: CodemakerService;
-    private readonly indenter: Indenter;
 
     private completionOutput: string = ""
 
     constructor(service: CodemakerService) {
         this.service = service;
-        this.indenter = new Indenter();
     }
 
     async provideInlineCompletionItems(
@@ -104,7 +102,8 @@ export default class CompletionProvider implements vscode.InlineCompletionItemPr
         if (output === '') {
             return '';
         }
-        const baseIndentation = getIndentationAtPosition(position);
-        return this.indenter.alignIndentation(output, ' ', baseIndentation);
+        const line = getLineAtPosition(position);
+        const indenter = Indenter.fromInput(' ', 4, line);
+        return indenter.alignIndentation(output);
     }
 }

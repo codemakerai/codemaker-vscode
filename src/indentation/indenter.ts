@@ -1,23 +1,23 @@
 
 export class Indenter {
 
-    alignIndentation(source: string, whitespace: string, baseIndentation: string) {
+    private readonly char: string;
+    private readonly increment: number;
+    private readonly depth: number;
+    private readonly baseIndentation: string;
+
+    constructor(char: string, increment: number, depth: number, baseIndentation: string) {
+        this.char = char;
+        this.increment = increment;
+        this.depth = depth;
+        this.baseIndentation = baseIndentation;
+    }
+
+    alignIndentation(source: string) {
         let output = '';
         let i  = 0;
         let depth = 0;
         
-        while (i < source.length) {            
-            output += source[i];
-            if (source[i] == '{') {
-                depth++;
-            } else if (source[i] == '\n') {
-                break;
-            }
-            i++;
-        }
-
-        i++;
-
         while (i < source.length) {
             output += source[i];
 
@@ -27,7 +27,7 @@ export class Indenter {
                 if (j < source.length && source[j] == '}') {
                     shift = -1;
                 }
-                output += this.indentation(depth + shift, whitespace, baseIndentation);
+                output += this.indentation(depth + shift);
                 i = j - 1;
             } else if (source[i] == '{') {
                 depth++;
@@ -37,14 +37,14 @@ export class Indenter {
             i++;
         }
 
-        return source;
+        return output;
     }
 
     private skipWhitespaces(source: string, start: number) {
         let i = start;
 
         while (i < source.length) {
-            if (!this.isWhitespace(source, i)) {
+            if (!Indenter.isWhitespace(source, i)) {
                 break;
             }
             i++;
@@ -52,11 +52,40 @@ export class Indenter {
         return i;
     }
 
-    private indentation(depth: number, whitespace: string, baseIndentation: string) {
-        return baseIndentation + whitespace.repeat(4 * Math.max(depth, 0));
+    private indentation(depth: number) {
+        return this.baseIndentation + this.char.repeat(4 * Math.max(depth, 0));
     }
 
-    private isWhitespace(source: string, i: number) {
+    private static isWhitespace(source: string, i: number) {
         return source[i] == ' ' || source[i] == '\t';
+    }
+
+    static fromInput(char: string, increment: number, source: string) {
+        let baseIndentation = '';
+        let i = 0;
+
+        console.log(`Source:|${source}|`);
+
+        while (i < source.length) {
+            if (!Indenter.isWhitespace(source, i)) {
+                break;
+            }
+            baseIndentation += source[i];
+            i++;
+        }
+
+        console.log(`BaseIndentation:|${baseIndentation}|`);
+
+        let depth = 0;
+        while (i < source.length) {
+            if (source[i] == '{') {
+                depth++;
+            } else if (source[i] == '}') {
+                depth--;
+            }
+            i++;
+        }
+        
+        return new Indenter(char, increment, depth, baseIndentation);
     }
 }
