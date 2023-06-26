@@ -53,7 +53,7 @@ export class Indenter {
     }
 
     private indentation(depth: number, whitespace: string, baseIndentation: string) {
-        return baseIndentation + whitespace.repeat(4 * depth);
+        return baseIndentation + whitespace.repeat(4 * Math.max(depth, 0));
     }
 
     private isWhitespace(source: string, i: number) {
