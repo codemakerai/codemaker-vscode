@@ -16,7 +16,7 @@ export class Indenter {
     alignIndentation(source: string) {
         let output = '';
         let i  = 0;
-        let depth = 0;
+        let depth = this.depth;
         
         while (i < source.length) {
             output += source[i];
@@ -53,7 +53,7 @@ export class Indenter {
     }
 
     private indentation(depth: number) {
-        return this.baseIndentation + this.char.repeat(4 * Math.max(depth, 0));
+        return this.baseIndentation + this.char.repeat(this.increment * Math.max(depth, 0));
     }
 
     private static isWhitespace(source: string, i: number) {

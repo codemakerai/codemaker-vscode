@@ -55,7 +55,7 @@ export default class CompletionProvider implements vscode.InlineCompletionItemPr
 
             console.log(`Completion output: ${output}`);
 
-            output =  this.formatCode(output, position)!;
+            output =  this.formatCode(output, currLineBeforeCursor)!;
             if (output === '') {
                 return;
             }
@@ -98,11 +98,10 @@ export default class CompletionProvider implements vscode.InlineCompletionItemPr
         return currLineBeforeCursor.length - currLineBeforeCursor.trimStart().length;
     }
 
-    private formatCode(output: string, position: vscode.Position): string {
+    private formatCode(output: string, line: string): string {
         if (output === '') {
             return '';
         }
-        const line = getLineAtPosition(position);
         const indenter = Indenter.fromInput(' ', 4, line);
         return indenter.alignIndentation(output);
     }
