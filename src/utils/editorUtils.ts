@@ -38,7 +38,7 @@ export function isEndOfLine(document: vscode.TextDocument, position: vscode.Posi
 export function getIndentationAtPosition(position: vscode.Position) {
     const document = vscode.window.activeTextEditor?.document;
     if (!document) {
-        return;
+        return '';
     }
     return document.lineAt(position.line).text.match(/^\s*/)?.[0] || '';
 }

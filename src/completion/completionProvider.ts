@@ -11,17 +11,21 @@ import {
     isEndOfLine
 } from '../utils/editorUtils';
 import { Configuration } from '../configuration/configuration';
+import { Indenter } from '../indentation/indenter';
 
 export default class CompletionProvider implements vscode.InlineCompletionItemProvider {
 
     private readonly completionDelay: number = 300;
     private readonly newLine: string = '\n';
 
+    private readonly service: CodemakerService;
+    private readonly indenter: Indenter;
+
     private completionOutput: string = ""
-    private service: CodemakerService;
 
     constructor(service: CodemakerService) {
         this.service = service;
+        this.indenter = new Indenter();
     }
 
     async provideInlineCompletionItems(
@@ -50,7 +54,10 @@ export default class CompletionProvider implements vscode.InlineCompletionItemPr
         const needNewRequest = this.shouldInvokeCompletion(currLineBeforeCursor);
         if (needNewRequest) {
             var output = await this.service.complete(document.getText(), langFromFileExtension(document.fileName), offset - 1);
-            output = this.formatCode(output, position)!;
+
+            console.log(`Completion output: ${output}`);
+
+            output =  this.formatCode(output, position)!;
             if (output === '') {
                 return;
             }
@@ -97,11 +104,7 @@ export default class CompletionProvider implements vscode.InlineCompletionItemPr
         if (output === '') {
             return '';
         }
-        const indent = getIndentationAtPosition(position);
-        const lines = output.split(this.newLine);
-        for (let i = 1; i < lines.length; i++) {
-            lines[i] = indent + lines[i];
-        }
-        return lines.join(this.newLine);;
+        const baseIndentation = getIndentationAtPosition(position);
+        return this.indenter.alignIndentation(output, ' ', baseIndentation);
     }
 }
