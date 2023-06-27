@@ -41,6 +41,9 @@ More language support is comming soon.
 1. Open Settings > Extensions > CodeMaker AI.
 2. Check the `Enable Autocomplete` checkbox.
 
+## Context-aware multi-line autocomplete
+![Context-aware multi-line autocomplete](./img/autocompletion-multi-line-demo.gif)
+
 ## Context-aware inline autocomplete
 ![Context-aware inline autocomplete](./img/autocomplete-demo.gif)
 

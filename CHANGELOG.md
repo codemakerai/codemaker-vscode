@@ -49,3 +49,7 @@ Updated extension description.
 ## Version: 1.8.0
 
 * Added C# support.
+
+## Version: 1.9.0
+
+* Added multi-line autocomplete.
