@@ -64,8 +64,6 @@ export class Indenter {
         let baseIndentation = '';
         let i = 0;
 
-        console.log(`Source:|${source}|`);
-
         while (i < source.length) {
             if (!Indenter.isWhitespace(source, i)) {
                 break;
@@ -73,8 +71,6 @@ export class Indenter {
             baseIndentation += source[i];
             i++;
         }
-
-        console.log(`BaseIndentation:|${baseIndentation}|`);
 
         let depth = 0;
         while (i < source.length) {
