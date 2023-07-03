@@ -8,6 +8,7 @@ import { AuthenticationError, UnsupportedLanguageError } from './sdk/errors';
 import CompletionProvider from './completion/completionProvider';
 import { findCodePath } from './utils/codePathUtils';
 import { CODE_PATH, subscribeToDocumentChanges } from './diagnostics/codePathDiagnostics';
+import completionImports from './completion/completionImports';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -129,6 +130,8 @@ function registerActions(context: vscode.ExtensionContext, codemakerService: Cod
 			})
 			.catch(err => errorHandler("Code replacement", err));
 	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('extension.ai.codemaker.completion.import', completionImports));
 }
 
 function registerCompletionProvider(context: vscode.ExtensionContext, service: CodemakerService) {

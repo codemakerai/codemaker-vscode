@@ -7,7 +7,6 @@ import {
 } from '../utils/languageUtils';
 import {
     checkLineLength,
-    getLineAtPosition,
     isEndOfLine
 } from '../utils/editorUtils';
 import { Configuration } from '../configuration/configuration';
@@ -66,6 +65,7 @@ export default class CompletionProvider implements vscode.InlineCompletionItemPr
             items: [{
                 insertText: this.completionOutput,
                 range: new vscode.Range(position.line, startPosition, position.line, document.lineAt(position.line).text.length),
+                command: this.getAutoImportCommand(this.completionOutput),
             }]
         };
         return result;
@@ -105,4 +105,14 @@ export default class CompletionProvider implements vscode.InlineCompletionItemPr
         const indenter = Indenter.fromInput(' ', 4, line);
         return indenter.alignIndentation(output);
     }
+
+    private getAutoImportCommand(completion: string): vscode.Command {
+        return {
+            title: "complete import",
+            command: "extension.ai.codemaker.completion.import",
+            arguments: [
+                completion,
+            ],
+        };
+      }
 }
