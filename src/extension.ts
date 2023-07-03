@@ -8,6 +8,7 @@ import { AuthenticationError, UnsupportedLanguageError } from './sdk/errors';
 import CompletionProvider from './completion/completionProvider';
 import { findCodePath } from './utils/codePathUtils';
 import { CODE_PATH, subscribeToDocumentChanges } from './diagnostics/codePathDiagnostics';
+import { Predictor } from './predictor/predictor';
 import completionImports from './completion/completionImports';
 
 // This method is called when your extension is activated
@@ -24,6 +25,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	registerActions(context, codemakerService);
 	registerCompletionProvider(context, codemakerService);
 	registerCodeAction(context, codemakerService);
+	registerPredictiveGeneration(context, codemakerService);
 }
 
 // This method is called when your extension is deactivated
@@ -154,6 +156,11 @@ function registerCodeAction(context: vscode.ExtensionContext, service: Codemaker
 	);
 }
 
+function registerPredictiveGeneration(context: vscode.ExtensionContext, codemakerService: CodemakerService) {
+	const predictor = new Predictor(codemakerService);
+	predictor.subscribeToDucumentChanges(context);
+}
+
 export class ReplaceMethodCodeAction implements vscode.CodeActionProvider {
 
 	public static readonly providedCodeActionKinds = [
@@ -190,3 +197,4 @@ export class ReplaceMethodDocumentationAction implements vscode.CodeActionProvid
 		return action;
 	}
 }
+

@@ -1,3 +1,5 @@
+// Copyright 2023 CodeMaker AI Inc. All rights reserved.
+
 import * as vscode from 'vscode';
 import { Configuration } from '..//configuration/configuration';
 import { isFileSupported } from '../utils/languageUtils';
