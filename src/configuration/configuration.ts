@@ -16,6 +16,10 @@ export class Configuration {
         return this.get('codemaker.enableCodeActions');
     }
 
+    static isPredictiveGenerationEnabled(): boolean {
+        return this.get('codemaker.enablePredictiveGeneration');
+    }
+
     private static get<T>(key: string): T {
         return vscode.workspace.getConfiguration().get(key) as T;
     }

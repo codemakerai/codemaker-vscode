@@ -41,6 +41,11 @@
           "description": "Enables code actions",
           "type": "boolean",
           "default": true
+        },
+        "codemaker.enablePredictiveGeneration": {          
+          "description": "Enables predictive generation",
+          "type": "boolean",
+          "default": false
         }
       }
     },

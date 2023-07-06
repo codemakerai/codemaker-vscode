@@ -27,7 +27,7 @@ class CodemakerService {
      * @param path file or directory path.
      */
     public async generateDocumentation(path: vscode.Uri) {
-        return this.walkFiles(path, this.getProcessor(Mode.document));
+        return this.walkFiles(path, this.getFileProcessor(Mode.document));
     }
 
     /**
@@ -36,7 +36,16 @@ class CodemakerService {
      * @param path file or directory path.
      */
     public async generateCode(path: vscode.Uri) {
-        return this.walkFiles(path, this.getProcessor(Mode.code));
+        return this.walkFiles(path, this.getFileProcessor(Mode.code));
+    }
+
+    /**
+     * Generate code for given source files.
+     *
+     * @param path file or directory path.
+     */
+    public async predictiveGeneration(path: vscode.Uri) {
+        return this.walkFiles(path, this.getPredictiveProcessor(Mode.code));
     }
 
     /**
@@ -57,7 +66,7 @@ class CodemakerService {
      * @param path file or directory path.
      */
     public async replaceDocumentation(path: vscode.Uri, codePath?: string) {
-        return this.walkFiles(path, this.getProcessor(Mode.document, Modify.replace, codePath));
+        return this.walkFiles(path, this.getFileProcessor(Mode.document, Modify.replace, codePath));
     }
 
     /**
@@ -66,27 +75,27 @@ class CodemakerService {
      * @param path file or directory path.
      */
     public async replaceCode(path: vscode.Uri, codePath?: string) {
-        return this.walkFiles(path, this.getProcessor(Mode.code, Modify.replace, codePath));
+        return this.walkFiles(path, this.getFileProcessor(Mode.code, Modify.replace, codePath));
     }
 
-    private getProcessor(mode: Mode, modify: Modify = Modify.none, codePath?: string) {
+    private getPredictiveProcessor(mode: Mode, modify: Modify = Modify.none, codePath?: string) {
         return async (filePath: vscode.Uri): Promise<void> => {
+            const source = await this.readFile(filePath);
+            const lang = langFromFileExtension(filePath.path);
+            const request = this.createProcessRequest(mode, lang, source, modify, codePath);
+            this.predictiveProcess(request);
+        }
+    }
 
-            // Save the underlying file if there are unpersisted changes
-            const textDocument = await vscode.workspace.openTextDocument(filePath);
-            if (textDocument.isDirty) {
-                await textDocument.save();
-            }
-
-            const sourceEncoded = await vscode.workspace.fs.readFile(filePath);
-            const source = new TextDecoder('utf-8').decode(sourceEncoded);
-            const ext = langFromFileExtension(filePath.path);
-            const request = this.createProcessRequest(mode, ext, source, modify, codePath);
-            return this.process(request)
-                .then(async (output) => {
-                    await vscode.workspace.fs.writeFile(filePath, new TextEncoder().encode(output));
-                });
-        };
+    private getFileProcessor(mode: Mode, modify: Modify = Modify.none, codePath?: string) {
+        return async (filePath: vscode.Uri): Promise<void> => {
+            const source = await this.readFile(filePath);
+            const lang = langFromFileExtension(filePath.path);
+            const request = this.createProcessRequest(mode, lang, source, modify, codePath);
+            return this.process(request).then(async (output) => {
+                await vscode.workspace.fs.writeFile(filePath, new TextEncoder().encode(output));
+            });
+        }
     }
 
     private async walkFiles(root: vscode.Uri, processor: (filePath: vscode.Uri) => Promise<void>) {
@@ -103,6 +112,10 @@ class CodemakerService {
                 console.error('Unsupported file type');
             }
         }
+    }
+
+    private async predictiveProcess(request: CreateProcessRequest, pollingInterval = this.defaultPollingInterval) {
+        await this.client.createProcess(request);
     }
 
     private async process(request: CreateProcessRequest, pollingInterval = this.defaultPollingInterval) {
@@ -129,6 +142,17 @@ class CodemakerService {
 
         const processOutput = await this.client.getProcessOutput(this.createProcessOutputRequest(taskId));
         return processOutput.data.output.source;
+    }
+
+    private async readFile(filePath: vscode.Uri) {
+        // Save the underlying file if there are unpersisted changes
+        const textDocument = await vscode.workspace.openTextDocument(filePath);
+        if (textDocument.isDirty) {
+            await textDocument.save();
+        }
+
+        const sourceEncoded = await vscode.workspace.fs.readFile(filePath);
+        return new TextDecoder('utf-8').decode(sourceEncoded);
     }
 
     private createProcessRequest(mode: Mode, lang: Language, source: string, modify: Modify, codePath?: string) {
