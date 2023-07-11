@@ -53,3 +53,9 @@ Updated extension description.
 ## Version: 1.9.0
 
 * Added multi-line autocomplete.
+
+## Version: 1.10.0
+
+* Predictive Code Generation.
+
+* Auto import with code completion.
