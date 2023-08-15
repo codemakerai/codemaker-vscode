@@ -59,3 +59,7 @@ Updated extension description.
 * Predictive Code Generation.
 
 * Auto import with code completion.
+
+## Version: 1.11.0
+
+* Maintainance release.
