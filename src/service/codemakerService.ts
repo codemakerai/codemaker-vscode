@@ -126,7 +126,7 @@ class CodemakerService {
         let status = Status.inProgress;
         let success = false;
 
-        const timeout = Date.now() + 10 * 60 * 1000;
+        const timeout = Date.now() + this.taskTimeoutInMilliseconds;
         while (status === Status.inProgress && timeout > Date.now()) {
             const processStatus = await this.client.getProcessStatus(this.createProcessStatusRequest(taskId));
             status = processStatus.data.status;
