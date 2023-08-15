@@ -12,7 +12,8 @@ import { langFromFileExtension } from '../utils/languageUtils';
  */
 class CodemakerService {
 
-    private readonly defaultPollingInterval: number = 1000
+    private readonly taskTimeoutInMilliseconds: number = 10 * 60 * 1000
+    private readonly defaultPollingInterval: number = 500
     private readonly completionPollingInterval: number = 100
 
     private readonly client;
