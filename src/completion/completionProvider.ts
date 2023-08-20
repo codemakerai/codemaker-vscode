@@ -11,6 +11,7 @@ import {
 } from '../utils/editorUtils';
 import { Configuration } from '../configuration/configuration';
 import { Indenter } from '../indentation/indenter';
+import { CodemakerStatusbar, StatusBarStatus } from '../vscode/statusBar';
 
 export default class CompletionProvider implements vscode.InlineCompletionItemProvider {
 
@@ -18,11 +19,13 @@ export default class CompletionProvider implements vscode.InlineCompletionItemPr
     private readonly newLine: string = '\n';
 
     private readonly service: CodemakerService;
+    private readonly statusBar: CodemakerStatusbar;
 
     private completionOutput: string = ""
 
-    constructor(service: CodemakerService) {
+    constructor(service: CodemakerService, statusBar: CodemakerStatusbar) {
         this.service = service;
+        this.statusBar = statusBar;
     }
 
     async provideInlineCompletionItems(
@@ -50,6 +53,7 @@ export default class CompletionProvider implements vscode.InlineCompletionItemPr
 
         const needNewRequest = this.shouldInvokeCompletion(currLineBeforeCursor);
         if (needNewRequest) {
+            this.statusBar.updateStatusBar(StatusBarStatus.processing);
             var output = await this.service.complete(document.getText(), langFromFileExtension(document.fileName), offset - 1);
 
             console.log(`Completion output: ${output}`);
@@ -68,6 +72,7 @@ export default class CompletionProvider implements vscode.InlineCompletionItemPr
                 command: this.getAutoImportCommand(this.completionOutput),
             }]
         };
+        this.statusBar.reset();
         return result;
     }
 

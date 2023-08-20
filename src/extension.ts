@@ -10,6 +10,9 @@ import { findCodePath } from './utils/codePathUtils';
 import { CODE_PATH, subscribeToDocumentChanges } from './diagnostics/codePathDiagnostics';
 import { Predictor } from './predictor/predictor';
 import completionImports from './completion/completionImports';
+import { CodemakerStatusbar, StatusBarStatus } from './vscode/statusBar'
+
+let statusBar: CodemakerStatusbar;
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -20,6 +23,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	console.log('Congratulations, your extension "CodeMaker" is now active!');
 
 	const codemakerService = new CodemakerService();
+	statusBar = new CodemakerStatusbar(context);
 
 	registerDiagnostics(context);
 	registerActions(context, codemakerService);
@@ -50,46 +54,38 @@ function registerDiagnostics(context: vscode.ExtensionContext) {
 
 function registerActions(context: vscode.ExtensionContext, codemakerService: CodemakerService) {
 	context.subscriptions.push(vscode.commands.registerCommand('extension.ai.codemaker.generate.doc', (uri) => {
-		vscode.window.showInformationMessage(`Generating documentation for ${uri ? uri.path : 'null'}`);
 		if (uri) {
+			statusBar.updateStatusBar(StatusBarStatus.processing);
 			codemakerService.generateDocumentation(vscode.Uri.parse(uri.path))
-				.then(() => {
-					vscode.window.showInformationMessage(`Documentation generated for ${uri ? uri.path : 'null'}`);
-				})
-				.catch(err => errorHandler("Documentation generation", err));
+				.catch(err => errorHandler("Documentation generation", err))
+				.finally(() => statusBar.reset());
 		}
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('extension.ai.codemaker.generate.code', (uri) => {
-		vscode.window.showInformationMessage(`Generating code for ${uri ? uri.path : 'null'}`);
 		if (uri) {
+			statusBar.updateStatusBar(StatusBarStatus.processing);
 			codemakerService.generateCode(vscode.Uri.parse(uri.path))
-				.then(() => {
-					vscode.window.showInformationMessage(`Code generated for ${uri ? uri.path : 'null'}`);
-				})
-				.catch(err => errorHandler("Code generation", err));
+				.catch(err => errorHandler("Code generation", err))
+				.finally(() => statusBar.reset());
 		}
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('extension.ai.codemaker.replace.doc', (uri) => {
-		vscode.window.showInformationMessage(`Replacing documentation for ${uri ? uri.path : 'null'}`);
 		if (uri) {
+			statusBar.updateStatusBar(StatusBarStatus.processing);
 			codemakerService.replaceDocumentation(vscode.Uri.parse(uri.path))
-				.then(() => {
-					vscode.window.showInformationMessage(`Documentation replaced for ${uri ? uri.path : 'null'}`);
-				})
-				.catch(err => errorHandler("Documentation replacement", err));
+				.catch(err => errorHandler("Documentation replacement", err))
+				.finally(() => statusBar.reset());
 		}
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('extension.ai.codemaker.replace.code', (uri) => {
-		vscode.window.showInformationMessage(`Replacing code for ${uri ? uri.path : 'null'}`);
 		if (uri) {
+			statusBar.updateStatusBar(StatusBarStatus.processing);
 			codemakerService.replaceCode(vscode.Uri.parse(uri.path))
-				.then(() => {
-					vscode.window.showInformationMessage(`Code replaced for ${uri ? uri.path : 'null'}`);
-				})
-				.catch(err => errorHandler("Code replacement", err));
+				.catch(err => errorHandler("Code replacement", err))
+				.finally(() => statusBar.reset());
 		}
 	}));
 
@@ -104,13 +100,10 @@ function registerActions(context: vscode.ExtensionContext, codemakerService: Cod
 			return null;
 		}
 
-		vscode.window.showInformationMessage(`Replacing documentation for ${uri ? uri.path : 'null'}`);
-
+		statusBar.updateStatusBar(StatusBarStatus.processing);
 		codemakerService.replaceDocumentation(vscode.Uri.parse(uri.path), codePath)
-			.then(() => {
-				vscode.window.showInformationMessage(`Documentation replaced for ${uri ? uri.path : 'null'}`);
-			})
-			.catch(err => errorHandler("Documentation replacement", err));
+			.catch(err => errorHandler("Documentation replacement", err))
+			.finally(() => statusBar.reset());
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('extension.ai.codemaker.replace.method.code', async () => {
@@ -124,20 +117,17 @@ function registerActions(context: vscode.ExtensionContext, codemakerService: Cod
 			return null;
 		}
 
-		vscode.window.showInformationMessage(`Replacing code for ${uri ? uri.path : 'null'}`);
-
+		statusBar.updateStatusBar(StatusBarStatus.processing);
 		codemakerService.replaceCode(vscode.Uri.parse(uri.path), codePath)
-			.then(() => {
-				vscode.window.showInformationMessage(`Code replaced for ${uri ? uri.path : 'null'}`);
-			})
-			.catch(err => errorHandler("Code replacement", err));
+			.catch(err => errorHandler("Code replacement", err))
+			.finally(() => statusBar.reset());
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('extension.ai.codemaker.completion.import', completionImports));
 }
 
 function registerCompletionProvider(context: vscode.ExtensionContext, service: CodemakerService) {
-	const provider = new CompletionProvider(service);
+	const provider = new CompletionProvider(service, statusBar);
 	context.subscriptions.push(
 		vscode.languages.registerInlineCompletionItemProvider({ pattern: '**' }, provider)
 	);

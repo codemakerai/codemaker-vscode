@@ -71,3 +71,8 @@ export enum Modify {
     none = "NONE",
     replace = "REPLACE"
 };
+
+export enum StatusBarStatus {
+    none = "",
+    processing = `$(loading~spin)`
+}
