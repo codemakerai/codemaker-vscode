@@ -3,33 +3,30 @@
 import * as vscode from 'vscode';
 
 enum StatusBarStatus {
-    none = "",
+    default = `$(codemaker-icon)`,
     processing = `$(loading~spin)`
 }
 
 class CodemakerStatusbar {
 
-    // TODO add codemaker image as text icon
-    private readonly baseTitle: string = "CodeMaker";
     private readonly statusBar: vscode.StatusBarItem;
 
     constructor(context: vscode.ExtensionContext) {
         this.statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 200);
-        this.statusBar.text = this.baseTitle;
+        this.statusBar.text = StatusBarStatus.default;
         this.statusBar.show();
         context.subscriptions.push(this.statusBar);
     }
 
     public updateStatusBar(status: StatusBarStatus) {
-        this.statusBar.text = `${status} ${this.baseTitle}`;
-        console.log("--------------------------------" + this.statusBar.text)
+        this.statusBar.text = `${status}`;
     }
 
     public reset() {
-        this.statusBar.text = this.baseTitle
+        this.statusBar.text = StatusBarStatus.default;
     }
 
-    // TODO add disable/enable config shortcut
+    // TODO make icon clickable, such as disable/enable config shortcut
 }
 
 export { StatusBarStatus, CodemakerStatusbar }

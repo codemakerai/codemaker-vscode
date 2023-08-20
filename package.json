@@ -25,6 +25,15 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "icons":{
+      "codemaker-icon": {
+        "description": "CodeMaker icon",
+        "default": {
+          "fontPath": "./font/codemaker.woff",
+          "fontCharacter": "\\41"
+        }
+      }
+    },
     "configuration": {
       "title": "CodeMaker AI",
       "properties": {
