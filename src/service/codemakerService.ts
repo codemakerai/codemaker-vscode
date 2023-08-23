@@ -23,15 +23,6 @@ class CodemakerService {
     }
 
     /**
-     * Generate documentation for given source files.
-     *
-     * @param path file or directory path.
-     */
-    public async generateDocumentation(path: vscode.Uri) {
-        return this.walkFiles(path, this.getFileProcessor(Mode.document));
-    }
-
-    /**
      * Generate code for given source files.
      *
      * @param path file or directory path.
@@ -41,7 +32,25 @@ class CodemakerService {
     }
 
     /**
-     * Generate code for given source files.
+     * Generate inline code for given source files.
+     *
+     * @param path file or directory path.
+     */
+    public async generateInlineCode(path: vscode.Uri, codePath: string) {
+        return this.walkFiles(path, this.getFileProcessor(Mode.inlineCode, Modify.none, codePath));
+    }
+
+    /**
+     * Generate documentation for given source files.
+     *
+     * @param path file or directory path.
+     */
+    public async generateDocumentation(path: vscode.Uri) {
+        return this.walkFiles(path, this.getFileProcessor(Mode.document));
+    }
+
+    /**
+     * Triggers predictive code generation for given source files.
      *
      * @param path file or directory path.
      */
