@@ -140,6 +140,16 @@
       {
         "command": "extension.ai.codemaker.replace.method.doc",
         "title": "Replace documentation"
+      },
+      {
+        "command": "extension.ai.codemaker.generate.inline.code",
+        "title": "Inline code"
+      }
+    ],
+    "keybindings":[
+      {
+        "command": "extension.ai.codemaker.generate.inline.code",
+        "key": "shift+ctrl+enter"
       }
     ]
   },

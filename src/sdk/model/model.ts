@@ -44,6 +44,7 @@ export type Options = {
 
 export enum Mode {
     code = "CODE",
+    inlineCode = "INLINE_CODE",
     document = "DOCUMENT",
     unitTest = "UNIT_TEST",
     migrateSyntax = "MIGRATE_SYNTAX",

@@ -11,6 +11,9 @@ import { CODE_PATH, subscribeToDocumentChanges } from './diagnostics/codePathDia
 import { Predictor } from './predictor/predictor';
 import completionImports from './completion/completionImports';
 import { CodemakerStatusbar, StatusBarStatus } from './vscode/statusBar'
+import {
+    isComment
+} from './utils/editorUtils';
 
 let statusBar: CodemakerStatusbar;
 
@@ -120,6 +123,23 @@ function registerActions(context: vscode.ExtensionContext, codemakerService: Cod
 		statusBar.updateStatusBar(StatusBarStatus.processing);
 		codemakerService.replaceCode(vscode.Uri.parse(uri.path), codePath)
 			.catch(err => errorHandler("Code replacement", err))
+			.finally(() => statusBar.reset());
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('extension.ai.codemaker.generate.inline.code', (uri) => {
+		const editor = vscode.window.activeTextEditor;
+		if (!editor || !editor.document) {
+			return;
+		}
+
+		if (!isComment(editor.selection.active)) {
+			return;
+		}
+		
+		const offset = editor.document.offsetAt(editor.selection.active);
+		statusBar.updateStatusBar(StatusBarStatus.processing);
+		codemakerService.generateInlineCode(editor.document.uri, `@${offset}`)
+			.catch(err => errorHandler("Inline code generation", err))
 			.finally(() => statusBar.reset());
 	}));
 
