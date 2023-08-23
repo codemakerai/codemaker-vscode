@@ -63,3 +63,8 @@ Updated extension description.
 ## Version: 1.11.0
 
 * Maintainance release.
+
+## Versino: 1.12.0
+
+* Added Inline code generation
+* Added CodeMaker status bar
