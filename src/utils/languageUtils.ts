@@ -1,7 +1,6 @@
 // Copyright 2023 CodeMaker AI Inc. All rights reserved.
 
-import { Language } from '../sdk/model/model';
-import { UnsupportedLanguageError } from '../sdk/errors';
+import { Language, UnsupportedLanguageError } from 'codemaker-sdk';
 
 const languages = new Map<string, Language>([
     ["java", Language.java],

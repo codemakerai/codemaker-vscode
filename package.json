@@ -25,7 +25,7 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
-    "icons":{
+    "icons": {
       "codemaker-icon": {
         "description": "CodeMaker icon",
         "default": {
@@ -39,19 +39,19 @@
       "properties": {
         "codemaker.apiKey": {
           "description": "API Key",
-          "type": "string"          
+          "type": "string"
         },
         "codemaker.enableAutocomplete": {
           "description": "Enables autocompletion.",
           "type": "boolean",
           "default": false
         },
-        "codemaker.enableCodeActions": {          
+        "codemaker.enableCodeActions": {
           "description": "Enables code actions",
           "type": "boolean",
           "default": true
         },
-        "codemaker.enablePredictiveGeneration": {          
+        "codemaker.enablePredictiveGeneration": {
           "description": "Enables predictive generation",
           "type": "boolean",
           "default": false
@@ -146,7 +146,7 @@
         "title": "Inline code"
       }
     ],
-    "keybindings":[
+    "keybindings": [
       {
         "command": "extension.ai.codemaker.generate.inline.code",
         "key": "shift+ctrl+enter"
@@ -166,7 +166,8 @@
     "test": "node ./out/test/runTest.js"
   },
   "dependencies": {
-    "axios": "^0.24.0"
+    "axios": "^0.24.0",
+    "codemaker-sdk": "^1.0.0"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",

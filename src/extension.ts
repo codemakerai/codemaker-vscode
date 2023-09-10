@@ -4,7 +4,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import CodemakerService from './service/codemakerService';
-import { AuthenticationError, UnsupportedLanguageError } from './sdk/errors';
+import { AuthenticationError, UnsupportedLanguageError } from 'codemaker-sdk';
 import CompletionProvider from './completion/completionProvider';
 import { findCodePath } from './utils/codePathUtils';
 import { CODE_PATH, subscribeToDocumentChanges } from './diagnostics/codePathDiagnostics';

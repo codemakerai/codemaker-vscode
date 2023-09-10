@@ -2,8 +2,7 @@
 
 import * as vscode from 'vscode';
 import { TextDecoder, TextEncoder } from 'util';
-import Client from '../sdk/client';
-import { CreateProcessRequest, Language, Mode, Modify, Status } from '../sdk/model/model';
+import { Client, CreateProcessRequest, Language, Mode, Modify, Status } from 'codemaker-sdk';
 import { Configuration } from '../configuration/configuration';
 import { langFromFileExtension } from '../utils/languageUtils';
 
