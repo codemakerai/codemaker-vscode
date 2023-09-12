@@ -68,3 +68,7 @@ Updated extension description.
 
 * Added Inline code generation
 * Added CodeMaker status bar
+
+## Versino: 1.12.1
+
+* Introduced codemaker-sdk
