@@ -167,7 +167,7 @@
   },
   "dependencies": {
     "axios": "^0.24.0",
-    "codemaker-sdk": "^1.0.0"
+    "codemaker-sdk": "^1.1.0"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
