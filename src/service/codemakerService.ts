@@ -2,7 +2,7 @@
 
 import * as vscode from 'vscode';
 import { TextDecoder, TextEncoder } from 'util';
-import { Client, CreateProcessRequest, Language, Mode, Modify, Status } from 'codemaker-sdk';
+import { Client, CreateProcessRequest, GetProcessOutputRequest, GetProcessStatusRequest, Language, Mode, Modify, Status } from 'codemaker-sdk';
 import { Configuration } from '../configuration/configuration';
 import { langFromFileExtension } from '../utils/languageUtils';
 
@@ -164,7 +164,7 @@ class CodemakerService {
         return new TextDecoder('utf-8').decode(sourceEncoded);
     }
 
-    private createProcessRequest(mode: Mode, lang: Language, source: string, modify: Modify, codePath?: string) {
+    private createProcessRequest(mode: Mode, lang: Language, source: string, modify: Modify, codePath?: string): CreateProcessRequest {
         return {
             process: {
                 mode: mode,
@@ -180,7 +180,7 @@ class CodemakerService {
         };
     }
 
-    private createCompletionProcessRequest(lang: Language, source: string, offset: number) {
+    private createCompletionProcessRequest(lang: Language, source: string, offset: number): CreateProcessRequest {
         return {
             process: {
                 mode: Mode.completion,
@@ -195,13 +195,13 @@ class CodemakerService {
         };
     }
 
-    private createProcessStatusRequest(taskId: string) {
+    private createProcessStatusRequest(taskId: string): GetProcessStatusRequest {
         return {
             id: taskId,
         };
     }
 
-    private createProcessOutputRequest(taskId: string) {
+    private createProcessOutputRequest(taskId: string): GetProcessOutputRequest {
         return {
             id: taskId,
         };
