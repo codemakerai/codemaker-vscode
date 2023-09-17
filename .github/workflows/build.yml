@@ -1,0 +1,32 @@
+name: Build package
+
+on: [push]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ macos-latest, ubuntu-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run compile
+
+      - name: Test Linux
+        run: xvfb-run -a npm test
+        if: runner.os == 'Linux'
+      - name: Test Windows and macOS
+        run: npm test
+        if: runner.os != 'Linux'
