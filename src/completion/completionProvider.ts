@@ -21,7 +21,7 @@ export default class CompletionProvider implements vscode.InlineCompletionItemPr
     private readonly service: CodemakerService;
     private readonly statusBar: CodemakerStatusbar;
 
-    private completionOutput: string = ""
+    private completionOutput: string = "";
 
     constructor(service: CodemakerService, statusBar: CodemakerStatusbar) {
         this.service = service;
@@ -35,7 +35,7 @@ export default class CompletionProvider implements vscode.InlineCompletionItemPr
         token: vscode.CancellationToken) {
 
         if (this.shouldSkip(document, position)) {
-            console.log("Skipped completion")
+            console.log("Skipped completion");
             return;
         }
 
@@ -49,7 +49,7 @@ export default class CompletionProvider implements vscode.InlineCompletionItemPr
             new vscode.Range(position.with(undefined, 0), position)
         );
         const offset = document.offsetAt(position);
-        const startPosition = this.getStartPosition(currLineBeforeCursor)
+        const startPosition = this.getStartPosition(currLineBeforeCursor);
 
         const needNewRequest = this.shouldInvokeCompletion(currLineBeforeCursor);
         if (needNewRequest) {

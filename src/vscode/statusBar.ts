@@ -29,4 +29,4 @@ class CodemakerStatusbar {
     // TODO make icon clickable, such as disable/enable config shortcut
 }
 
-export { StatusBarStatus, CodemakerStatusbar }
+export { StatusBarStatus, CodemakerStatusbar };
