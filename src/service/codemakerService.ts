@@ -11,9 +11,9 @@ import { langFromFileExtension } from '../utils/languageUtils';
  */
 class CodemakerService {
 
-    private readonly taskTimeoutInMilliseconds: number = 10 * 60 * 1000
-    private readonly defaultPollingInterval: number = 500
-    private readonly completionPollingInterval: number = 100
+    private readonly taskTimeoutInMilliseconds: number = 10 * 60 * 1000;
+    private readonly defaultPollingInterval: number = 500;
+    private readonly completionPollingInterval: number = 100;
 
     private readonly client;
 
@@ -93,7 +93,7 @@ class CodemakerService {
             const lang = langFromFileExtension(filePath.path);
             const request = this.createProcessRequest(mode, lang, source, modify, codePath);
             this.predictiveProcess(request);
-        }
+        };
     }
 
     private getFileProcessor(mode: Mode, modify: Modify = Modify.none, codePath?: string) {
@@ -104,7 +104,7 @@ class CodemakerService {
             return this.process(request).then(async (output) => {
                 await vscode.workspace.fs.writeFile(filePath, new TextEncoder().encode(output));
             });
-        }
+        };
     }
 
     private async walkFiles(root: vscode.Uri, processor: (filePath: vscode.Uri) => Promise<void>) {

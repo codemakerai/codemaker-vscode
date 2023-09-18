@@ -5,7 +5,7 @@ import { Configuration } from '..//configuration/configuration';
 import { isFileSupported } from '../utils/languageUtils';
 import CodeMakerService from '../service/codemakerService';
 
-const PredictiveGenerationCoolDown = 1000 * 30;
+const predictiveGenerationCoolDown = 1000 * 30;
 
 export class Predictor {
 
@@ -64,6 +64,6 @@ export class Predictor {
     private canRefresh(document: vscode.TextDocument) {
         const lastGenerationTime = this.lastPredictiveGeneration.get(document.uri.toString());
         return !lastGenerationTime 
-            || (new Date().getTime() - lastGenerationTime.getTime()) >= PredictiveGenerationCoolDown;
+            || (new Date().getTime() - lastGenerationTime.getTime()) >= predictiveGenerationCoolDown;
     }
 }

@@ -10,7 +10,7 @@ import { findCodePath } from './utils/codePathUtils';
 import { CODE_PATH, subscribeToDocumentChanges } from './diagnostics/codePathDiagnostics';
 import { Predictor } from './predictor/predictor';
 import completionImports from './completion/completionImports';
-import { CodemakerStatusbar, StatusBarStatus } from './vscode/statusBar'
+import { CodemakerStatusbar, StatusBarStatus } from './vscode/statusBar';
 import {
     isComment
 } from './utils/editorUtils';
@@ -98,7 +98,7 @@ function registerActions(context: vscode.ExtensionContext, codemakerService: Cod
 			return;
 		}
 		const uri = editor.document.uri;
-		const codePath = await findCodePath(uri, editor.selection.active)
+		const codePath = await findCodePath(uri, editor.selection.active);
 		if (!codePath) {
 			return null;
 		}
@@ -115,7 +115,7 @@ function registerActions(context: vscode.ExtensionContext, codemakerService: Cod
 			return;
 		}
 		const uri = editor.document.uri;
-		const codePath = await findCodePath(uri, editor.selection.active)
+		const codePath = await findCodePath(uri, editor.selection.active);
 		if (!codePath) {
 			return null;
 		}

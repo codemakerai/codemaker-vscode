@@ -22,17 +22,17 @@ export class Indenter {
         while (i < source.length) {
             output += source[i];
 
-            if (source[i] == '\n') {
+            if (source[i] === '\n') {
                 const j = this.skipWhitespaces(source, i + 1);
                 let shift = 0;
-                if (j < source.length && source[j] == '}') {
+                if (j < source.length && source[j] === '}') {
                     shift = -1;
                 }
                 output += this.indentation(depth + shift);
                 i = j - 1;
-            } else if (source[i] == '{') {
+            } else if (source[i] === '{') {
                 depth++;
-            } else if (source[i] == '}') {
+            } else if (source[i] === '}') {
                 depth--;
             }
             i++;
@@ -58,7 +58,7 @@ export class Indenter {
     }
 
     private static isWhitespace(source: string, i: number) {
-        return source[i] == ' ' || source[i] == '\t';
+        return source[i] === ' ' || source[i] === '\t';
     }
 
     static fromInput(char: string, increment: number, source: string) {
@@ -75,9 +75,9 @@ export class Indenter {
 
         let depth = 0;
         while (i < source.length) {
-            if (source[i] == '{') {
+            if (source[i] === '{') {
                 depth++;
-            } else if (source[i] == '}') {
+            } else if (source[i] === '}') {
                 depth = Math.max(depth - 1, 0);
             }
             i++;

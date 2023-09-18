@@ -26,14 +26,14 @@ export async function refreshDiagnostics(document: vscode.TextDocument, diagnost
 
     const diagnostics: vscode.Diagnostic[] = [];
     for (let symbol of symbols) {
-        if (symbol.kind == vscode.SymbolKind.Function) {
+        if (symbol.kind === vscode.SymbolKind.Function) {
             diagnostics.push(createDiagnostic(symbol.range, 'Function'));
-        } else if (symbol.kind == vscode.SymbolKind.Class) {
+        } else if (symbol.kind === vscode.SymbolKind.Class) {
             if (!symbol.children) {
                 return;
             }
             for (let child of symbol.children) {
-                if (child.kind == vscode.SymbolKind.Method) {                    
+                if (child.kind === vscode.SymbolKind.Method) {                    
                     diagnostics.push(createDiagnostic(child.range, 'Method'));
                 }
             }

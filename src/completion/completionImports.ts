@@ -34,7 +34,7 @@ export default async function completionImports(completion: string) {
     if (quickFixSuggestions && quickFixSuggestions.length > 0) {
         const importCommands = quickFixSuggestions.filter(suggestion => importStatements.some(stmt => stmt.test(suggestion.title)));
         // if there are multiple import options, skip auto import.
-        if (importCommands.length == 1 && importCommands[0].edit) {
+        if (importCommands.length === 1 && importCommands[0].edit) {
             await vscode.workspace.applyEdit(importCommands[0].edit);
         }
     }
