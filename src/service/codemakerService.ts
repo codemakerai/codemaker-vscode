@@ -87,6 +87,15 @@ class CodemakerService {
         return this.walkFiles(path, this.getFileProcessor(Mode.code, Modify.replace, codePath));
     }
 
+    /**
+     * Edits code.
+     *
+     * @param path file or directory path.
+     */
+    public async editCode(path: vscode.Uri, codePath?: string, prompt?: string) {
+        return this.walkFiles(path, this.getFileProcessor(Mode.editCode, Modify.replace, codePath, prompt));
+    }
+
     private getPredictiveProcessor(mode: Mode, modify: Modify = Modify.none, codePath?: string) {
         return async (filePath: vscode.Uri): Promise<void> => {
             const source = await this.readFile(filePath);
@@ -96,11 +105,11 @@ class CodemakerService {
         };
     }
 
-    private getFileProcessor(mode: Mode, modify: Modify = Modify.none, codePath?: string) {
+    private getFileProcessor(mode: Mode, modify: Modify = Modify.none, codePath?: string, prompt?: string) {
         return async (filePath: vscode.Uri): Promise<void> => {
             const source = await this.readFile(filePath);
             const lang = langFromFileExtension(filePath.path);
-            const request = this.createProcessRequest(mode, lang, source, modify, codePath);
+            const request = this.createProcessRequest(mode, lang, source, modify, codePath, prompt);
             return this.process(request).then(async (output) => {
                 await vscode.workspace.fs.writeFile(filePath, new TextEncoder().encode(output));
             });
@@ -109,7 +118,7 @@ class CodemakerService {
 
     private async walkFiles(root: vscode.Uri, processor: (filePath: vscode.Uri) => Promise<void>) {
         const type = await vscode.workspace.fs.stat(root);
-        if(type.type === vscode.FileType.File) {
+        if (type.type === vscode.FileType.File) {
             return await processor(root);
         }
         for (const [name, type] of await vscode.workspace.fs.readDirectory(root)) {
@@ -164,7 +173,7 @@ class CodemakerService {
         return new TextDecoder('utf-8').decode(sourceEncoded);
     }
 
-    private createProcessRequest(mode: Mode, lang: Language, source: string, modify: Modify, codePath?: string): CreateProcessRequest {
+    private createProcessRequest(mode: Mode, lang: Language, source: string, modify: Modify, codePath?: string, prompt?: string): CreateProcessRequest {
         return {
             process: {
                 mode: mode,
@@ -174,7 +183,8 @@ class CodemakerService {
                 },
                 options: {
                     modify: modify,
-                    codePath: codePath
+                    codePath: codePath,
+                    prompt: prompt,
                 },
             }
         };
