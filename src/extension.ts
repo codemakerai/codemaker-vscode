@@ -12,7 +12,7 @@ import { Predictor } from './predictor/predictor';
 import completionImports from './completion/completionImports';
 import { CodemakerStatusbar, StatusBarStatus } from './vscode/statusBar';
 import {
-    isComment
+	isComment
 } from './utils/editorUtils';
 
 let statusBar: CodemakerStatusbar;
@@ -92,6 +92,32 @@ function registerActions(context: vscode.ExtensionContext, codemakerService: Cod
 		}
 	}));
 
+	context.subscriptions.push(vscode.commands.registerCommand('extension.ai.codemaker.edit.code', async () => {
+		const editor = vscode.window.activeTextEditor;
+		if (!editor) {
+			return;
+		}
+
+		const uri = editor.document.uri;
+		const offset = editor.document.offsetAt(editor.selection.active);
+		const codePath = `@${offset}`;
+
+		const input = await vscode.window.showInputBox({
+			placeHolder: '',
+			prompt: 'CodeMaker AI Edit Code Prompt',
+			value: '',
+		});
+
+		if (!input) {
+			return null;
+		}
+
+		statusBar.updateStatusBar(StatusBarStatus.processing);
+		codemakerService.editCode(vscode.Uri.parse(uri.path), codePath, input)
+			.catch(err => errorHandler("Code edit", err))
+			.finally(() => statusBar.reset());
+	}));
+
 	context.subscriptions.push(vscode.commands.registerCommand('extension.ai.codemaker.replace.method.doc', async () => {
 		const editor = vscode.window.activeTextEditor;
 		if (!editor) {
@@ -135,7 +161,7 @@ function registerActions(context: vscode.ExtensionContext, codemakerService: Cod
 		if (!isComment(editor.selection.active)) {
 			return;
 		}
-		
+
 		const offset = editor.document.offsetAt(editor.selection.active);
 		statusBar.updateStatusBar(StatusBarStatus.processing);
 		codemakerService.generateInlineCode(editor.document.uri, `@${offset}`)
@@ -162,6 +188,11 @@ function registerCodeAction(context: vscode.ExtensionContext, service: Codemaker
 	context.subscriptions.push(
 		vscode.languages.registerCodeActionsProvider('*', new ReplaceMethodDocumentationAction(), {
 			providedCodeActionKinds: ReplaceMethodDocumentationAction.providedCodeActionKinds
+		})
+	);
+	context.subscriptions.push(
+		vscode.languages.registerCodeActionsProvider('*', new EditMethodCodeAction(), {
+			providedCodeActionKinds: EditMethodCodeAction.providedCodeActionKinds
 		})
 	);
 }
@@ -204,6 +235,25 @@ export class ReplaceMethodDocumentationAction implements vscode.CodeActionProvid
 	createCommand(diagnostic: vscode.Diagnostic) {
 		const action = new vscode.CodeAction('Replace documentation', vscode.CodeActionKind.QuickFix);
 		action.command = { command: 'extension.ai.codemaker.replace.method.doc', title: 'Replaces documentation', tooltip: 'This will replace documentation.' };
+		return action;
+	}
+}
+
+export class EditMethodCodeAction implements vscode.CodeActionProvider {
+
+	public static readonly providedCodeActionKinds = [
+		vscode.CodeActionKind.QuickFix
+	];
+
+	async provideCodeActions(document: vscode.TextDocument, selection: vscode.Selection, context: vscode.CodeActionContext, token: vscode.CancellationToken) {
+		return context.diagnostics
+			.filter(diagnostic => diagnostic.code === CODE_PATH).map(diagnostic => this.createCommand(diagnostic));
+	}
+
+	createCommand(diagnostic: vscode.Diagnostic) {
+		const action = new vscode.CodeAction('Edit code with prompt', vscode.CodeActionKind.QuickFix);
+		action.command = { command: 'extension.ai.codemaker.edit.code', title: 'Edit code with prompt', tooltip: 'This will edit code using provided prompt.' };
+		action.isPreferred = true;
 		return action;
 	}
 }
