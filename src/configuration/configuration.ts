@@ -8,8 +8,12 @@ export class Configuration {
         return this.get('codemaker.apiKey');
     }
 
-    static isAutoCompleteEnabled(): boolean {
+    static isAutocompleteEnabled(): boolean {
         return this.get('codemaker.enableAutocomplete');
+    }
+
+    static isAllowMultiLineAutocomplete(): boolean {
+        return this.get('codemaker.allowMultiLineAutocomplete');
     }
 
     static isCodeActionsEnabled(): boolean {

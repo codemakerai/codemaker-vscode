@@ -10,7 +10,6 @@ import {
     isEndOfLine
 } from '../utils/editorUtils';
 import { Configuration } from '../configuration/configuration';
-import { Indenter } from '../indentation/indenter';
 import { CodemakerStatusbar, StatusBarStatus } from '../vscode/statusBar';
 
 export default class CompletionProvider implements vscode.InlineCompletionItemProvider {
@@ -54,11 +53,10 @@ export default class CompletionProvider implements vscode.InlineCompletionItemPr
         const needNewRequest = this.shouldInvokeCompletion(currLineBeforeCursor);
         if (needNewRequest) {
             this.statusBar.updateStatusBar(StatusBarStatus.processing);
-            var output = await this.service.complete(document.getText(), langFromFileExtension(document.fileName), offset - 1);
+            var output = await this.service.complete(document.getText(), langFromFileExtension(document.fileName), offset - 1, Configuration.isAllowMultiLineAutocomplete());
 
             console.log(`Completion output: ${output}`);
 
-            output =  this.formatCode(output, currLineBeforeCursor)!;
             if (output === '') {
                 return;
             }
@@ -77,7 +75,7 @@ export default class CompletionProvider implements vscode.InlineCompletionItemPr
     }
 
     private shouldSkip(document: vscode.TextDocument, position: vscode.Position): boolean {
-        return !Configuration.isAutoCompleteEnabled()
+        return !Configuration.isAutocompleteEnabled()
             || !checkLineLength(position)
             || !isEndOfLine(document, position);
     }
@@ -101,14 +99,6 @@ export default class CompletionProvider implements vscode.InlineCompletionItemPr
 
     private getStartPosition(currLineBeforeCursor: string) {
         return currLineBeforeCursor.length - currLineBeforeCursor.trimStart().length;
-    }
-
-    private formatCode(output: string, line: string): string {
-        if (output === '') {
-            return '';
-        }
-        const indenter = Indenter.fromInput(' ', 4, line);
-        return indenter.alignIndentation(output);
     }
 
     private getAutoImportCommand(completion: string): vscode.Command {
