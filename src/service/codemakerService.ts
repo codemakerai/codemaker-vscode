@@ -64,8 +64,8 @@ class CodemakerService {
      * @param lang language
      * @param offset offset of current cursor
      */
-    public async complete(source: string, lang: Language, offset: number) {
-        const request = this.createCompletionProcessRequest(lang, source, offset);
+    public async complete(source: string, lang: Language, offset: number, allowMultiLineAutocomplete: boolean) {
+        const request = this.createCompletionProcessRequest(lang, source, offset, allowMultiLineAutocomplete);
         return this.process(request, this.completionPollingInterval);
     }
 
@@ -190,7 +190,7 @@ class CodemakerService {
         };
     }
 
-    private createCompletionProcessRequest(lang: Language, source: string, offset: number): CreateProcessRequest {
+    private createCompletionProcessRequest(lang: Language, source: string, offset: number, allowMultiLineAutocomplete: boolean): CreateProcessRequest {
         return {
             process: {
                 mode: Mode.completion,
@@ -199,7 +199,8 @@ class CodemakerService {
                     source: source,
                 },
                 options: {
-                    codePath: '@' + offset
+                    codePath: '@' + offset,
+                    allowMultiLineAutocomplete: allowMultiLineAutocomplete,
                 }
             }
         };

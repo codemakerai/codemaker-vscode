@@ -42,17 +42,22 @@
           "type": "string"
         },
         "codemaker.enableAutocomplete": {
-          "description": "Enables autocompletion.",
+          "description": "Enable autocompletion.",
+          "type": "boolean",
+          "default": false
+        },
+        "codemaker.allowMultiLineAutocomplete": {
+          "description": "Allow multi line autocomplete.",
           "type": "boolean",
           "default": false
         },
         "codemaker.enableCodeActions": {
-          "description": "Enables code actions",
+          "description": "Enable code actions",
           "type": "boolean",
           "default": true
         },
         "codemaker.enablePredictiveGeneration": {
-          "description": "Enables predictive generation",
+          "description": "Enable predictive generation",
           "type": "boolean",
           "default": false
         }
