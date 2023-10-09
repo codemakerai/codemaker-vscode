@@ -44,23 +44,25 @@ export default class CompletionProvider implements vscode.InlineCompletionItemPr
             return;
         }
 
+        const offset = document.offsetAt(position);
         const currLineBeforeCursor = document.getText(
             new vscode.Range(position.with(undefined, 0), position)
-        );
-        const offset = document.offsetAt(position);
+        );        
         const startPosition = this.getStartPosition(currLineBeforeCursor);
 
         const needNewRequest = this.shouldInvokeCompletion(currLineBeforeCursor);
         if (needNewRequest) {
             this.statusBar.updateStatusBar(StatusBarStatus.processing);
-            var output = await this.service.complete(document.getText(), langFromFileExtension(document.fileName), offset - 1, Configuration.isAllowMultiLineAutocomplete());
+            var output = await this.service.complete(
+                document.getText(), langFromFileExtension(document.fileName), offset - 1, Configuration.isAllowMultiLineAutocomplete()
+            );
 
             console.log(`Completion output: ${output}`);
 
             if (output === '') {
                 return;
             }
-            this.completionOutput = currLineBeforeCursor.trim() + output;
+            this.completionOutput = currLineBeforeCursor.trimStart() + output;
         }
 
         const result: vscode.InlineCompletionList = {
