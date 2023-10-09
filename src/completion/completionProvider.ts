@@ -21,6 +21,7 @@ export default class CompletionProvider implements vscode.InlineCompletionItemPr
     private readonly statusBar: CodemakerStatusbar;
 
     private completionOutput: string = "";
+    private completionLine: number = -1;
 
     constructor(service: CodemakerService, statusBar: CodemakerStatusbar) {
         this.service = service;
@@ -50,7 +51,7 @@ export default class CompletionProvider implements vscode.InlineCompletionItemPr
         );        
         const startPosition = this.getStartPosition(currLineBeforeCursor);
 
-        const needNewRequest = this.shouldInvokeCompletion(currLineBeforeCursor);
+        const needNewRequest = this.shouldInvokeCompletion(currLineBeforeCursor, document, position);
         if (needNewRequest) {
             this.statusBar.updateStatusBar(StatusBarStatus.processing);
             var output = await this.service.complete(
@@ -63,6 +64,7 @@ export default class CompletionProvider implements vscode.InlineCompletionItemPr
                 return;
             }
             this.completionOutput = currLineBeforeCursor.trimStart() + output;
+            this.completionLine = document.lineAt(startPosition).lineNumber;
         }
 
         const result: vscode.InlineCompletionList = {
@@ -82,8 +84,9 @@ export default class CompletionProvider implements vscode.InlineCompletionItemPr
             || !isEndOfLine(document, position);
     }
 
-    private shouldInvokeCompletion(currLineBeforeCursor: string) {
-        if (this.completionOutput.startsWith(currLineBeforeCursor.trim())) {
+    private shouldInvokeCompletion(currLineBeforeCursor: string, document: vscode.TextDocument, position: vscode.Position) {
+        if (this.completionOutput.startsWith(currLineBeforeCursor.trim()) 
+            && document.lineAt(position).lineNumber === this.completionLine) {
             console.log("Do not need new completion");
             return false;
         }
