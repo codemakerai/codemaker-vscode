@@ -152,6 +152,23 @@ function registerActions(context: vscode.ExtensionContext, codemakerService: Cod
 			.finally(() => statusBar.reset());
 	}));
 
+	context.subscriptions.push(vscode.commands.registerCommand('extension.ai.codemaker.fix.method.syntax', async () => {
+		const editor = vscode.window.activeTextEditor;
+		if (!editor) {
+			return;
+		}
+		const uri = editor.document.uri;
+		const codePath = await findCodePath(uri, editor.selection.active);
+		if (!codePath) {
+			return null;
+		}
+
+		statusBar.updateStatusBar(StatusBarStatus.processing);
+		codemakerService.fixSyntax(vscode.Uri.parse(uri.path), codePath)
+			.catch(err => errorHandler("Fix syntax", err))
+			.finally(() => statusBar.reset());
+	}));
+
 	context.subscriptions.push(vscode.commands.registerCommand('extension.ai.codemaker.generate.inline.code', (uri) => {
 		const editor = vscode.window.activeTextEditor;
 		if (!editor || !editor.document) {
@@ -188,6 +205,11 @@ function registerCodeAction(context: vscode.ExtensionContext, service: Codemaker
 	context.subscriptions.push(
 		vscode.languages.registerCodeActionsProvider('*', new ReplaceMethodDocumentationAction(), {
 			providedCodeActionKinds: ReplaceMethodDocumentationAction.providedCodeActionKinds
+		})
+	);
+	context.subscriptions.push(
+		vscode.languages.registerCodeActionsProvider('*', new FixMethodSyntaxAction(), {
+			providedCodeActionKinds: FixMethodSyntaxAction.providedCodeActionKinds
 		})
 	);
 	context.subscriptions.push(
@@ -235,6 +257,24 @@ export class ReplaceMethodDocumentationAction implements vscode.CodeActionProvid
 	createCommand(diagnostic: vscode.Diagnostic) {
 		const action = new vscode.CodeAction('Replace documentation', vscode.CodeActionKind.QuickFix);
 		action.command = { command: 'extension.ai.codemaker.replace.method.doc', title: 'Replaces documentation', tooltip: 'This will replace documentation.' };
+		return action;
+	}
+}
+
+export class FixMethodSyntaxAction implements vscode.CodeActionProvider {
+
+	public static readonly providedCodeActionKinds = [
+		vscode.CodeActionKind.QuickFix
+	];
+
+	provideCodeActions(document: vscode.TextDocument, selection: vscode.Selection, context: vscode.CodeActionContext, token: vscode.CancellationToken) {
+		return context.diagnostics
+			.filter(diagnostic => diagnostic.code === CODE_PATH).map(diagnostic => this.createCommand(diagnostic));
+	}
+
+	createCommand(diagnostic: vscode.Diagnostic) {
+		const action = new vscode.CodeAction('Fix code', vscode.CodeActionKind.QuickFix);
+		action.command = { command: 'extension.ai.codemaker.fix.method.syntax', title: 'Fix code', tooltip: 'This will fix code syntax.' };		
 		return action;
 	}
 }

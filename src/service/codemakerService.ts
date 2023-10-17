@@ -88,6 +88,15 @@ class CodemakerService {
     }
 
     /**
+     * Fixes code syntax for given source files.
+     *
+     * @param path file or directory path.
+     */
+    public async fixSyntax(path: vscode.Uri, codePath?: string) {
+        return this.walkFiles(path, this.getFileProcessor(Mode.fixSyntax, Modify.replace, codePath));
+    }
+
+    /**
      * Edits code.
      *
      * @param path file or directory path.

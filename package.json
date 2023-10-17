@@ -147,6 +147,10 @@
         "title": "Replace documentation"
       },
       {
+        "command": "extension.ai.codemaker.fix.method.syntax",
+        "title": "Fix code"
+      },
+      {
         "command": "extension.ai.codemaker.generate.inline.code",
         "title": "Inline code"
       }
