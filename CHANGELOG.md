@@ -75,8 +75,12 @@ Updated extension description.
 
 ## Version: 1.13.0
 
-* Fix syntax quick fix action
+* Autocompletion
 
 ## Version: 1.14.0
+
+* Fix syntax quick fix action
+
+## Version: 1.15.0
 
 * Fix syntax command
