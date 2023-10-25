@@ -64,11 +64,19 @@ Updated extension description.
 
 * Maintainance release.
 
-## Versino: 1.12.0
+## Version: 1.12.0
 
 * Added Inline code generation
 * Added CodeMaker status bar
 
-## Versino: 1.12.1
+## Version: 1.12.1
 
 * Introduced codemaker-sdk
+
+## Version: 1.13.0
+
+* Fix syntax quick fix action
+
+## Version: 1.14.0
+
+* Fix syntax command
