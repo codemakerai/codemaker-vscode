@@ -84,6 +84,10 @@
         {
           "submenu": "codemaker.submenu.replace",
           "group": "navigation"
+        },
+        {
+          "submenu": "codemaker.submenu.fix",
+          "group": "navigation"
         }
       ],
       "codemaker.submenu.generate": [
@@ -105,6 +109,12 @@
           "command": "extension.ai.codemaker.replace.code",
           "group": "replace"
         }
+      ],
+      "codemaker.submenu.fix": [
+        {
+          "command": "extension.ai.codemaker.fix.syntax",
+          "group": "fix"
+        }
       ]
     },
     "submenus": [
@@ -119,6 +129,10 @@
       {
         "id": "codemaker.submenu.replace",
         "label": "Replace"
+      },
+      {
+        "id": "codemaker.submenu.fix",
+        "label": "Fix"
       }
     ],
     "commands": [
@@ -137,6 +151,10 @@
       {
         "command": "extension.ai.codemaker.replace.code",
         "title": "Code"
+      },
+      {
+        "command": "extension.ai.codemaker.fix.syntax",
+        "title": "Syntax"
       },
       {
         "command": "extension.ai.codemaker.replace.method.code",

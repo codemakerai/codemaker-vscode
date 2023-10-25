@@ -92,6 +92,15 @@ function registerActions(context: vscode.ExtensionContext, codemakerService: Cod
 		}
 	}));
 
+	context.subscriptions.push(vscode.commands.registerCommand('extension.ai.codemaker.fix.syntax', (uri) => {
+		if (uri) {
+			statusBar.updateStatusBar(StatusBarStatus.processing);
+			codemakerService.fixSyntax(vscode.Uri.parse(uri.path))
+				.catch(err => errorHandler("Fix syntax", err))
+				.finally(() => statusBar.reset());
+		}
+	}));
+
 	context.subscriptions.push(vscode.commands.registerCommand('extension.ai.codemaker.edit.code', async () => {
 		const editor = vscode.window.activeTextEditor;
 		if (!editor) {
