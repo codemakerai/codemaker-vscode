@@ -33,6 +33,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	registerCompletionProvider(context, codemakerService);
 	registerCodeAction(context, codemakerService);
 	registerPredictiveGeneration(context, codemakerService);
+	registerAutoCorrection(context, codemakerService);
 }
 
 // This method is called when your extension is deactivated
@@ -229,6 +230,11 @@ function registerCodeAction(context: vscode.ExtensionContext, service: Codemaker
 }
 
 function registerPredictiveGeneration(context: vscode.ExtensionContext, codemakerService: CodemakerService) {
+	const predictor = new Predictor(codemakerService);
+	predictor.subscribeToDucumentChanges(context);
+}
+
+function registerAutoCorrection(context: vscode.ExtensionContext, codemakerService: CodemakerService) {
 	const predictor = new Predictor(codemakerService);
 	predictor.subscribeToDucumentChanges(context);
 }
