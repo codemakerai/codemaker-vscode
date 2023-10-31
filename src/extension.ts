@@ -14,6 +14,7 @@ import { CodemakerStatusbar, StatusBarStatus } from './vscode/statusBar';
 import {
 	isComment
 } from './utils/editorUtils';
+import { Corrector } from './correction/corrector';
 
 let statusBar: CodemakerStatusbar;
 
@@ -33,6 +34,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	registerCompletionProvider(context, codemakerService);
 	registerCodeAction(context, codemakerService);
 	registerPredictiveGeneration(context, codemakerService);
+	registerAutoCorrection(context, codemakerService);
 }
 
 // This method is called when your extension is deactivated
@@ -231,6 +233,11 @@ function registerCodeAction(context: vscode.ExtensionContext, service: Codemaker
 function registerPredictiveGeneration(context: vscode.ExtensionContext, codemakerService: CodemakerService) {
 	const predictor = new Predictor(codemakerService);
 	predictor.subscribeToDucumentChanges(context);
+}
+
+function registerAutoCorrection(context: vscode.ExtensionContext, codemakerService: CodemakerService) {
+	const corrector = new Corrector(codemakerService);
+	corrector.subscribeToDucumentChanges(context);
 }
 
 export class ReplaceMethodCodeAction implements vscode.CodeActionProvider {

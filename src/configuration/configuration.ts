@@ -24,6 +24,10 @@ export class Configuration {
         return this.get('codemaker.enablePredictiveGeneration');
     }
 
+    static isSyntaxAutocorrectionEnabled(): boolean {
+        return this.get('codemaker.enableSyntaxAutocorrection');
+    }
+
     private static get<T>(key: string): T {
         return vscode.workspace.getConfiguration().get(key) as T;
     }
