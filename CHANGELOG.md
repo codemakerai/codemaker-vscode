@@ -84,3 +84,7 @@ Updated extension description.
 ## Version: 1.15.0
 
 * Fix syntax command
+
+## Version: 1.16.0
+
+* Syntax autocorrection
