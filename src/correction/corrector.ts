@@ -30,7 +30,7 @@ export class Corrector {
 
         try {            
             this.correctedFiles.add(uri.toString());
-            await this.codeMakerService.fixSyntax(document.uri);
+            await this.codeMakerService.fixSyntax(uri);
         } finally {
             this.correctedFiles.delete(uri.toString());
         }
