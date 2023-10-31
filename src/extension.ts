@@ -14,6 +14,7 @@ import { CodemakerStatusbar, StatusBarStatus } from './vscode/statusBar';
 import {
 	isComment
 } from './utils/editorUtils';
+import { Corrector } from './correction/corrector';
 
 let statusBar: CodemakerStatusbar;
 
@@ -235,8 +236,8 @@ function registerPredictiveGeneration(context: vscode.ExtensionContext, codemake
 }
 
 function registerAutoCorrection(context: vscode.ExtensionContext, codemakerService: CodemakerService) {
-	const predictor = new Predictor(codemakerService);
-	predictor.subscribeToDucumentChanges(context);
+	const corrector = new Corrector(codemakerService);
+	corrector.subscribeToDucumentChanges(context);
 }
 
 export class ReplaceMethodCodeAction implements vscode.CodeActionProvider {

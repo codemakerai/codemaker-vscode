@@ -60,6 +60,11 @@
           "description": "Enable predictive generation",
           "type": "boolean",
           "default": false
+        },
+        "codemaker.enableSyntaxAutocorrection": {
+          "description": "Enable syntax autocorrection",
+          "type": "boolean",
+          "default": false
         }
       }
     },

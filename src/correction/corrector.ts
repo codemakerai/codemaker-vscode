@@ -15,7 +15,7 @@ export class Corrector {
     }
 
     async correct(document: vscode.TextDocument) {
-        if (!Configuration.isPredictiveGenerationEnabled()) {
+        if (!Configuration.isSyntaxAutocorrectionEnabled()) {
             return;
         }
 
@@ -53,7 +53,7 @@ export class Corrector {
         );
 
         context.subscriptions.push(
-            vscode.workspace.onDidChangeTextDocument(event => this.correct(event.document))
+            vscode.workspace.onDidSaveTextDocument(event => this.correct(event))
         );
 
         context.subscriptions.push(
@@ -62,6 +62,6 @@ export class Corrector {
     }
 
     private canCorrect(uri: vscode.Uri) {
-        return this.correctedFiles.has(uri.toString());
+        return !this.correctedFiles.has(uri.toString());
     }
 }
