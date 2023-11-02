@@ -51,6 +51,11 @@
           "type": "boolean",
           "default": false
         },
+        "codemaker.allowLocalContext": {
+          "description": "Allow local context search.",
+          "type": "boolean",
+          "default": false
+        },
         "codemaker.enableCodeActions": {
           "description": "Enable code actions",
           "type": "boolean",
@@ -202,7 +207,7 @@
   },
   "dependencies": {
     "axios": "^0.24.0",
-    "codemaker-sdk": "^1.1.0"
+    "codemaker-sdk": "^1.5.0"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",

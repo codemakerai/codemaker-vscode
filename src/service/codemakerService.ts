@@ -5,6 +5,7 @@ import { TextDecoder, TextEncoder } from 'util';
 import { Client, CreateProcessRequest, GetProcessOutputRequest, GetProcessStatusRequest, Language, Mode, Modify, Status } from 'codemaker-sdk';
 import { Configuration } from '../configuration/configuration';
 import { langFromFileExtension } from '../utils/languageUtils';
+import { CodeSnippetContext } from 'codemaker-sdk';
 
 /**
  * Service to modify source code.
@@ -64,8 +65,8 @@ class CodemakerService {
      * @param lang language
      * @param offset offset of current cursor
      */
-    public async complete(source: string, lang: Language, offset: number, allowMultiLineAutocomplete: boolean) {
-        const request = this.createCompletionProcessRequest(lang, source, offset, allowMultiLineAutocomplete);
+    public async complete(source: string, lang: Language, offset: number, allowMultiLineAutocomplete: boolean, codeSnippetContexts: CodeSnippetContext[]) {
+        const request = this.createCompletionProcessRequest(lang, source, offset, allowMultiLineAutocomplete, codeSnippetContexts);
         return this.process(request, this.completionPollingInterval);
     }
 
@@ -199,7 +200,13 @@ class CodemakerService {
         };
     }
 
-    private createCompletionProcessRequest(lang: Language, source: string, offset: number, allowMultiLineAutocomplete: boolean): CreateProcessRequest {
+    private createCompletionProcessRequest(
+        lang: Language, 
+        source: string, 
+        offset: number, 
+        allowMultiLineAutocomplete: boolean, 
+        codeSnippetContexts: CodeSnippetContext[]): CreateProcessRequest {
+
         return {
             process: {
                 mode: Mode.completion,
@@ -210,6 +217,7 @@ class CodemakerService {
                 options: {
                     codePath: '@' + offset,
                     allowMultiLineAutocomplete: allowMultiLineAutocomplete,
+                    codeSnippetContexts: codeSnippetContexts
                 }
             }
         };
