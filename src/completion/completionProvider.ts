@@ -2,15 +2,12 @@
 
 import * as vscode from 'vscode';
 import CodemakerService from '../service/codemakerService';
-import {    
-    langFromFileExtension
-} from '../utils/languageUtils';
-import {
-    checkLineLength,
-    isEndOfLine
-} from '../utils/editorUtils';
+import { langFromFileExtension } from '../utils/languageUtils';
+import { isEndOfLine } from '../utils/editorUtils';
 import { Configuration } from '../configuration/configuration';
 import { CodemakerStatusbar, StatusBarStatus } from '../vscode/statusBar';
+import { getLocalCodeSnippetContexts } from './context/localContext';
+import { CodeSnippetContext } from 'codemaker-sdk';
 
 export default class CompletionProvider implements vscode.InlineCompletionItemProvider {
 
@@ -54,11 +51,15 @@ export default class CompletionProvider implements vscode.InlineCompletionItemPr
         const needNewRequest = this.shouldInvokeCompletion(currLineBeforeCursor, document, position);
         if (needNewRequest) {
             this.statusBar.updateStatusBar(StatusBarStatus.processing);
-            var output = await this.service.complete(
-                document.getText(), langFromFileExtension(document.fileName), offset - 1, Configuration.isAllowMultiLineAutocomplete()
-            );
 
-            console.log(`Completion output: ${output}`);
+            var codeSnippetContexts: CodeSnippetContext[] = Configuration.isAllowLocalContext() ? await getLocalCodeSnippetContexts() : [];
+            var output = await this.service.complete(
+                document.getText(), 
+                langFromFileExtension(document.fileName), 
+                offset - 1, 
+                Configuration.isAllowMultiLineAutocomplete(), 
+                codeSnippetContexts,
+            );
 
             if (output === '') {
                 return;
@@ -80,7 +81,6 @@ export default class CompletionProvider implements vscode.InlineCompletionItemPr
 
     private shouldSkip(document: vscode.TextDocument, position: vscode.Position): boolean {
         return !Configuration.isAutocompleteEnabled()
-            || !checkLineLength(position)
             || !isEndOfLine(document, position);
     }
 

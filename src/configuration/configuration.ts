@@ -16,6 +16,10 @@ export class Configuration {
         return this.get('codemaker.allowMultiLineAutocomplete');
     }
 
+    static isAllowLocalContext(): boolean {
+        return this.get('codemaker.allowLocalContext');
+    }
+
     static isCodeActionsEnabled(): boolean {
         return this.get('codemaker.enableCodeActions');
     }
