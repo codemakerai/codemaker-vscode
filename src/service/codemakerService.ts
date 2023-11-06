@@ -2,7 +2,7 @@
 
 import * as vscode from 'vscode';
 import { TextDecoder, TextEncoder } from 'util';
-import { Client, CreateProcessRequest, GetProcessOutputRequest, GetProcessStatusRequest, Language, Mode, Modify, Status } from 'codemaker-sdk';
+import { Client, ProcessRequest, CompletionRequest, PredictRequest, Language, Mode, Modify } from 'codemaker-sdk';
 import { Configuration } from '../configuration/configuration';
 import { langFromFileExtension } from '../utils/languageUtils';
 import { CodeSnippetContext } from 'codemaker-sdk';
@@ -11,10 +11,6 @@ import { CodeSnippetContext } from 'codemaker-sdk';
  * Service to modify source code.
  */
 class CodemakerService {
-
-    private readonly taskTimeoutInMilliseconds: number = 10 * 60 * 1000;
-    private readonly defaultPollingInterval: number = 500;
-    private readonly completionPollingInterval: number = 100;
 
     private readonly client;
 
@@ -55,7 +51,7 @@ class CodemakerService {
      * @param path file or directory path.
      */
     public async predictiveGeneration(path: vscode.Uri) {
-        return this.walkFiles(path, this.getPredictiveProcessor(Mode.code));
+        return this.walkFiles(path, this.getPredictiveProcessor());
     }
 
     /**
@@ -66,8 +62,8 @@ class CodemakerService {
      * @param offset offset of current cursor
      */
     public async complete(source: string, lang: Language, offset: number, allowMultiLineAutocomplete: boolean, codeSnippetContexts: CodeSnippetContext[]) {
-        const request = this.createCompletionProcessRequest(lang, source, offset, allowMultiLineAutocomplete, codeSnippetContexts);
-        return this.process(request, this.completionPollingInterval);
+        const request = this.createCompletionProcessRequest(lang, source, offset, allowMultiLineAutocomplete, codeSnippetContexts);        
+        return this.completion(request);
     }
 
     /**
@@ -106,11 +102,11 @@ class CodemakerService {
         return this.walkFiles(path, this.getFileProcessor(Mode.editCode, Modify.replace, codePath, prompt));
     }
 
-    private getPredictiveProcessor(mode: Mode, modify: Modify = Modify.none, codePath?: string) {
+    private getPredictiveProcessor() {
         return async (filePath: vscode.Uri): Promise<void> => {
             const source = await this.readFile(filePath);
             const lang = langFromFileExtension(filePath.path);
-            const request = this.createProcessRequest(mode, lang, source, modify, codePath);
+            const request = this.createPredictRequest(lang, source);
             this.predictiveProcess(request);
         };
     }
@@ -142,34 +138,18 @@ class CodemakerService {
         }
     }
 
-    private async predictiveProcess(request: CreateProcessRequest, pollingInterval = this.defaultPollingInterval) {
-        await this.client.createProcess(request);
+    private async predictiveProcess(request: PredictRequest) {        
+        await this.client.prediction(request);
     }
 
-    private async process(request: CreateProcessRequest, pollingInterval = this.defaultPollingInterval) {
-        const processTask = await this.client.createProcess(request);
+    private async process(request: ProcessRequest) {
+        const response = await this.client.process(request);
+        return response.output.source;
+    }
 
-        const taskId = processTask.data.id;
-        let status = Status.inProgress;
-        let success = false;
-
-        const timeout = Date.now() + this.taskTimeoutInMilliseconds;
-        while (status === Status.inProgress && timeout > Date.now()) {
-            const processStatus = await this.client.getProcessStatus(this.createProcessStatusRequest(taskId));
-            status = processStatus.data.status;
-            if (processStatus.data.status === Status.completed) {
-                success = true;
-                break;
-            }
-            await new Promise(resolve => setTimeout(resolve, pollingInterval));
-        }
-
-        if (!success) {
-            throw Error('Processing task had failed');
-        }
-
-        const processOutput = await this.client.getProcessOutput(this.createProcessOutputRequest(taskId));
-        return processOutput.data.output.source;
+    private async completion(request: CompletionRequest) {
+        const response = await this.client.completion(request);
+        return response.output.source;
     }
 
     private async readFile(filePath: vscode.Uri) {
@@ -183,10 +163,9 @@ class CodemakerService {
         return new TextDecoder('utf-8').decode(sourceEncoded);
     }
 
-    private createProcessRequest(mode: Mode, lang: Language, source: string, modify: Modify, codePath?: string, prompt?: string): CreateProcessRequest {
+    private createProcessRequest(mode: Mode, lang: Language, source: string, modify: Modify, codePath?: string, prompt?: string): ProcessRequest {
         return {
-            process: {
-                mode: mode,
+            mode: mode,
                 language: lang,
                 input: {
                     source: source,
@@ -196,42 +175,29 @@ class CodemakerService {
                     codePath: codePath,
                     prompt: prompt,
                 },
+        };
+    }
+
+    private createCompletionProcessRequest(lang: Language, source: string, offset: number, allowMultiLineAutocomplete: boolean, codeSnippetContexts: CodeSnippetContext[]): CompletionRequest {
+        return {
+            language: lang,
+            input: {
+                source: source,
+            },
+            options: {
+                codePath: '@' + offset,
+                allowMultiLineAutocomplete: allowMultiLineAutocomplete,
+                codeSnippetContexts: codeSnippetContexts
             }
         };
     }
 
-    private createCompletionProcessRequest(
-        lang: Language, 
-        source: string, 
-        offset: number, 
-        allowMultiLineAutocomplete: boolean, 
-        codeSnippetContexts: CodeSnippetContext[]): CreateProcessRequest {
-
+    private createPredictRequest(lang: Language, source: string): PredictRequest {
         return {
-            process: {
-                mode: Mode.completion,
-                language: lang,
-                input: {
-                    source: source,
-                },
-                options: {
-                    codePath: '@' + offset,
-                    allowMultiLineAutocomplete: allowMultiLineAutocomplete,
-                    codeSnippetContexts: codeSnippetContexts
-                }
+            language: lang,
+            input: {
+                source: source,
             }
-        };
-    }
-
-    private createProcessStatusRequest(taskId: string): GetProcessStatusRequest {
-        return {
-            id: taskId,
-        };
-    }
-
-    private createProcessOutputRequest(taskId: string): GetProcessOutputRequest {
-        return {
-            id: taskId,
         };
     }
 }

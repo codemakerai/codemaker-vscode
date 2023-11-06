@@ -49,23 +49,27 @@ export default class CompletionProvider implements vscode.InlineCompletionItemPr
         const startPosition = this.getStartPosition(currLineBeforeCursor);
 
         const needNewRequest = this.shouldInvokeCompletion(currLineBeforeCursor, document, position);
-        if (needNewRequest) {
+        if (needNewRequest) {             
             this.statusBar.updateStatusBar(StatusBarStatus.processing);
 
-            var codeSnippetContexts: CodeSnippetContext[] = Configuration.isAllowLocalContext() ? await getLocalCodeSnippetContexts() : [];
-            var output = await this.service.complete(
-                document.getText(), 
-                langFromFileExtension(document.fileName), 
-                offset - 1, 
-                Configuration.isAllowMultiLineAutocomplete(), 
-                codeSnippetContexts,
-            );
+            try {
+                var codeSnippetContexts: CodeSnippetContext[] = Configuration.isAllowLocalContext() ? await getLocalCodeSnippetContexts() : [];
+                var output = await this.service.complete(
+                    document.getText(), 
+                    langFromFileExtension(document.fileName), 
+                    offset - 1, 
+                    Configuration.isAllowMultiLineAutocomplete(), 
+                    codeSnippetContexts,
+                );
 
-            if (output === '') {
-                return;
+                if (output === '') {
+                    return;
+                }
+                this.completionOutput = currLineBeforeCursor.trimStart() + output;
+                this.completionLine = document.lineAt(startPosition).lineNumber;
+            } finally {
+                this.statusBar.reset();
             }
-            this.completionOutput = currLineBeforeCursor.trimStart() + output;
-            this.completionLine = document.lineAt(startPosition).lineNumber;
         }
 
         const result: vscode.InlineCompletionList = {
@@ -75,7 +79,6 @@ export default class CompletionProvider implements vscode.InlineCompletionItemPr
                 command: this.getAutoImportCommand(this.completionOutput),
             }]
         };
-        this.statusBar.reset();
         return result;
     }
 

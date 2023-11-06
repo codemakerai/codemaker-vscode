@@ -23,7 +23,7 @@
   "activationEvents": [
     "*"
   ],
-  "main": "./dist/extension.js",
+  "main": "./out/extension.js",
   "contributes": {
     "icons": {
       "codemaker-icon": {
@@ -207,7 +207,7 @@
   },
   "dependencies": {
     "axios": "^0.24.0",
-    "codemaker-sdk": "^1.5.0"
+    "codemaker-sdk": "^2.0.0"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
