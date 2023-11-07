@@ -88,3 +88,8 @@ Updated extension description.
 ## Version: 1.16.0
 
 * Syntax autocorrection
+
+## Version: 1.17.0
+
+* Local context for autocompletion
+* Optimized API endpoints
