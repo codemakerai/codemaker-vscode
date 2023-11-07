@@ -195,19 +195,18 @@
     "url": "https://github.com/codemakerai/codemaker-vscode"
   },
   "scripts": {
-    "vscode:prepublish": "npm run esbuild-base -- --minify",
+    "vscode:prepublish": "npm run compile",
     "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node",
     "esbuild": "npm run esbuild-base -- --sourcemap",
     "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
     "compile": "tsc -p ./",
-    "watch": "webpack --watch",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js"
   },
   "dependencies": {
     "axios": "^0.24.0",
-    "codemaker-sdk": "^2.0.0"
+    "codemaker-sdk": "^2.0.1"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
