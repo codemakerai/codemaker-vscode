@@ -32,6 +32,10 @@ export class Configuration {
         return this.get('codemaker.enableSyntaxAutocorrection');
     }
 
+    static isExtendedSourceContextEnabled(): boolean {
+        return this.get('codemaker.enableExtendedSourceContext');
+    }
+
     private static get<T>(key: string): T {
         return vscode.workspace.getConfiguration().get(key) as T;
     }

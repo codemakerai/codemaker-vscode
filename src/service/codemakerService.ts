@@ -1,8 +1,10 @@
 // Copyright 2023 CodeMaker AI Inc. All rights reserved.
 
 import * as vscode from 'vscode';
+import * as path from 'node:path';
+import * as fs from 'node:fs';
 import { TextDecoder, TextEncoder } from 'util';
-import { Client, ProcessRequest, CompletionRequest, PredictRequest, Language, Mode, Modify } from 'codemaker-sdk';
+import { Client, ProcessRequest, CompletionRequest, PredictRequest, Language, Mode, Modify, DiscoverContextRequest, CreateContextRequest, RegisterContextRequest, SourceContext } from 'codemaker-sdk';
 import { Configuration } from '../configuration/configuration';
 import { langFromFileExtension } from '../utils/languageUtils';
 import { CodeSnippetContext } from 'codemaker-sdk';
@@ -62,7 +64,7 @@ class CodemakerService {
      * @param offset offset of current cursor
      */
     public async complete(source: string, lang: Language, offset: number, allowMultiLineAutocomplete: boolean, codeSnippetContexts: CodeSnippetContext[]) {
-        const request = this.createCompletionProcessRequest(lang, source, offset, allowMultiLineAutocomplete, codeSnippetContexts);        
+        const request = this.createCompletionProcessRequest(lang, source, offset, allowMultiLineAutocomplete, codeSnippetContexts);
         return this.completion(request);
     }
 
@@ -115,7 +117,10 @@ class CodemakerService {
         return async (filePath: vscode.Uri): Promise<void> => {
             const source = await this.readFile(filePath);
             const lang = langFromFileExtension(filePath.path);
-            const request = this.createProcessRequest(mode, lang, source, modify, codePath, prompt);
+
+            const contextId = await this.discoverContext(mode, lang, source, filePath);
+
+            const request = this.createProcessRequest(mode, lang, source, modify, codePath, prompt, contextId);
             return this.process(request).then(async (output) => {
                 await vscode.workspace.fs.writeFile(filePath, new TextEncoder().encode(output));
             });
@@ -138,7 +143,53 @@ class CodemakerService {
         }
     }
 
-    private async predictiveProcess(request: PredictRequest) {        
+    private async discoverContext(mode: Mode, language: Language, source: string, filePath: vscode.Uri): Promise<string | undefined> {
+        try {
+            if (!Configuration.isExtendedSourceContextEnabled() || !this.isExtendedContextSupported(mode)) {
+                return;
+            }
+
+            const baseDir = path.dirname(filePath.fsPath);
+
+            const discoverContextResponse = await this.client.discoverContext(this.createDiscoverContextRequest(language, source, filePath.path));
+            const paths = discoverContextResponse.requiredContexts.map(context => path.resolve(baseDir, path.relative(path.basename(filePath.fsPath), context.path)));
+
+
+            const createContextResponse = await this.client.createContext(this.createCreateContextRequest());
+            const contextId = createContextResponse.id;
+
+            const decoder = new TextDecoder('utf-8');
+            const sourceContexts: SourceContext[] = [];
+            for (let p of paths) {
+                if (!fs.existsSync(p)) {
+                    continue;
+                }
+
+                try {
+                    const uri = vscode.Uri.file(p);
+                    const content = await vscode.workspace.fs.readFile(uri);
+                    const source = decoder.decode(content);
+                    sourceContexts.push({
+                        language: language,
+                        input: {
+                            source
+                        },
+                        path: p
+                    });
+                } catch {
+                    // ignores
+                }
+            }
+
+            await this.client.registerContext(this.createRegisterContextRequest(contextId, sourceContexts));
+            return contextId;
+        } catch (error) {
+            console.warn('Context discovery failed ', error);
+            return;
+        }
+    }
+
+    private async predictiveProcess(request: PredictRequest) {
         await this.client.prediction(request);
     }
 
@@ -163,41 +214,71 @@ class CodemakerService {
         return new TextDecoder('utf-8').decode(sourceEncoded);
     }
 
-    private createProcessRequest(mode: Mode, lang: Language, source: string, modify: Modify, codePath?: string, prompt?: string): ProcessRequest {
+    private isExtendedContextSupported(mode: Mode) {
+        return mode === Mode.code
+            || mode === Mode.editCode
+            || mode === Mode.inlineCode;
+    }
+
+    private createProcessRequest(mode: Mode, language: Language, source: string, modify: Modify, codePath?: string, prompt?: string, contextId?: string): ProcessRequest {
         return {
-            mode: mode,
-                language: lang,
-                input: {
-                    source: source,
-                },
-                options: {
-                    modify: modify,
-                    codePath: codePath,
-                    prompt: prompt,
-                },
+            mode,
+            language,
+            input: {
+                source,
+            },
+            options: {
+                modify,
+                codePath,
+                prompt,
+                contextId,
+            },
         };
     }
 
-    private createCompletionProcessRequest(lang: Language, source: string, offset: number, allowMultiLineAutocomplete: boolean, codeSnippetContexts: CodeSnippetContext[]): CompletionRequest {
+    private createCompletionProcessRequest(language: Language, source: string, offset: number, allowMultiLineAutocomplete: boolean, codeSnippetContexts: CodeSnippetContext[]): CompletionRequest {
         return {
-            language: lang,
+            language,
             input: {
-                source: source,
+                source,
             },
             options: {
                 codePath: '@' + offset,
-                allowMultiLineAutocomplete: allowMultiLineAutocomplete,
-                codeSnippetContexts: codeSnippetContexts
+                allowMultiLineAutocomplete,
+                codeSnippetContexts
             }
         };
     }
 
-    private createPredictRequest(lang: Language, source: string): PredictRequest {
+    private createPredictRequest(language: Language, source: string): PredictRequest {
         return {
-            language: lang,
+            language,
             input: {
-                source: source,
+                source,
             }
+        };
+    }
+
+    private createDiscoverContextRequest(language: Language, source: string, path: string): DiscoverContextRequest {
+        return {
+            context: {
+                language,
+                input: {
+                    source,
+                },
+                path
+            }
+        };
+    }
+
+    private createCreateContextRequest(): CreateContextRequest {
+        return {};
+    }
+
+    private createRegisterContextRequest(id: string, contexts: SourceContext[]): RegisterContextRequest {
+        return {
+            id,
+            contexts
         };
     }
 }

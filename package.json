@@ -70,6 +70,11 @@
           "description": "Enable syntax autocorrection",
           "type": "boolean",
           "default": false
+        },
+        "codemaker.enableExtendedSourceContext": {
+          "description": "Enable extended source context",
+          "type": "boolean",
+          "default": false
         }
       }
     },
@@ -206,7 +211,7 @@
   },
   "dependencies": {
     "axios": "^0.24.0",
-    "codemaker-sdk": "^2.0.1"
+    "codemaker-sdk": "^2.1.0"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
