@@ -93,3 +93,7 @@ Updated extension description.
 
 * Local context for autocompletion
 * Optimized API endpoints
+
+## Version: 1.18.0
+
+* Extended source context
