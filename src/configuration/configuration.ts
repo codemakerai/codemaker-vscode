@@ -5,7 +5,7 @@ import * as vscode from 'vscode';
 export class Configuration {
 
     static apiKey(): string {
-        return this.get('codemaker.apiKey');
+        return this.get<string>('codemaker.apiKey').trim();
     }
 
     static isAutocompleteEnabled(): boolean {
