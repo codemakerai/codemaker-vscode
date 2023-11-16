@@ -210,8 +210,7 @@
     "test": "node ./out/test/runTest.js"
   },
   "dependencies": {
-    "axios": "^0.24.0",
-    "codemaker-sdk": "^2.1.0"
+    "codemaker-sdk": "^2.2.0"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
@@ -221,7 +220,6 @@
     "@typescript-eslint/eslint-plugin": "^5.56.0",
     "@typescript-eslint/parser": "^5.56.0",
     "@vscode/test-electron": "^2.3.0",
-    "axios-logger": "^2.6.2",
     "esbuild": "^0.19.4",
     "eslint": "^8.36.0",
     "glob": "^8.1.0",

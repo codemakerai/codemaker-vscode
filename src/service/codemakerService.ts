@@ -108,7 +108,10 @@ class CodemakerService {
         return async (filePath: vscode.Uri): Promise<void> => {
             const source = await this.readFile(filePath);
             const lang = langFromFileExtension(filePath.path);
-            const request = this.createPredictRequest(lang, source);
+
+            const contextId = await this.discoverContext(lang, source, filePath);
+
+            const request = this.createPredictRequest(lang, source, contextId);
             this.predictiveProcess(request);
         };
     }
@@ -118,7 +121,7 @@ class CodemakerService {
             const source = await this.readFile(filePath);
             const lang = langFromFileExtension(filePath.path);
 
-            const contextId = await this.discoverContext(mode, lang, source, filePath);
+            const contextId = await this.discoverContext(lang, source, filePath, mode);
 
             const request = this.createProcessRequest(mode, lang, source, modify, codePath, prompt, contextId);
             return this.process(request).then(async (output) => {
@@ -143,9 +146,9 @@ class CodemakerService {
         }
     }
 
-    private async discoverContext(mode: Mode, language: Language, source: string, filePath: vscode.Uri): Promise<string | undefined> {
+    private async discoverContext(language: Language, source: string, filePath: vscode.Uri, mode?: Mode): Promise<string | undefined> {
         try {
-            if (!Configuration.isExtendedSourceContextEnabled() || !this.isExtendedContextSupported(mode)) {
+            if (!Configuration.isExtendedSourceContextEnabled() || (mode && !this.isExtendedContextSupported(mode))) {
                 return;
             }
 
@@ -250,11 +253,14 @@ class CodemakerService {
         };
     }
 
-    private createPredictRequest(language: Language, source: string): PredictRequest {
+    private createPredictRequest(language: Language, source: string, contextId?: string): PredictRequest {
         return {
             language,
             input: {
                 source,
+            },
+            options: {
+                contextId
             }
         };
     }
