@@ -6,14 +6,12 @@ import * as vscode from 'vscode';
 import CodemakerService from './service/codemakerService';
 import { AuthenticationError, UnsupportedLanguageError } from 'codemaker-sdk';
 import CompletionProvider from './completion/completionProvider';
-import { findCodePath } from './utils/codePathUtils';
+import { codePathFromOffset } from './utils/codePathUtils';
 import { CODE_PATH, subscribeToDocumentChanges } from './diagnostics/codePathDiagnostics';
 import { Predictor } from './predictor/predictor';
 import completionImports from './completion/completionImports';
 import { CodemakerStatusbar, StatusBarStatus } from './vscode/statusBar';
-import {
-	isComment
-} from './utils/editorUtils';
+import { isComment } from './utils/editorUtils';
 import { Corrector } from './correction/corrector';
 
 let statusBar: CodemakerStatusbar;
@@ -134,11 +132,9 @@ function registerActions(context: vscode.ExtensionContext, codemakerService: Cod
 		if (!editor) {
 			return;
 		}
+
 		const uri = editor.document.uri;
-		const codePath = await findCodePath(uri, editor.selection.active);
-		if (!codePath) {
-			return null;
-		}
+		const codePath = codePathFromOffset(editor);
 
 		statusBar.updateStatusBar(StatusBarStatus.processing);
 		codemakerService.replaceDocumentation(vscode.Uri.parse(uri.path), codePath)
@@ -152,10 +148,7 @@ function registerActions(context: vscode.ExtensionContext, codemakerService: Cod
 			return;
 		}
 		const uri = editor.document.uri;
-		const codePath = await findCodePath(uri, editor.selection.active);
-		if (!codePath) {
-			return null;
-		}
+		const codePath = codePathFromOffset(editor);
 
 		statusBar.updateStatusBar(StatusBarStatus.processing);
 		codemakerService.replaceCode(vscode.Uri.parse(uri.path), codePath)
@@ -169,10 +162,7 @@ function registerActions(context: vscode.ExtensionContext, codemakerService: Cod
 			return;
 		}
 		const uri = editor.document.uri;
-		const codePath = await findCodePath(uri, editor.selection.active);
-		if (!codePath) {
-			return null;
-		}
+		const codePath = codePathFromOffset(editor);
 
 		statusBar.updateStatusBar(StatusBarStatus.processing);
 		codemakerService.fixSyntax(vscode.Uri.parse(uri.path), codePath)
@@ -190,9 +180,9 @@ function registerActions(context: vscode.ExtensionContext, codemakerService: Cod
 			return;
 		}
 
-		const offset = editor.document.offsetAt(editor.selection.active);
+		const codePath = codePathFromOffset(editor);		
 		statusBar.updateStatusBar(StatusBarStatus.processing);
-		codemakerService.generateInlineCode(editor.document.uri, `@${offset}`)
+		codemakerService.generateInlineCode(editor.document.uri, codePath)
 			.catch(err => errorHandler("Inline code generation", err))
 			.finally(() => statusBar.reset());
 	}));
