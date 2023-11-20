@@ -97,3 +97,7 @@ Updated extension description.
 ## Version: 1.18.0
 
 * Extended source context
+
+## Version: 1.19.0
+
+* Support extended source context in predictive code generation
