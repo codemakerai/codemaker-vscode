@@ -63,8 +63,10 @@ class CodemakerService {
      * @param lang language
      * @param offset offset of current cursor
      */
-    public async complete(source: string, lang: Language, offset: number, allowMultiLineAutocomplete: boolean, codeSnippetContexts: CodeSnippetContext[]) {
-        const request = this.createCompletionProcessRequest(lang, source, offset, allowMultiLineAutocomplete, codeSnippetContexts);
+    public async complete(filePath: vscode.Uri, source: string, lang: Language, offset: number, allowMultiLineAutocomplete: boolean, codeSnippetContexts: CodeSnippetContext[]) {
+        const codePath = '@' + offset;
+        const contextId = await this.discoverContext(lang, source, filePath);
+        const request = this.createCompletionProcessRequest(lang, source, codePath, allowMultiLineAutocomplete, codeSnippetContexts, contextId);
         return this.completion(request);
     }
 
@@ -239,16 +241,17 @@ class CodemakerService {
         };
     }
 
-    private createCompletionProcessRequest(language: Language, source: string, offset: number, allowMultiLineAutocomplete: boolean, codeSnippetContexts: CodeSnippetContext[]): CompletionRequest {
+    private createCompletionProcessRequest(language: Language, source: string, codePath: string, allowMultiLineAutocomplete: boolean, codeSnippetContexts: CodeSnippetContext[], contextId?: string): CompletionRequest {
         return {
             language,
             input: {
                 source,
             },
             options: {
-                codePath: '@' + offset,
+                codePath,
                 allowMultiLineAutocomplete,
-                codeSnippetContexts
+                codeSnippetContexts,
+                contextId
             }
         };
     }

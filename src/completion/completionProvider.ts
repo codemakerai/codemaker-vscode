@@ -55,6 +55,7 @@ export default class CompletionProvider implements vscode.InlineCompletionItemPr
             try {
                 var codeSnippetContexts: CodeSnippetContext[] = Configuration.isAllowLocalContext() ? await getLocalCodeSnippetContexts() : [];
                 var output = await this.service.complete(
+                    document.uri,
                     document.getText(), 
                     langFromFileExtension(document.fileName), 
                     offset - 1, 
