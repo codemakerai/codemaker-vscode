@@ -101,3 +101,7 @@ Updated extension description.
 ## Version: 1.19.0
 
 * Support extended source context in predictive code generation
+
+## Version: 1.20.0
+
+* Support extended source context in autocompletion
