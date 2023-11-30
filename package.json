@@ -75,6 +75,11 @@
           "description": "Enable extended source context",
           "type": "boolean",
           "default": false
+        },
+        "codemaker.enableSourceGraphGeneration": {
+          "description": "Enable source graph generation",
+          "type": "boolean",
+          "default": false
         }
       }
     },
