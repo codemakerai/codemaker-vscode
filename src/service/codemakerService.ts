@@ -33,6 +33,15 @@ class CodemakerService {
     }
 
     /**
+     * Generate source graph code for given source files.
+     *
+     * @param path file or directory path.
+     */
+    public async generateSourceGraphCode(path: vscode.Uri, depth: number = 0) {
+        return this.walkFiles(path, this.getSourceGraphFileProcessor(Mode.code, depth));
+    }
+
+    /**
      * Generate inline code for given source files.
      *
      * @param path file or directory path.
@@ -67,8 +76,8 @@ class CodemakerService {
      * @param offset offset of current cursor
      */
     public async complete(filePath: vscode.Uri, source: string, lang: Language, offset: number, allowMultiLineAutocomplete: boolean, codeSnippetContexts: CodeSnippetContext[]) {
-        const codePath = '@' + offset;
-        const contextId = await this.registerContext(lang, source, filePath, false);
+        const codePath = `@${offset}`;
+        const contextId = await this.registerContext(lang, source, filePath);
         const request = this.createCompletionProcessRequest(lang, source, codePath, allowMultiLineAutocomplete, codeSnippetContexts, contextId);
         return this.completion(request);
     }
@@ -114,7 +123,7 @@ class CodemakerService {
             const source = await this.readFile(filePath);
             const lang = langFromFileExtension(filePath.path);
 
-            const contextId = await this.registerContext(lang, source, filePath, false);
+            const contextId = await this.registerContext(lang, source, filePath);
 
             const request = this.createPredictRequest(lang, source, contextId);
             this.predictiveProcess(request);
@@ -126,10 +135,30 @@ class CodemakerService {
             const source = await this.readFile(filePath);
             const lang = langFromFileExtension(filePath.path);
 
-            const sourceGraphGeneration = Configuration.isSourceGraphGenerationEnabled() && mode === Mode.code;
-            const contextId = await this.registerContext(lang, source, filePath, sourceGraphGeneration, 0);
+            const contextId = await this.registerContext(lang, source, filePath);
 
             const request = this.createProcessRequest(mode, lang, source, modify, codePath, prompt, contextId);
+            return this.process(request).then(async (output) => {
+                await vscode.workspace.fs.writeFile(filePath, new TextEncoder().encode(output));
+            });
+        };
+    }
+
+    private getSourceGraphFileProcessor(mode: Mode, depth: number = 0) {
+        return async (filePath: vscode.Uri): Promise<void> => {
+            const source = await this.readFile(filePath);
+            const lang = langFromFileExtension(filePath.path);
+
+            const paths: vscode.Uri[] = await this.discoverContext(filePath, lang, source);
+            if (depth < 1) {
+                for (let path of paths) {
+                    await this.generateSourceGraphCode(path, depth + 1);
+                }
+            }
+
+            const contextId = await this.registerContext(lang, source, filePath, Mode.code);
+
+            const request = this.createProcessRequest(mode, lang, source, Modify.none, undefined, contextId);
             return this.process(request).then(async (output) => {
                 await vscode.workspace.fs.writeFile(filePath, new TextEncoder().encode(output));
             });
@@ -152,13 +181,13 @@ class CodemakerService {
         }
     }
 
-    private async registerContext(language: Language, source: string, filePath: vscode.Uri, sourceGraphGeneration: boolean, depth: number = 0, mode?: Mode): Promise<string | undefined> {
+    private async registerContext(language: Language, source: string, filePath: vscode.Uri, mode?: Mode) {
         try {
             if (!Configuration.isExtendedSourceContextEnabled() || (mode && !this.isExtendedContextSupported(mode))) {
                 return;
             }
 
-            const sourceContexts = await this.resolveContext(filePath, language, source, sourceGraphGeneration, depth);
+            const sourceContexts = await this.resolveContext(filePath, language, source);
 
             const createContextResponse = await this.client.createContext(this.createCreateContextRequest());
             const contextId = createContextResponse.id;
@@ -176,31 +205,24 @@ class CodemakerService {
 
         const discoverContextResponse = await this.client.discoverContext(this.createDiscoverContextRequest(language, source, filePath.path));
         return discoverContextResponse.requiredContexts.map(context => path.resolve(baseDir, path.relative(path.basename(filePath.fsPath), context.path)))
-            .filter(p => fs.existsSync(p));
+            .filter(p => fs.existsSync(p))
+            .map(p => vscode.Uri.file(p));
     }
 
-    private async resolveContext(filePath: vscode.Uri, language: Language, source: string, sourceGraphGeneration: boolean, depth: number = 0) {
-        const paths: string[] = await this.discoverContext(filePath, language, source);
-
-        if (sourceGraphGeneration && depth < 1) {
-            for (let p of paths) {
-                const uri = vscode.Uri.file(p);
-                this.walkFiles(uri, this.getFileProcessor(Mode.code, depth + 1));
-            }
-        }
+    private async resolveContext(filePath: vscode.Uri, language: Language, source: string) {
+        const paths: vscode.Uri[] = await this.discoverContext(filePath, language, source);
 
         const sourceContexts = [];
         for (let p of paths) {
             try {
-                const uri = vscode.Uri.file(p);
-                const content = await vscode.workspace.fs.readFile(uri);
+                const content = await vscode.workspace.fs.readFile(p);
                 const source = this.decoder.decode(content);
                 sourceContexts.push({
                     language: language,
                     input: {
                         source
                     },
-                    path: p
+                    path: p.fsPath
                 });
             } catch {
                 console.warn("Failed to resolve file context.");

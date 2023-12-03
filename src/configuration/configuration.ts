@@ -36,10 +36,6 @@ export class Configuration {
         return this.get('codemaker.enableExtendedSourceContext');
     }
 
-    static isSourceGraphGenerationEnabled(): boolean {
-        return this.get('codemaker.enableSourceGraphGeneration');
-    }
-
     private static get<T>(key: string): T {
         return vscode.workspace.getConfiguration().get(key) as T;
     }
