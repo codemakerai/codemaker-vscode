@@ -75,11 +75,6 @@
           "description": "Enable extended source context",
           "type": "boolean",
           "default": false
-        },
-        "codemaker.enableSourceGraphGeneration": {
-          "description": "Enable source graph generation",
-          "type": "boolean",
-          "default": false
         }
       }
     },
@@ -117,6 +112,10 @@
         },
         {
           "command": "extension.ai.codemaker.generate.code",
+          "group": "generate"
+        },
+        {
+          "command": "extension.ai.codemaker.generate.sourcegraph.code",
           "group": "generate"
         }
       ],
@@ -163,6 +162,10 @@
       {
         "command": "extension.ai.codemaker.generate.code",
         "title": "Code"
+      },
+      {
+        "command": "extension.ai.codemaker.generate.sourcegraph.code",
+        "title": "Code Graph"
       },
       {
         "command": "extension.ai.codemaker.replace.doc",

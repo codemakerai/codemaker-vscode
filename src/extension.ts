@@ -74,6 +74,15 @@ function registerActions(context: vscode.ExtensionContext, codemakerService: Cod
 		}
 	}));
 
+	context.subscriptions.push(vscode.commands.registerCommand('extension.ai.codemaker.generate.sourcegraph.code', (uri) => {
+		if (uri) {
+			statusBar.updateStatusBar(StatusBarStatus.processing);
+			codemakerService.generateSourceGraphCode(vscode.Uri.parse(uri.path))
+				.catch(err => errorHandler("Source Graph Code generation", err))
+				.finally(() => statusBar.reset());
+		}
+	}));
+
 	context.subscriptions.push(vscode.commands.registerCommand('extension.ai.codemaker.replace.doc', (uri) => {
 		if (uri) {
 			statusBar.updateStatusBar(StatusBarStatus.processing);
