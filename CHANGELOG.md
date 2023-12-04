@@ -105,3 +105,7 @@ Updated extension description.
 ## Version: 1.20.0
 
 * Support extended source context in autocompletion
+
+## Version: 1.21.0
+
+* Source graph generation
