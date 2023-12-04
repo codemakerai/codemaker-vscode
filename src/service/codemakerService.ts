@@ -77,7 +77,7 @@ class CodemakerService {
      */
     public async complete(filePath: vscode.Uri, source: string, lang: Language, offset: number, allowMultiLineAutocomplete: boolean, codeSnippetContexts: CodeSnippetContext[]) {
         const codePath = `@${offset}`;
-        const contextId = await this.registerContext(lang, source, filePath);
+        const contextId = await this.registerContext(lang, filePath);
         const request = this.createCompletionProcessRequest(lang, source, codePath, allowMultiLineAutocomplete, codeSnippetContexts, contextId);
         return this.completion(request);
     }
@@ -119,24 +119,24 @@ class CodemakerService {
     }
 
     private getPredictiveProcessor() {
-        return async (filePath: vscode.Uri): Promise<void> => {
-            const source = await this.readFile(filePath);
+        return async (filePath: vscode.Uri): Promise<void> => {            
             const lang = langFromFileExtension(filePath.path);
 
-            const contextId = await this.registerContext(lang, source, filePath);
+            const contextId = await this.registerContext(lang, filePath);
 
+            const source = await this.readFile(filePath);
             const request = this.createPredictRequest(lang, source, contextId);
             this.predictiveProcess(request);
         };
     }
 
     private getFileProcessor(mode: Mode, depth: number = 0, modify: Modify = Modify.none, codePath?: string, prompt?: string) {
-        return async (filePath: vscode.Uri): Promise<void> => {
-            const source = await this.readFile(filePath);
+        return async (filePath: vscode.Uri): Promise<void> => {            
             const lang = langFromFileExtension(filePath.path);
 
-            const contextId = await this.registerContext(lang, source, filePath);
+            const contextId = await this.registerContext(lang, filePath);
 
+            const source = await this.readFile(filePath);
             const request = this.createProcessRequest(mode, lang, source, modify, codePath, prompt, contextId);
             return this.process(request).then(async (output) => {
                 await vscode.workspace.fs.writeFile(filePath, new TextEncoder().encode(output));
@@ -146,19 +146,19 @@ class CodemakerService {
 
     private getSourceGraphFileProcessor(mode: Mode, depth: number = 0) {
         return async (filePath: vscode.Uri): Promise<void> => {
-            const source = await this.readFile(filePath);
             const lang = langFromFileExtension(filePath.path);
 
-            const paths: vscode.Uri[] = await this.discoverContext(filePath, lang, source);
+            const paths: vscode.Uri[] = await this.discoverContext(filePath, lang);
             if (depth < 1) {
                 for (let path of paths) {
                     await this.generateSourceGraphCode(path, depth + 1);
                 }
             }
 
-            const contextId = await this.registerContext(lang, source, filePath, Mode.code);
+            const contextId = await this.registerContext(lang, filePath, Mode.code);
 
-            const request = this.createProcessRequest(mode, lang, source, Modify.none, undefined, contextId);
+            const source = await this.readFile(filePath);
+            const request = this.createProcessRequest(mode, lang, source, Modify.none, undefined, undefined, contextId);
             return this.process(request).then(async (output) => {
                 await vscode.workspace.fs.writeFile(filePath, new TextEncoder().encode(output));
             });
@@ -181,13 +181,13 @@ class CodemakerService {
         }
     }
 
-    private async registerContext(language: Language, source: string, filePath: vscode.Uri, mode?: Mode) {
+    private async registerContext(language: Language, filePath: vscode.Uri, mode?: Mode) {
         try {
             if (!Configuration.isExtendedSourceContextEnabled() || (mode && !this.isExtendedContextSupported(mode))) {
                 return;
             }
 
-            const sourceContexts = await this.resolveContext(filePath, language, source);
+            const sourceContexts = await this.resolveContext(filePath, language);
 
             const createContextResponse = await this.client.createContext(this.createCreateContextRequest());
             const contextId = createContextResponse.id;
@@ -200,8 +200,9 @@ class CodemakerService {
         }
     }
 
-    private async discoverContext(filePath: vscode.Uri, language: Language, source: string) {
+    private async discoverContext(filePath: vscode.Uri, language: Language) {
         const baseDir = path.dirname(filePath.fsPath);
+        const source = await this.readFile(filePath);
 
         const discoverContextResponse = await this.client.discoverContext(this.createDiscoverContextRequest(language, source, filePath.path));
         return discoverContextResponse.requiredContexts.map(context => path.resolve(baseDir, path.relative(path.basename(filePath.fsPath), context.path)))
@@ -209,14 +210,13 @@ class CodemakerService {
             .map(p => vscode.Uri.file(p));
     }
 
-    private async resolveContext(filePath: vscode.Uri, language: Language, source: string) {
-        const paths: vscode.Uri[] = await this.discoverContext(filePath, language, source);
+    private async resolveContext(filePath: vscode.Uri, language: Language) {
+        const paths: vscode.Uri[] = await this.discoverContext(filePath, language);
 
         const sourceContexts = [];
         for (let p of paths) {
             try {
-                const content = await vscode.workspace.fs.readFile(p);
-                const source = this.decoder.decode(content);
+                const source = await this.readFile(p);
                 sourceContexts.push({
                     language: language,
                     input: {
