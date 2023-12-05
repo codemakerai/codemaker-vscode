@@ -103,6 +103,10 @@
         {
           "submenu": "codemaker.submenu.fix",
           "group": "navigation"
+        },
+        {
+          "submenu": "codemaker.submenu.sourcegraph",
+          "group": "navigation"
         }
       ],
       "codemaker.submenu.generate": [
@@ -113,11 +117,6 @@
         {
           "command": "extension.ai.codemaker.generate.code",
           "group": "generate"
-        },
-        {
-          "command": "extension.ai.codemaker.generate.sourcegraph.code",
-          "group": "generate",
-          "when": "config.codemaker.enableExtendedSourceContext == true"
         }
       ],
       "codemaker.submenu.replace": [
@@ -128,6 +127,13 @@
         {
           "command": "extension.ai.codemaker.replace.code",
           "group": "replace"
+        }
+      ],
+      "codemaker.submenu.sourcegraph": [
+        {
+          "command": "extension.ai.codemaker.generate.sourcegraph.code",
+          "group": "sourcegraph",
+          "when": "config.codemaker.enableExtendedSourceContext == true"
         }
       ],
       "codemaker.submenu.fix": [
@@ -151,6 +157,10 @@
         "label": "Replace"
       },
       {
+        "id": "codemaker.submenu.sourcegraph",
+        "label": "Source Graph"
+      },
+      {
         "id": "codemaker.submenu.fix",
         "label": "Fix"
       }
@@ -166,7 +176,7 @@
       },
       {
         "command": "extension.ai.codemaker.generate.sourcegraph.code",
-        "title": "Code Graph"
+        "title": "Generate"
       },
       {
         "command": "extension.ai.codemaker.replace.doc",
