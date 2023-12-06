@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 import * as path from 'node:path';
 import * as fs from 'node:fs';
 import { TextDecoder, TextEncoder } from 'util';
-import { Client, ProcessRequest, CompletionRequest, PredictRequest, Language, Mode, Modify, DiscoverContextRequest, CreateContextRequest, RegisterContextRequest, SourceContext } from 'codemaker-sdk';
+import { Client, ProcessRequest, CompletionRequest, PredictRequest, Language, Mode, Modify, DiscoverContextRequest, CreateContextRequest, RegisterContextRequest, SourceContext, DiscoverContextResponse } from 'codemaker-sdk';
 import { Configuration } from '../configuration/configuration';
 import { langFromFileExtension } from '../utils/languageUtils';
 import { CodeSnippetContext } from 'codemaker-sdk';
@@ -13,6 +13,8 @@ import { CodeSnippetContext } from 'codemaker-sdk';
  * Service to modify source code.
  */
 class CodemakerService {
+
+    private static readonly maximumSourceGraphDepth = 16;
 
     private readonly client;
 
@@ -148,11 +150,14 @@ class CodemakerService {
         return async (filePath: vscode.Uri): Promise<void> => {
             const lang = langFromFileExtension(filePath.path);
 
-            const paths: vscode.Uri[] = await this.discoverContext(filePath, lang);
-            if (depth < 1) {
-                for (let path of paths) {
-                    await this.generateSourceGraphCode(path, depth + 1);
-                }
+            if (depth < CodemakerService.maximumSourceGraphDepth) {
+                const discoverContextResponse = await this.discoverContext(filePath, lang);
+                if (discoverContextResponse.requiresProcessing) {
+                    const paths: vscode.Uri[] = this.matchContextPaths(discoverContextResponse, filePath);
+                    for (let path of paths) {
+                        await this.generateSourceGraphCode(path, depth + 1);
+                    }
+                }                
             }
 
             const contextId = await this.registerContext(lang, filePath, Mode.code);
@@ -200,18 +205,21 @@ class CodemakerService {
         }
     }
 
-    private async discoverContext(filePath: vscode.Uri, language: Language) {
-        const baseDir = path.dirname(filePath.fsPath);
+    private async discoverContext(filePath: vscode.Uri, language: Language) {        
         const source = await this.readFile(filePath);
+        return await this.client.discoverContext(this.createDiscoverContextRequest(language, source, filePath.path));        
+    }
 
-        const discoverContextResponse = await this.client.discoverContext(this.createDiscoverContextRequest(language, source, filePath.path));
+    private matchContextPaths(discoverContextResponse: DiscoverContextResponse, filePath: vscode.Uri) {
+        const baseDir = path.dirname(filePath.fsPath);
         return discoverContextResponse.requiredContexts.map(context => path.resolve(baseDir, path.relative(path.basename(filePath.fsPath), context.path)))
             .filter(p => fs.existsSync(p))
             .map(p => vscode.Uri.file(p));
     }
 
     private async resolveContext(filePath: vscode.Uri, language: Language) {
-        const paths: vscode.Uri[] = await this.discoverContext(filePath, language);
+        const discoverContextResponse = await this.discoverContext(filePath, language);
+        const paths: vscode.Uri[] = this.matchContextPaths(discoverContextResponse, filePath);
 
         const sourceContexts = [];
         for (let p of paths) {
