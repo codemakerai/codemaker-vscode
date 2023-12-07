@@ -14,6 +14,8 @@ import { CodeSnippetContext } from 'codemaker-sdk';
  */
 class CodemakerService {
 
+    private static readonly maximumSourceContextSize = 10;
+
     private static readonly maximumSourceGraphDepth = 16;
 
     private readonly client;
@@ -153,7 +155,7 @@ class CodemakerService {
             if (depth < CodemakerService.maximumSourceGraphDepth) {
                 const discoverContextResponse = await this.discoverContext(filePath, lang);
                 if (discoverContextResponse.requiresProcessing) {
-                    const paths: vscode.Uri[] = this.matchContextPaths(discoverContextResponse, filePath);
+                    const paths: vscode.Uri[] = this.resolveContextPaths(discoverContextResponse, filePath);
                     for (let path of paths) {
                         await this.generateSourceGraphCode(path, depth + 1);
                     }
@@ -205,12 +207,17 @@ class CodemakerService {
         }
     }
 
+    private async discoverContextPaths(filePath: vscode.Uri, language: Language) {        
+        const discoverContextResponse = await this.discoverContext(filePath, language);
+        return await this.resolveContextPaths(discoverContextResponse, filePath);        
+    }
+
     private async discoverContext(filePath: vscode.Uri, language: Language) {        
         const source = await this.readFile(filePath);
         return await this.client.discoverContext(this.createDiscoverContextRequest(language, source, filePath.path));        
     }
 
-    private matchContextPaths(discoverContextResponse: DiscoverContextResponse, filePath: vscode.Uri) {
+    private resolveContextPaths(discoverContextResponse: DiscoverContextResponse, filePath: vscode.Uri) {
         const baseDir = path.dirname(filePath.fsPath);
         return discoverContextResponse.requiredContexts.map(context => path.resolve(baseDir, path.relative(path.basename(filePath.fsPath), context.path)))
             .filter(p => fs.existsSync(p))
@@ -219,10 +226,52 @@ class CodemakerService {
 
     private async resolveContext(filePath: vscode.Uri, language: Language) {
         const discoverContextResponse = await this.discoverContext(filePath, language);
-        const paths: vscode.Uri[] = this.matchContextPaths(discoverContextResponse, filePath);
+        const paths: vscode.Uri[] = this.resolveContextPaths(discoverContextResponse, filePath);
 
         const sourceContexts = [];
         for (let p of paths) {
+            try {
+                const source = await this.readFile(p);
+                sourceContexts.push({
+                    language: language,
+                    input: {
+                        source
+                    },
+                    path: p.fsPath
+                });
+            } catch {
+                console.warn("Failed to resolve file context.");
+            }
+        }
+        return sourceContexts;
+    }
+
+    private async resolveContextWithDepth(filePath: vscode.Uri, language: Language, maximumDepth: number) {
+        const queue = await this.discoverContextPaths(filePath, language);
+        const resolvedSourceContexts = [];
+        let depth = 1;
+        let count = queue.length;
+
+        while (queue.length > 0 && resolvedSourceContexts.length < CodemakerService.maximumSourceContextSize) {
+            const child = queue.shift()!;
+            resolvedSourceContexts.push(child);
+
+            if (depth + 1 <= maximumDepth) {
+                const childContexts = await this.discoverContextPaths(child, language);
+
+                for (let childContext of childContexts) {
+                    queue.push(childContext);
+                }
+            }
+
+            if (--count === 0) {            
+                count = queue.length;
+                depth++;
+            }
+        }
+
+        const sourceContexts = [];
+        for (let p of resolvedSourceContexts) {
             try {
                 const source = await this.readFile(p);
                 sourceContexts.push({
