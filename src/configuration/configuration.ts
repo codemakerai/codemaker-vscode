@@ -36,6 +36,10 @@ export class Configuration {
         return this.get('codemaker.enableExtendedSourceContext');
     }
 
+    static getExtendedSourceContextDepth(): number {
+        return this.get('codemaker.extendedSourceContextDepth');
+    }
+
     private static get<T>(key: string): T {
         return vscode.workspace.getConfiguration().get(key) as T;
     }
