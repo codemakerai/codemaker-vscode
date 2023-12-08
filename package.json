@@ -78,11 +78,18 @@
           "default": false,
           "order": 6
         },
+        "codemaker.extendedSourceContextDepth": {
+          "description": "Extended source context maximum depth",
+          "type": "number",
+          "default": 1,
+          "enum": [1, 2, 3],
+          "order": 7
+        },     
         "codemaker.enableSyntaxAutocorrection": {
           "description": "Enable syntax autocorrection",
           "type": "boolean",
           "default": false,
-          "order": 7
+          "order": 8
         }
       }
     },
