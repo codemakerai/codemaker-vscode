@@ -194,7 +194,7 @@ class CodemakerService {
                 return;
             }
 
-            const sourceContexts = await this.resolveContext(filePath, language);
+            const sourceContexts = await this.resolveContextWithDepth(filePath, language, Configuration.getExtendedSourceContextDepth());
 
             const createContextResponse = await this.client.createContext(this.createCreateContextRequest());
             const contextId = createContextResponse.id;
@@ -219,31 +219,9 @@ class CodemakerService {
 
     private resolveContextPaths(discoverContextResponse: DiscoverContextResponse, filePath: vscode.Uri) {
         const baseDir = path.dirname(filePath.fsPath);
-        return discoverContextResponse.requiredContexts.map(context => path.resolve(baseDir, path.relative(path.basename(filePath.fsPath), context.path)))
+        return discoverContextResponse.requiredContexts.map(context => path.resolve(baseDir, context.path))
             .filter(p => fs.existsSync(p))
             .map(p => vscode.Uri.file(p));
-    }
-
-    private async resolveContext(filePath: vscode.Uri, language: Language) {
-        const discoverContextResponse = await this.discoverContext(filePath, language);
-        const paths: vscode.Uri[] = this.resolveContextPaths(discoverContextResponse, filePath);
-
-        const sourceContexts = [];
-        for (let p of paths) {
-            try {
-                const source = await this.readFile(p);
-                sourceContexts.push({
-                    language: language,
-                    input: {
-                        source
-                    },
-                    path: p.fsPath
-                });
-            } catch {
-                console.warn("Failed to resolve file context.");
-            }
-        }
-        return sourceContexts;
     }
 
     private async resolveContextWithDepth(filePath: vscode.Uri, language: Language, maximumDepth: number) {
