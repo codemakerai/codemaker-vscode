@@ -109,3 +109,7 @@ Updated extension description.
 ## Version: 1.21.0
 
 * Source graph generation
+
+## Version: 1.22.0
+
+* Complex source graph generation
