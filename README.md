@@ -30,8 +30,8 @@ More language support is comming soon.
 
 ## Getting started
 
-1. Sign up for the Early Access Program at https://codemaker.ai.
-2. Receive the Early Access Program invitation email. 
+1. Sign up at https://codemaker.ai.
+2. Generate API Key in https://portal.codemaker.ai.
 3. Install the extension from [Visual Studio Code Marketplace](https://marketplace.visualstudio.com/items?itemName=codemakerai.codemakerai).
 4. Configure the API Key in Settings > Extensions > CodeMaker AI.
 5. Have fun.
