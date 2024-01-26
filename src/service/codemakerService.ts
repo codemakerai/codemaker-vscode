@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 import * as path from 'node:path';
 import * as fs from 'node:fs';
 import { TextDecoder, TextEncoder } from 'util';
-import { Client, ProcessRequest, CompletionRequest, PredictRequest, Language, Mode, Modify, DiscoverContextRequest, CreateContextRequest, RegisterContextRequest, SourceContext, DiscoverContextResponse } from 'codemaker-sdk';
+import { Client, ProcessRequest, CompletionRequest, PredictRequest, Language, Mode, Modify, DiscoverContextRequest, CreateContextRequest, RegisterContextRequest, SourceContext, DiscoverContextResponse, AssistantCodeCompletionRequest, AssistantCompletionRequest, AssistantCodeCompletionResponse, AssistantCompletionResponse } from 'codemaker-sdk';
 import { Configuration } from '../configuration/configuration';
 import { langFromFileExtension } from '../utils/languageUtils';
 import { CodeSnippetContext } from 'codemaker-sdk';
@@ -84,6 +84,35 @@ class CodemakerService {
         const contextId = await this.registerContext(lang, filePath);
         const request = this.createCompletionProcessRequest(lang, source, codePath, allowMultiLineAutocomplete, codeSnippetContexts, contextId);
         return this.completion(request);
+    }
+
+    /**
+     * 
+     * @param message chat message
+     * @returns 
+     */
+    public async assistantCompletion(message: string) {
+        return this.client.assistantCompletion(this.createAssistantCompletionRequest(message));
+    }
+
+    /**
+     * 
+     * @param message chat message
+     * @param language language
+     * @param source source code
+     * @returns 
+     */
+    public async assistantCodeCompletion(message: string, language: Language, source: string) {
+        if (!Configuration.isAssistantEnabled()) {
+            // remind user to assistant is not enabled in return message
+            return {
+                output: {
+                    source: `// Assistant is not enabled. Please enable it in the extension settings.`
+                }
+            } as AssistantCodeCompletionResponse;
+
+        }
+        return this.client.assistantCodeCompletion(this.createAssistantCodeCompletionRequest(message, language, source));
     }
 
     /**
@@ -360,6 +389,22 @@ class CodemakerService {
         return {
             id,
             contexts
+        };
+    }
+
+    private createAssistantCompletionRequest(message: string): AssistantCompletionRequest {
+        return {
+            message
+        };
+    }
+
+    private createAssistantCodeCompletionRequest(message: string, language: Language, source: string): AssistantCodeCompletionRequest {
+        return {
+            message,
+            language,
+            input: {
+                source
+            }
         };
     }
 }

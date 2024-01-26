@@ -13,6 +13,8 @@ import completionImports from './completion/completionImports';
 import { CodemakerStatusbar, StatusBarStatus } from './vscode/statusBar';
 import { isComment } from './utils/editorUtils';
 import { Corrector } from './correction/corrector';
+import AssistantChatViewProvider from './assistant/assistantChatViewProvider';
+import { Configuration } from './configuration/configuration';
 
 let statusBar: CodemakerStatusbar;
 
@@ -33,6 +35,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	registerCodeAction(context, codemakerService);
 	registerPredictiveGeneration(context, codemakerService);
 	registerAutoCorrection(context, codemakerService);
+	registerAssistantChatView(context, codemakerService);
 }
 
 // This method is called when your extension is deactivated
@@ -237,6 +240,16 @@ function registerPredictiveGeneration(context: vscode.ExtensionContext, codemake
 function registerAutoCorrection(context: vscode.ExtensionContext, codemakerService: CodemakerService) {
 	const corrector = new Corrector(codemakerService);
 	corrector.subscribeToDucumentChanges(context);
+}
+
+function registerAssistantChatView(context: vscode.ExtensionContext,  codemakerService: CodemakerService) {
+	if (!Configuration.isAssistantEnabled()) {
+		return;
+	}
+	const assistantChatViewProvider = new AssistantChatViewProvider(context.extensionUri, codemakerService);
+    context.subscriptions.push(
+        vscode.window.registerWebviewViewProvider("assistantChatView", assistantChatViewProvider)
+    );
 }
 
 export class ReplaceMethodCodeAction implements vscode.CodeActionProvider {
