@@ -42,7 +42,7 @@ function handleSubmit(e, inputField) {
 
 function handleAssistantResponse(completionResult) {
     if (completionResult) {
-        addMessage(completionResult, 'Assistant');
+        addMessage(completionResult, 'CODEMAKER AI');
     } else {
         addMessage('No response from Assistant', 'Assistant');
     }
@@ -61,7 +61,7 @@ function addPendingMessage() {
 
 function addPendingMessage() {
     const messageElement = document.createElement('div');
-    messageElement.setAttribute('data-username', "Assistant");
+    messageElement.setAttribute('data-username', "CODEMAKER AI");
     messageElement.classList.add('message');
     messageElement.classList.add('pending');
     messageElement.innerHTML = `

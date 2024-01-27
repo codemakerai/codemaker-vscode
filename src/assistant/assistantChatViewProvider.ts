@@ -39,16 +39,17 @@ export default class AssistantChatViewProvider implements vscode.WebviewViewProv
         const mainCssUrl = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'main.css'));
         const markedScriptUrl = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'marked.min.js'));
         const highlightScriptUrl = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'highlight.min.js'));
-        const highlightDarkCssUrl = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'highlight-dark.min.css'));
+        const atomCssUrl = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'atom-one-dark.min.css'));
 
         return `<!DOCTYPE html>
         <html lang="en">
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Assistant Chat</title>
-            <link href="${highlightDarkCssUrl}" rel="stylesheet">
+            <title>CODEMAKER AI</title>
             <link href="${mainCssUrl}" rel="stylesheet">
+            <link href="${atomCssUrl}" rel="stylesheet">
+
             <script src="${highlightScriptUrl}"></script>
             <script src="${markedScriptUrl}"></script>
             <script src="${mainScriptUrl}"></script>

@@ -29,7 +29,7 @@
       "activitybar": [
           {
             "id": "assistantChat",
-            "title": "Assistant Chat",
+            "title": "CodeMaker AI",
             "icon": "./img/chat.svg",
             "when": "config.codemaker.enableAssistant == true"
           }
@@ -40,7 +40,7 @@
           {
             "type": "webview",
             "id": "assistantChatView",
-            "name": "Assistant Chat",
+            "name": "CodeMaker AI",
             "when": "config.codemaker.enableAssistant == true"
           }
       ]
@@ -75,9 +75,9 @@
           "order": 2
         },
         "codemaker.enableAssistant": {
-          "description": "Enable assistant.",
+          "description": "Enable Codemaker assistant.",
           "type": "boolean",
-          "default": false,
+          "default": true,
           "order": 3
         },
         "codemaker.allowLocalContext": {
