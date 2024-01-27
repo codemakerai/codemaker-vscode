@@ -63,6 +63,10 @@ More language support is comming soon.
 
 ![Source code & documentation replacement](./img/replacement.gif)
 
+## Assistant Chat
+
+![Assistant Chat](./img/assistant.gif)
+
 ## License
 
 MIT

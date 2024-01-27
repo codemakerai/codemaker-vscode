@@ -117,3 +117,7 @@ Updated extension description.
 ## Version: 1.23.0
 
 * Maintenance release
+
+## Version: 1.24.0
+
+# Added Codemaker AI assistant chat
