@@ -40,6 +40,10 @@ export class Configuration {
         return this.get('codemaker.extendedSourceContextDepth');
     }
 
+    static isAssistantEnabled(): boolean {
+        return this.get('codemaker.enableAssistant');
+    }
+
     private static get<T>(key: string): T {
         return vscode.workspace.getConfiguration().get(key) as T;
     }

@@ -25,6 +25,26 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+          {
+            "id": "assistantChat",
+            "title": "CodeMaker AI",
+            "icon": "./img/chat.svg",
+            "when": "config.codemaker.enableAssistant == true"
+          }
+      ]
+    },
+    "views": {
+      "assistantChat": [
+          {
+            "type": "webview",
+            "id": "assistantChatView",
+            "name": "CodeMaker AI",
+            "when": "config.codemaker.enableAssistant == true"
+          }
+      ]
+    },
     "icons": {
       "codemaker-icon": {
         "description": "CodeMaker icon",
@@ -54,42 +74,48 @@
           "default": false,
           "order": 2
         },
+        "codemaker.enableAssistant": {
+          "description": "Enable Codemaker assistant.",
+          "type": "boolean",
+          "default": true,
+          "order": 3
+        },
         "codemaker.allowLocalContext": {
           "description": "Allow local context search.",
           "type": "boolean",
           "default": false,
-          "order": 3
+          "order": 4
         },
         "codemaker.enableCodeActions": {
           "description": "Enable code actions",
           "type": "boolean",
           "default": true,
-          "order": 4
+          "order": 5
         },
         "codemaker.enablePredictiveGeneration": {
           "description": "Enable predictive generation",
           "type": "boolean",
           "default": false,
-          "order": 5
+          "order": 6
         },
         "codemaker.enableExtendedSourceContext": {
           "description": "Enable extended source context",
           "type": "boolean",
           "default": false,
-          "order": 6
+          "order": 7
         },
         "codemaker.extendedSourceContextDepth": {
           "description": "Extended source context maximum depth",
           "type": "number",
           "default": 1,
           "enum": [1, 2, 3],
-          "order": 7
+          "order": 8
         },     
         "codemaker.enableSyntaxAutocorrection": {
           "description": "Enable syntax autocorrection",
           "type": "boolean",
           "default": false,
-          "order": 8
+          "order": 9
         }
       }
     },
@@ -244,7 +270,7 @@
     "test": "node ./out/test/runTest.js"
   },
   "dependencies": {
-    "codemaker-sdk": "^2.4.0"
+    "codemaker-sdk": "^2.5.0"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
