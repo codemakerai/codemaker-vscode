@@ -43,7 +43,16 @@ class AssistantRequestCommand implements ICommand {
         const doc = editor.document;
         const source = doc.getText();
         const language = langFromFileExtension(doc.fileName);
+        
         const result = await this._codemakerService.assistantCodeCompletion(message.text, language, source);
+        
+        if (result.output.source !== null && result.output.source.length > 0) {
+            editor.edit(builder => {
+                const range = new vscode.Range(doc.lineAt(0).range.start, doc.lineAt(doc.lineCount - 1).range.end);
+                builder.replace(range, result.output.source);
+            });
+        }
+
         webviewView.webview.postMessage({
             command: CommandType.assistantRespondAdded,
             result: result,
