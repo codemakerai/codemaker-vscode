@@ -120,4 +120,8 @@ Updated extension description.
 
 ## Version: 1.24.0
 
-# Added Codemaker AI assistant chat
+* Added Codemaker AI Assistant
+
+## Version: 1.25.0
+
+* Assistant code editing
