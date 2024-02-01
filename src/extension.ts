@@ -242,10 +242,7 @@ function registerAutoCorrection(context: vscode.ExtensionContext, codemakerServi
 	corrector.subscribeToDucumentChanges(context);
 }
 
-function registerAssistantChatView(context: vscode.ExtensionContext,  codemakerService: CodemakerService) {
-	if (!Configuration.isAssistantEnabled()) {
-		return;
-	}
+function registerAssistantChatView(context: vscode.ExtensionContext,  codemakerService: CodemakerService) {	
 	const assistantChatViewProvider = new AssistantChatViewProvider(context.extensionUri, codemakerService);
     context.subscriptions.push(
         vscode.window.registerWebviewViewProvider("assistantChatView", assistantChatViewProvider)

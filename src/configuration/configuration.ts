@@ -40,8 +40,8 @@ export class Configuration {
         return this.get('codemaker.extendedSourceContextDepth');
     }
 
-    static isAssistantEnabled(): boolean {
-        return this.get('codemaker.enableAssistant');
+    static isAssistantActionsEnabled(): boolean {
+        return this.get('codemaker.enableAssistantActions');
     }
 
     private static get<T>(key: string): T {

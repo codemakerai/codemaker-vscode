@@ -106,15 +106,6 @@ class CodemakerService {
      * @returns 
      */
     public async assistantCodeCompletion(message: string, language: Language, source: string) {
-        if (!Configuration.isAssistantEnabled()) {
-            // remind user to assistant is not enabled in return message
-            return {
-                output: {
-                    source: `// Assistant is not enabled. Please enable it in the extension settings.`
-                }
-            } as AssistantCodeCompletionResponse;
-
-        }
         return this.client.assistantCodeCompletion(this.createAssistantCodeCompletionRequest(message, language, source));
     }
 

@@ -74,8 +74,8 @@
           "default": false,
           "order": 2
         },
-        "codemaker.enableAssistant": {
-          "description": "Enable Codemaker assistant.",
+        "codemaker.enableAssistantActions": {
+          "description": "Enable assistant contextual operations.",
           "type": "boolean",
           "default": true,
           "order": 3
