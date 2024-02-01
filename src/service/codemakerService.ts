@@ -105,8 +105,18 @@ class CodemakerService {
      * @param source source code
      * @returns 
      */
-    public async assistantCodeCompletion(message: string, language: Language, source: string) {
-        return this.client.assistantCodeCompletion(this.createAssistantCodeCompletionRequest(message, language, source));
+    public async assistantCodeCompletion(message: string, path: vscode.Uri) {
+        const language = langFromFileExtension(path.path);
+        const source = await this.readFile(path);
+
+        const response = await this.client.assistantCodeCompletion(this.createAssistantCodeCompletionRequest(message, language, source));
+
+        if (response.output.source !== null && response.output.source.length !== 0) {
+            const output = response.output.source;
+            await vscode.workspace.fs.writeFile(path, new TextEncoder().encode(output));
+        }
+
+        return response;
     }
 
     /**

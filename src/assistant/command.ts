@@ -44,22 +44,13 @@ class AssistantRequestCommand implements ICommand {
                 result: result,
             });
         } else {
-            const doc = editor.document;
-            const source = doc.getText();
-            const language = langFromFileExtension(doc.fileName);
+            const path = editor.document.uri;
             
-            const result = await this._codemakerService.assistantCodeCompletion(message.text, language, source);
-            
-            if (result.output.source !== null && result.output.source.length > 0) {
-                editor.edit(builder => {
-                    const range = new vscode.Range(doc.lineAt(0).range.start, doc.lineAt(doc.lineCount - 1).range.end);
-                    builder.replace(range, result.output.source);
-                });
-            }
+            const output = await this._codemakerService.assistantCodeCompletion(message.text, path);
     
             webviewView.webview.postMessage({
                 command: CommandType.assistantRespondAdded,
-                result: result,
+                result: output,
             });
         }
     }
