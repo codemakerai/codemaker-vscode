@@ -33,13 +33,15 @@ class AssistantRequestCommand implements ICommand {
     async execute(message: any, webviewView: vscode.WebviewView) {
         const editor = vscode.window.activeTextEditor;
         if (!editor) {
-            console.warn('No active editor');
+            const result = await this._codemakerService.assistantCompletion(message.text);
+
             webviewView.webview.postMessage({
-                command: CommandType.assistantRespondError,
-                error: 'No active editor selected',
+                command: CommandType.assistantRespondAdded,
+                result: result,
             });
             return;
         }
+
         const doc = editor.document;
         const source = doc.getText();
         const language = langFromFileExtension(doc.fileName);

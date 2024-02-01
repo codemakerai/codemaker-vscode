@@ -73,7 +73,7 @@ class CodemakerService {
     }
 
     /**
-     * Complete comment for given line comment
+     * Completes comment for given line comment
      * 
      * @param source source file
      * @param lang language
@@ -87,6 +87,7 @@ class CodemakerService {
     }
 
     /**
+     * Completes the natural language user message.
      * 
      * @param message chat message
      * @returns 
@@ -96,6 +97,8 @@ class CodemakerService {
     }
 
     /**
+     * Completes the natural language user message.
+     * 
      * 
      * @param message chat message
      * @param language language
