@@ -27,22 +27,22 @@
   "contributes": {
     "viewsContainers": {
       "activitybar": [
-          {
-            "id": "assistantChat",
-            "title": "CodeMaker AI",
-            "icon": "./img/chat.svg",
-            "when": "config.codemaker.enableAssistant == true"
-          }
+        {
+          "id": "assistantChat",
+          "title": "CodeMaker AI",
+          "icon": "./img/chat.svg",
+          "when": "config.codemaker.enableAssistant == true"
+        }
       ]
     },
     "views": {
       "assistantChat": [
-          {
-            "type": "webview",
-            "id": "assistantChatView",
-            "name": "CodeMaker AI",
-            "when": "config.codemaker.enableAssistant == true"
-          }
+        {
+          "type": "webview",
+          "id": "assistantChatView",
+          "name": "CodeMaker AI",
+          "when": "config.codemaker.enableAssistant == true"
+        }
       ]
     },
     "icons": {
@@ -108,9 +108,13 @@
           "description": "Extended source context maximum depth",
           "type": "number",
           "default": 1,
-          "enum": [1, 2, 3],
+          "enum": [
+            1,
+            2,
+            3
+          ],
           "order": 8
-        },     
+        },
         "codemaker.enableSyntaxAutocorrection": {
           "description": "Enable syntax autocorrection",
           "type": "boolean",
@@ -270,7 +274,7 @@
     "test": "node ./out/test/runTest.js"
   },
   "dependencies": {
-    "codemaker-sdk": "^2.5.0"
+    "codemaker-sdk": "^2.6.0"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
