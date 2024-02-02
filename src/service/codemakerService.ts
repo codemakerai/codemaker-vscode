@@ -109,7 +109,9 @@ class CodemakerService {
         const language = langFromFileExtension(path.path);
         const source = await this.readFile(path);
 
-        const response = await this.client.assistantCodeCompletion(this.createAssistantCodeCompletionRequest(message, language, source));
+        const contextId = await this.registerContext(language, path);
+
+        const response = await this.client.assistantCodeCompletion(this.createAssistantCodeCompletionRequest(message, language, source, contextId));
 
         if (response.output.source !== null && response.output.source.length !== 0) {
             const output = response.output.source;
@@ -402,12 +404,15 @@ class CodemakerService {
         };
     }
 
-    private createAssistantCodeCompletionRequest(message: string, language: Language, source: string): AssistantCodeCompletionRequest {
+    private createAssistantCodeCompletionRequest(message: string, language: Language, source: string, contextId?: string): AssistantCodeCompletionRequest {
         return {
             message,
             language,
             input: {
                 source
+            },
+            options: {
+                contextId
             }
         };
     }
