@@ -40,8 +40,7 @@
         {
           "type": "webview",
           "id": "assistantChatView",
-          "name": "CodeMaker AI",
-          "when": "config.codemaker.enableAssistant == true"
+          "name": "CodeMaker AI"
         }
       ]
     },
