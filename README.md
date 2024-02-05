@@ -8,20 +8,19 @@ Integrates CodeMaker Code Generation capabilities and directly offers them as ID
 
 Fallowing operations are supported:
 
+* Coding Assistant.
+* Autocompletion.
 * Context-aware source code generation and replacement.
 * Generating source code documentation and replacement.
-* Context-aware inline autocompletion.
 * Quick fix generations actions for functions and methods.
 
 ## Supported languages
 
 Following programming languages are supported:
 
+* JavaScript & JSX
+* TypeScript & TSX
 * Java
-* JavaScript
-* JSX
-* TypeScript
-* TSX
 * Kotlin
 * Golang
 * C#
@@ -40,6 +39,10 @@ More language support is comming soon.
 
 1. Open Settings > Extensions > CodeMaker AI.
 2. Check the `Enable Autocomplete` checkbox.
+
+## Coding Assistant
+
+![Coding Assistant](./img/assistant.gif)
 
 ## Context-aware multi-line autocomplete
 ![Context-aware multi-line autocomplete](./img/autocompletion-multi-line-demo.gif)
@@ -62,10 +65,6 @@ More language support is comming soon.
 ## Source code & documentation replacement
 
 ![Source code & documentation replacement](./img/replacement.gif)
-
-## Assistant Chat
-
-![Assistant Chat](./img/assistant.gif)
 
 ## License
 
