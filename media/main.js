@@ -42,7 +42,7 @@ function handleSubmit(e, inputField) {
 
 function handleAssistantResponse(completionResult) {
     if (completionResult) {
-        addMessage(completionResult, 'CODEMAKER AI');
+        addMessage(completionResult, 'Assistant');
     } else {
         addMessage('No response from Assistant', 'Assistant');
     }
