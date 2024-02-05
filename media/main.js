@@ -61,7 +61,7 @@ function addPendingMessage() {
 
 function addPendingMessage() {
     const messageElement = document.createElement('div');
-    messageElement.setAttribute('data-username', "CODEMAKER AI");
+    messageElement.setAttribute('data-username', "Assistant");
     messageElement.classList.add('message');
     messageElement.classList.add('pending');
     messageElement.innerHTML = `
