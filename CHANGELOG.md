@@ -125,3 +125,7 @@ Updated extension description.
 ## Version: 1.25.0
 
 * Assistant code editing
+
+## Version: 1.26.0
+
+* Maintenance release
