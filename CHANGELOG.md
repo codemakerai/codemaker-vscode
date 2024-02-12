@@ -129,3 +129,8 @@ Updated extension description.
 ## Version: 1.26.0
 
 * Maintenance release
+
+## Version: 1.27.0
+
+* Assistant improvements.
+* C Language support.
