@@ -4,6 +4,8 @@ import { Language, UnsupportedLanguageError } from 'codemaker-sdk';
 
 const languages = new Map<string, Language>([
     ["c", Language.c],
+    ["cpp", Language.cpp],
+    ["cxx", Language.cpp],
     ["java", Language.java],
     ["js", Language.javascript],
     ["jsx", Language.javascript],
