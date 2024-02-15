@@ -10,7 +10,7 @@ function handleEvent(event) {
         case 'assistantRespondAdded':
             handleAssistantResponse(message.result.message);
             break;
-        case 'assistantRespondError':
+        case 'assistantError':
             handleAssistantResponse(message.error);
             break;
     }

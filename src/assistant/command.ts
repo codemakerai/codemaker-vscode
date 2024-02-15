@@ -8,7 +8,7 @@ enum CommandType {
     copyToClipboard = 'copyToClipboard',
     assistantRequest = 'assistantRequest',
     assistantRespondAdded = 'assistantRespondAdded',
-    assistantRespondError = 'assistantRespondError',
+    assistantError = 'assistantError',
 }
 
 interface ICommand {
@@ -32,25 +32,32 @@ class AssistantRequestCommand implements ICommand {
     constructor(private readonly _codemakerService: CodemakerService) {}
 
     async execute(message: any, webviewView: vscode.WebviewView) {
-        const isAssistantActionsEnabled = Configuration.isAssistantActionsEnabled();
+        try {
+            const isAssistantActionsEnabled = Configuration.isAssistantActionsEnabled();
 
-        const editor = vscode.window.activeTextEditor;
+            const editor = vscode.window.activeTextEditor;
 
-        if (!isAssistantActionsEnabled || !editor || !isFileSupported(editor.document.fileName)) {
-            const result = await this._codemakerService.assistantCompletion(message.text);
+            if (!isAssistantActionsEnabled || !editor || !isFileSupported(editor.document.fileName)) {
+                const result = await this._codemakerService.assistantCompletion(message.text);
 
+                webviewView.webview.postMessage({
+                    command: CommandType.assistantRespondAdded,
+                    result: result,
+                });
+            } else {
+                const path = editor.document.uri;
+                
+                const output = await this._codemakerService.assistantCodeCompletion(message.text, path);
+        
+                webviewView.webview.postMessage({
+                    command: CommandType.assistantRespondAdded,
+                    result: output,
+                });
+            }
+        } catch (error) {
             webviewView.webview.postMessage({
-                command: CommandType.assistantRespondAdded,
-                result: result,
-            });
-        } else {
-            const path = editor.document.uri;
-            
-            const output = await this._codemakerService.assistantCodeCompletion(message.text, path);
-    
-            webviewView.webview.postMessage({
-                command: CommandType.assistantRespondAdded,
-                result: output,
+                command: CommandType.assistantError,
+                error: 'Assistant could not complete this request. Please try again.',
             });
         }
     }
