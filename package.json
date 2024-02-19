@@ -57,7 +57,7 @@
       "title": "CodeMaker AI",
       "properties": {
         "codemaker.apiKey": {
-          "description": "API Key",
+          "markdownDescription": "CodeMaker AI API Key. [Create account for free](https://portal.codemaker.ai/#/register).",
           "type": "string",
           "order": 0
         },
