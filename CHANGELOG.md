@@ -134,3 +134,9 @@ Updated extension description.
 
 * Assistant improvements.
 * C Language support.
+
+## Version: 1.28.0
+
+* C++ Language support.
+* PHP Language support.
+* Rust Language support.

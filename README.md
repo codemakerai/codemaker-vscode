@@ -19,12 +19,15 @@ Fallowing operations are supported:
 Following programming languages are supported:
 
 * C
+* C++
+* Java
+* Go
 * JavaScript & JSX
 * TypeScript & TSX
-* Java
-* Kotlin
-* Golang
+* PHP
 * C#
+* Rust
+* Kotlin
 
 More language support is comming soon.
 
