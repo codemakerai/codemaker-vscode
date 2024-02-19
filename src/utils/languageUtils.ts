@@ -11,10 +11,11 @@ const languages = new Map<string, Language>([
     ["php", Language.php],
     ["java", Language.java],
     ["cs", Language.csharp],
-    ["go", Language.go],         
-    ["ts", Language.typescript],
-    ["tsx", Language.typescript],
+    ["go", Language.go],
     ["kt", Language.kotlin],
+    ["ts", Language.typescript],
+    ["tsx", Language.typescript],    
+    ["rs", Language.rust],
 ]);
 
 export function isFileSupported(fileName: string): boolean {
