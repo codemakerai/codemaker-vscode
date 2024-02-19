@@ -2,7 +2,7 @@
 
 ## Overview
 
-Integrates CodeMaker Code Generation capabilities and directly offers them as IDE context options.
+CodeMaker AI Visual Studio Code extension. Offers all the CodeMaker AI features directly in the IDE.
 
 ## Features
 
