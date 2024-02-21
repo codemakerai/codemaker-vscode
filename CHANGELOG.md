@@ -140,3 +140,7 @@ Updated extension description.
 * C++ Language support.
 * PHP Language support.
 * Rust Language support.
+
+## Version: 1.29.0
+
+* Maintenance release
