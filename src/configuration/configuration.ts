@@ -8,6 +8,10 @@ export class Configuration {
         return this.get<string>('codemaker.apiKey').trim();
     }
 
+    static model(): string {
+        return this.get('codemaker.model');
+    }
+
     static isAutocompleteEnabled(): boolean {
         return this.get('codemaker.enableAutocomplete');
     }
