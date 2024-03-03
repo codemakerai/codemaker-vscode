@@ -170,13 +170,14 @@ class CodemakerService {
     }
 
     private getFileProcessor(mode: Mode, depth: number = 0, modify: Modify = Modify.none, codePath?: string, prompt?: string) {
-        return async (filePath: vscode.Uri): Promise<void> => {            
+        return async (filePath: vscode.Uri): Promise<void> => {     
+            const model = Configuration.model();
             const lang = langFromFileExtension(filePath.path);
 
             const contextId = await this.registerContext(lang, filePath);
 
             const source = await this.readFile(filePath);
-            const request = this.createProcessRequest(mode, lang, source, modify, codePath, prompt, contextId);
+            const request = this.createProcessRequest(mode, lang, source, modify, codePath, prompt, contextId, model);
             return this.process(request).then(async (output) => {
                 await vscode.workspace.fs.writeFile(filePath, new TextEncoder().encode(output));
             });
@@ -185,6 +186,7 @@ class CodemakerService {
 
     private getSourceGraphFileProcessor(mode: Mode, depth: number = 0) {
         return async (filePath: vscode.Uri): Promise<void> => {
+            const model = Configuration.model();
             const lang = langFromFileExtension(filePath.path);
 
             if (depth < CodemakerService.maximumSourceGraphDepth) {
@@ -200,7 +202,7 @@ class CodemakerService {
             const contextId = await this.registerContext(lang, filePath, Mode.code);
 
             const source = await this.readFile(filePath);
-            const request = this.createProcessRequest(mode, lang, source, Modify.none, undefined, undefined, contextId);
+            const request = this.createProcessRequest(mode, lang, source, Modify.none, undefined, undefined, contextId, model);
             return this.process(request).then(async (output) => {
                 await vscode.workspace.fs.writeFile(filePath, new TextEncoder().encode(output));
             });
@@ -332,7 +334,7 @@ class CodemakerService {
             || mode === Mode.inlineCode;
     }
 
-    private createProcessRequest(mode: Mode, language: Language, source: string, modify: Modify, codePath?: string, prompt?: string, contextId?: string): ProcessRequest {
+    private createProcessRequest(mode: Mode, language: Language, source: string, modify: Modify, codePath?: string, prompt?: string, contextId?: string, model?: string): ProcessRequest {
         return {
             mode,
             language,
@@ -344,6 +346,7 @@ class CodemakerService {
                 codePath,
                 prompt,
                 contextId,
+                model
             },
         };
     }
