@@ -148,3 +148,7 @@ Updated extension description.
 ## Version: 1.30.0
 
 * Maintenance release
+
+## Version: 1.31.0
+
+* Maintenance release
