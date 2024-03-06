@@ -152,3 +152,7 @@ Updated extension description.
 ## Version: 1.31.0
 
 * Maintenance release
+
+## Version: 1.32.0
+
+* Maintenance release
