@@ -156,3 +156,7 @@ Updated extension description.
 ## Version: 1.32.0
 
 * Maintenance release
+
+## Version: 1.33.0
+
+* Assistant improvements
