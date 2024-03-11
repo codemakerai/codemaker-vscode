@@ -32,6 +32,17 @@ class AssistantRequestCommand implements ICommand {
     constructor(private readonly _codemakerService: CodemakerService) {}
 
     async execute(message: any, webviewView: vscode.WebviewView) {
+        if (!Configuration.apiKey()) {
+            webviewView.webview.postMessage({
+                command: CommandType.assistantRespondAdded,
+                result: {
+                    message: "To use Assistant features, please first set the API Key in the Extension Settings." +
+                        "\nYou can create free account [here](https://portal.codemaker.ai/#/register)."
+                },
+            });
+            return;
+        }
+
         try {
             const isAssistantActionsEnabled = Configuration.isAssistantActionsEnabled();
 
