@@ -80,9 +80,10 @@ class CodemakerService {
      * @param offset offset of current cursor
      */
     public async complete(filePath: vscode.Uri, source: string, lang: Language, offset: number, allowMultiLineAutocomplete: boolean, codeSnippetContexts: CodeSnippetContext[]) {
+        const model = Configuration.model();
         const codePath = `@${offset}`;
         const contextId = await this.registerContext(lang, filePath);
-        const request = this.createCompletionProcessRequest(lang, source, codePath, allowMultiLineAutocomplete, codeSnippetContexts, contextId);
+        const request = this.createCompletionProcessRequest(lang, source, codePath, allowMultiLineAutocomplete, codeSnippetContexts, contextId, model);
         return this.completion(request);
     }
 
@@ -106,12 +107,14 @@ class CodemakerService {
      * @returns 
      */
     public async assistantCodeCompletion(message: string, path: vscode.Uri) {
+        const model = Configuration.model();
+        
         const language = langFromFileExtension(path.path);
         const source = await this.readFile(path);
 
         const contextId = await this.registerContext(language, path);
 
-        const response = await this.client.assistantCodeCompletion(this.createAssistantCodeCompletionRequest(message, language, source, contextId));
+        const response = await this.client.assistantCodeCompletion(this.createAssistantCodeCompletionRequest(message, language, source, contextId, model));
 
         if (response.output.source !== null && response.output.source.length !== 0) {
             const output = response.output.source;
@@ -351,7 +354,7 @@ class CodemakerService {
         };
     }
 
-    private createCompletionProcessRequest(language: Language, source: string, codePath: string, allowMultiLineAutocomplete: boolean, codeSnippetContexts: CodeSnippetContext[], contextId?: string): CompletionRequest {
+    private createCompletionProcessRequest(language: Language, source: string, codePath: string, allowMultiLineAutocomplete: boolean, codeSnippetContexts: CodeSnippetContext[], contextId?: string, model?: string): CompletionRequest {
         return {
             language,
             input: {
@@ -361,7 +364,8 @@ class CodemakerService {
                 codePath,
                 allowMultiLineAutocomplete,
                 codeSnippetContexts,
-                contextId
+                contextId,
+                model
             }
         };
     }
@@ -407,7 +411,7 @@ class CodemakerService {
         };
     }
 
-    private createAssistantCodeCompletionRequest(message: string, language: Language, source: string, contextId?: string): AssistantCodeCompletionRequest {
+    private createAssistantCodeCompletionRequest(message: string, language: Language, source: string, contextId?: string, model?: string): AssistantCodeCompletionRequest {
         return {
             message,
             language,
@@ -415,7 +419,8 @@ class CodemakerService {
                 source
             },
             options: {
-                contextId
+                contextId,
+                model
             }
         };
     }
