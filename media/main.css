@@ -96,7 +96,7 @@ button:hover {
 .dot {
     width: 10px;
     height: 10px;
-    background-color: #333;
+    background-color: #e7e7d2;
     border-radius: 50%;
     animation: shine 1.4s infinite ease-in-out both;
 }
