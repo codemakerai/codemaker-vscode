@@ -160,3 +160,7 @@ Updated extension description.
 ## Version: 1.33.0
 
 * Assistant improvements
+
+## Version: 1.34.0
+
+* Maintenance release
