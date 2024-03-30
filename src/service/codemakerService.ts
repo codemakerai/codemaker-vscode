@@ -161,13 +161,14 @@ class CodemakerService {
     }
 
     private getPredictiveProcessor() {
-        return async (filePath: vscode.Uri): Promise<void> => {            
+        return async (filePath: vscode.Uri): Promise<void> => {       
+            const model = Configuration.model();     
             const lang = langFromFileExtension(filePath.path);
 
             const contextId = await this.registerContext(lang, filePath);
 
             const source = await this.readFile(filePath);
-            const request = this.createPredictRequest(lang, source, contextId);
+            const request = this.createPredictRequest(lang, source, contextId, model);
             this.predictiveProcess(request);
         };
     }
@@ -370,14 +371,15 @@ class CodemakerService {
         };
     }
 
-    private createPredictRequest(language: Language, source: string, contextId?: string): PredictRequest {
+    private createPredictRequest(language: Language, source: string, contextId?: string, model?: string): PredictRequest {
         return {
             language,
             input: {
                 source,
             },
             options: {
-                contextId
+                contextId,
+                model
             }
         };
     }
