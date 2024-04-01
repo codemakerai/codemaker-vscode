@@ -164,3 +164,8 @@ Updated extension description.
 ## Version: 1.34.0
 
 * Maintenance release
+
+## Version: 1.35.0
+
+* Model handling
+* Assistant UI improvements
