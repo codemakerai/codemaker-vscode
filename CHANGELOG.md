@@ -169,3 +169,7 @@ Updated extension description.
 
 * Model handling
 * Assistant UI improvements
+
+## Version: 1.36.0
+
+* Added custom user model to settings.
