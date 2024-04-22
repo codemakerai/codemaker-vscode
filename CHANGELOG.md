@@ -173,3 +173,7 @@ Updated extension description.
 ## Version: 1.36.0
 
 * Added custom user model to settings.
+
+## Version: 1.37.0
+
+* Maintenance release
