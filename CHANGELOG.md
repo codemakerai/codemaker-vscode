@@ -177,3 +177,7 @@ Updated extension description.
 ## Version: 1.37.0
 
 * Maintenance release
+
+## Version: 1.38.0
+
+* Endpoint setting
