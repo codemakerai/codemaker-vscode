@@ -129,6 +129,11 @@
           "type": "boolean",
           "default": false,
           "order": 10
+        },
+        "codemaker.endpoint": {
+          "markdownDescription": "CodeMaker AI Endpoint.",
+          "type": "string",
+          "order": 11
         }
       }
     },
