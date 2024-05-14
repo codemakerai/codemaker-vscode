@@ -181,3 +181,7 @@ Updated extension description.
 ## Version: 1.38.0
 
 * Endpoint setting
+
+## Version: 1.39.0
+
+* Maintenance release
