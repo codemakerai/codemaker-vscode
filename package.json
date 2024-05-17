@@ -288,6 +288,7 @@
     "test": "node ./out/test/runTest.js"
   },
   "dependencies": {
+    "@grpc/grpc-js": "^1.10.8",
     "codemaker-sdk": "^2.15.0"
   },
   "devDependencies": {
