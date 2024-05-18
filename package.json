@@ -3,7 +3,7 @@
   "displayName": "CodeMaker AI",
   "description": "CodeMaker AI VS Code Plugin",
   "icon": "./img/icon.png",
-  "version": "1.39.0",
+  "version": "1.40.0",
   "publisher": "codemakerai",
   "engines": {
     "vscode": "^1.77.0"
@@ -288,14 +288,13 @@
     "test": "node ./out/test/runTest.js"
   },
   "dependencies": {
-    "@grpc/grpc-js": "^1.10.8",
-    "codemaker-sdk": "^2.15.0"
+    "codemaker-sdk": "^2.16.0"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.6",
     "@types/node": "^16.18.97",
-    "@types/vscode": "^1.89.0",
+    "@types/vscode": "^1.77.0",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
     "@vscode/test-electron": "^2.3.10",

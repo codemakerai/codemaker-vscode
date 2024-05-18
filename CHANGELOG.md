@@ -185,3 +185,7 @@ Updated extension description.
 ## Version: 1.39.0
 
 * Maintenance release
+
+## Version: 1.40.0
+
+* Maintenance release
