@@ -189,3 +189,7 @@ Updated extension description.
 ## Version: 1.40.0
 
 * Maintenance release
+
+## Version: 1.41.0
+
+* Increased number of API retries.
