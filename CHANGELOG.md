@@ -192,4 +192,8 @@ Updated extension description.
 
 ## Version: 1.41.0
 
-* Increased number of API retries.
+* Increased number of API retries
+
+## Version: 1.42.0
+
+* Maintenance release
