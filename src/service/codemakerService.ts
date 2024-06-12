@@ -14,6 +14,8 @@ import { CodeSnippetContext } from 'codemaker-sdk';
  */
 class CodemakerService {
 
+    private static readonly defaultMaxRetries = 10;
+
     private static readonly maximumSourceContextSize = 10;
 
     private static readonly maximumSourceGraphDepth = 16;
@@ -23,7 +25,9 @@ class CodemakerService {
     private readonly decoder;
 
     constructor() {
-        this.client = new Client(() => Configuration.apiKey());
+        this.client = new Client(() => Configuration.apiKey(), {
+            maxRetries: CodemakerService.defaultMaxRetries
+        });
         this.decoder = new TextDecoder('utf-8');
     }
 
