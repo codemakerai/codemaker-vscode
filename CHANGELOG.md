@@ -197,3 +197,7 @@ Updated extension description.
 ## Version: 1.42.0
 
 * Maintenance release
+
+## Version: 1.43.0
+
+* Configurable API client endpoints
