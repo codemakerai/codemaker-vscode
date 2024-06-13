@@ -8,26 +8,23 @@ import { Client, ProcessRequest, CompletionRequest, PredictRequest, Language, Mo
 import { Configuration } from '../configuration/configuration';
 import { langFromFileExtension } from '../utils/languageUtils';
 import { CodeSnippetContext } from 'codemaker-sdk';
+import { ClientManager } from '../client/clientManager';
 
 /**
  * Service to modify source code.
  */
 class CodemakerService {
 
-    private static readonly defaultMaxRetries = 10;
-
     private static readonly maximumSourceContextSize = 10;
 
     private static readonly maximumSourceGraphDepth = 16;
 
-    private readonly client;
+    private readonly clientManager;
 
     private readonly decoder;
 
     constructor() {
-        this.client = new Client(() => Configuration.apiKey(), {
-            maxRetries: CodemakerService.defaultMaxRetries
-        });
+        this.clientManager = new ClientManager();
         this.decoder = new TextDecoder('utf-8');
     }
 
@@ -98,7 +95,7 @@ class CodemakerService {
      * @returns 
      */
     public async assistantCompletion(message: string) {
-        return this.client.assistantCompletion(this.createAssistantCompletionRequest(message));
+        return this.getClient().assistantCompletion(this.createAssistantCompletionRequest(message));
     }
 
     /**
@@ -118,7 +115,7 @@ class CodemakerService {
 
         const contextId = await this.registerContext(language, path);
 
-        const response = await this.client.assistantCodeCompletion(this.createAssistantCodeCompletionRequest(message, language, source, contextId, model));
+        const response = await this.getClient().assistantCodeCompletion(this.createAssistantCodeCompletionRequest(message, language, source, contextId, model));
 
         if (response.output.source !== null && response.output.source.length !== 0) {
             const output = response.output.source;
@@ -241,10 +238,10 @@ class CodemakerService {
 
             const sourceContexts = await this.resolveContextWithDepth(filePath, language, Configuration.getExtendedSourceContextDepth());
 
-            const createContextResponse = await this.client.createContext(this.createCreateContextRequest());
+            const createContextResponse = await this.getClient().createContext(this.createCreateContextRequest());
             const contextId = createContextResponse.id;
 
-            await this.client.registerContext(this.createRegisterContextRequest(contextId, sourceContexts));
+            await this.getClient().registerContext(this.createRegisterContextRequest(contextId, sourceContexts));
             return contextId;
         } catch (error) {
             console.warn('Context discovery failed ', error);
@@ -259,7 +256,7 @@ class CodemakerService {
 
     private async discoverContext(filePath: vscode.Uri, language: Language) {        
         const source = await this.readFile(filePath);
-        return await this.client.discoverContext(this.createDiscoverContextRequest(language, source, filePath.path));        
+        return await this.getClient().discoverContext(this.createDiscoverContextRequest(language, source, filePath.path));        
     }
 
     private resolveContextPaths(discoverContextResponse: DiscoverContextResponse, filePath: vscode.Uri) {
@@ -312,16 +309,16 @@ class CodemakerService {
     }
 
     private async predictiveProcess(request: PredictRequest) {
-        await this.client.prediction(request);
+        await this.getClient().prediction(request);
     }
 
     private async process(request: ProcessRequest) {
-        const response = await this.client.process(request);
+        const response = await this.getClient().process(request);
         return response.output.source;
     }
 
     private async completion(request: CompletionRequest) {
-        const response = await this.client.completion(request);
+        const response = await this.getClient().completion(request);
         return response.output.source;
     }
 
@@ -334,6 +331,10 @@ class CodemakerService {
 
         const sourceEncoded = await vscode.workspace.fs.readFile(filePath);
         return this.decoder.decode(sourceEncoded);
+    }
+
+    private getClient() {
+        return this.clientManager.getClient(Configuration.getEndpoint());
     }
 
     private isExtendedContextSupported(mode: Mode) {

@@ -52,6 +52,10 @@ export class Configuration {
         return this.get('codemaker.enableAssistantActions');
     }
 
+    static getEndpoint(): string {
+        return this.get('codemaker.endpoint');
+    }
+
     private static get<T>(key: string): T {
         return vscode.workspace.getConfiguration().get(key) as T;
     }
