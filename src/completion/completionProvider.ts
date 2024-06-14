@@ -2,7 +2,7 @@
 
 import * as vscode from 'vscode';
 import CodemakerService from '../service/codemakerService';
-import { langFromFileExtension } from '../utils/languageUtils';
+import { languageFromFile } from '../utils/languageUtils';
 import { isEndOfLine } from '../utils/editorUtils';
 import { Configuration } from '../configuration/configuration';
 import { CodemakerStatusbar, StatusBarStatus } from '../vscode/statusBar';
@@ -57,7 +57,7 @@ export default class CompletionProvider implements vscode.InlineCompletionItemPr
                 var output = await this.service.complete(
                     document.uri,
                     document.getText(), 
-                    langFromFileExtension(document.fileName), 
+                    languageFromFile(document.fileName), 
                     offset - 1, 
                     Configuration.isAllowMultiLineAutocomplete(), 
                     codeSnippetContexts,

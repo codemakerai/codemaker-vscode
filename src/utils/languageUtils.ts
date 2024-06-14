@@ -24,7 +24,7 @@ export function isFileSupported(fileName: string): boolean {
     return !!ext && languages.has(ext);
 }
 
-export function langFromFileExtension(fileName: string): Language {
+export function languageFromFile(fileName: string): Language {
     const ext = fileName.split('.').pop();
     if (!ext) {
         throw new UnsupportedLanguageError("Could not determine file language " + fileName);

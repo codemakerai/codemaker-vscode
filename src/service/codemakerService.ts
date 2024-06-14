@@ -6,7 +6,7 @@ import * as fs from 'node:fs';
 import { TextDecoder, TextEncoder } from 'util';
 import { Client, ProcessRequest, CompletionRequest, PredictRequest, Language, Mode, Modify, DiscoverContextRequest, CreateContextRequest, RegisterContextRequest, SourceContext, DiscoverContextResponse, AssistantCodeCompletionRequest, AssistantCompletionRequest, AssistantCodeCompletionResponse, AssistantCompletionResponse } from 'codemaker-sdk';
 import { Configuration } from '../configuration/configuration';
-import { langFromFileExtension } from '../utils/languageUtils';
+import { languageFromFile, isFileSupported } from '../utils/languageUtils';
 import { CodeSnippetContext } from 'codemaker-sdk';
 import { ClientManager } from '../client/clientManager';
 
@@ -110,7 +110,7 @@ class CodemakerService {
     public async assistantCodeCompletion(message: string, path: vscode.Uri) {
         const model = Configuration.model();
         
-        const language = langFromFileExtension(path.path);
+        const language = languageFromFile(path.path);
         const source = await this.readFile(path);
 
         const contextId = await this.registerContext(language, path);
@@ -164,7 +164,7 @@ class CodemakerService {
     private getPredictiveProcessor() {
         return async (filePath: vscode.Uri): Promise<void> => {       
             const model = Configuration.model();     
-            const lang = langFromFileExtension(filePath.path);
+            const lang = languageFromFile(filePath.path);
 
             const contextId = await this.registerContext(lang, filePath);
 
@@ -177,7 +177,7 @@ class CodemakerService {
     private getFileProcessor(mode: Mode, depth: number = 0, modify: Modify = Modify.none, codePath?: string, prompt?: string) {
         return async (filePath: vscode.Uri): Promise<void> => {     
             const model = Configuration.model();
-            const lang = langFromFileExtension(filePath.path);
+            const lang = languageFromFile(filePath.path);
 
             const contextId = await this.registerContext(lang, filePath);
 
@@ -192,7 +192,7 @@ class CodemakerService {
     private getSourceGraphFileProcessor(mode: Mode, depth: number = 0) {
         return async (filePath: vscode.Uri): Promise<void> => {
             const model = Configuration.model();
-            const lang = langFromFileExtension(filePath.path);
+            const lang = languageFromFile(filePath.path);
 
             if (depth < CodemakerService.maximumSourceGraphDepth) {
                 const discoverContextResponse = await this.discoverContext(filePath, lang);
@@ -220,12 +220,12 @@ class CodemakerService {
             return await processor(root);
         }
         for (const [name, type] of await vscode.workspace.fs.readDirectory(root)) {
-            if (type === vscode.FileType.File) {
-                await processor(vscode.Uri.joinPath(root, name));
-            } else if (type === vscode.FileType.Directory) {
+            if (type === vscode.FileType.Directory) {
                 await this.walkFiles(vscode.Uri.joinPath(root, name), processor);
+            } else if (type === vscode.FileType.File && isFileSupported(name)) {
+                await processor(vscode.Uri.joinPath(root, name));
             } else {
-                console.error('Unsupported file type');
+                console.error(`File ${name} is not supported`);
             }
         }
     }

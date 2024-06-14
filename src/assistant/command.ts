@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import CodemakerService from '../service/codemakerService';
-import { langFromFileExtension, isFileSupported } from '../utils/languageUtils';
+import { isFileSupported } from '../utils/languageUtils';
 import { Configuration } from '../configuration/configuration';
 
 enum CommandType {
