@@ -23,13 +23,20 @@ function initializeChat() {
     const inputField = document.querySelector('#inputField');
 
     inputForm.addEventListener('submit', (e) => handleSubmit(e, inputField));
+
+    marked.setOptions({
+        highlight: function(code, lang) {
+            const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+            return hljs.highlight(code, { language }).value;
+        }
+    });
 }
 
 function handleSubmit(e, inputField) {
     e.preventDefault();
     const message = inputField.value;
     if (message.trim()) {
-        addMessage(message, 'User');
+        addMessage('User', message);
         vscode.postMessage({
             command: 'assistantRequest',
             text: message
@@ -42,9 +49,9 @@ function handleSubmit(e, inputField) {
 
 function handleAssistantResponse(completionResult) {
     if (completionResult) {
-        addMessage(completionResult, 'Assistant');
+        addMessage('Assistant', completionResult);
     } else {
-        addMessage('No response from Assistant', 'Assistant');
+        addMessage('Assistant', 'No response from Assistant');
     }
 }
 
@@ -82,19 +89,24 @@ function removePendingMessage() {
     }
 }
 
-function addMessage(markdownText, sender) {
+function addMessage(sender, message) {
     removePendingMessage();
-    const messageElement = createMessageElement(sender);
-    messageElement.innerHTML = marked.parse(markdownText);
+
+    const messageElement = createMessageElement(sender, message);
+    
     appendMessageElement(messageElement);
-    renderMarkdown();
-    addCopyButtonToCodeBlocks();
 }
 
-function createMessageElement(sender) {
+function createMessageElement(sender, message) {
     const messageElement = document.createElement('div');
-    messageElement.classList.add('message');
+
+    messageElement.classList.add('message');    
     messageElement.setAttribute('data-username', sender);
+    messageElement.innerHTML = marked.parse(message);
+
+    renderMarkdown(messageElement);
+    addCopyButtonToCodeBlocks(messageElement);
+
     return messageElement;
 }
 
@@ -104,27 +116,21 @@ function appendMessageElement(messageElement) {
     chatbox.scrollTop = chatbox.scrollHeight;
 }
 
-function renderMarkdown() {
-    marked.setOptions({
-        highlight: function(code, lang) {
-            const language = hljs.getLanguage(lang) ? lang : 'plaintext';
-            return hljs.highlight(code, { language }).value;
-        }
-    });
-    document.querySelectorAll('.message pre code').forEach((block) => {
+function renderMarkdown(element) {
+    element.querySelectorAll('pre code').forEach((block) => {
         hljs.highlightBlock(block);
     });
 }
 
-function addCopyButtonToCodeBlocks() {
-    var snippets = document.getElementsByTagName('pre');
-    var numberOfSnippets = snippets.length;
-    for (var i = 0; i < numberOfSnippets; i++) {
-        var code = snippets[i].getElementsByTagName('code')[0].innerText;
-        if (!snippets[i].getElementsByClassName('hljs-copy')[0]) {
-            snippets[i].classList.add('hljs');
-            snippets[i].innerHTML = '<button class="hljs-copy">Copy</button>' + snippets[i].innerHTML; 
-            snippets[i].getElementsByClassName('hljs-copy')[0].addEventListener("click", (function(code) {
+function addCopyButtonToCodeBlocks(element) {
+    const codeBlocks = element.getElementsByTagName('pre');
+    const length = codeBlocks.length;
+    for (var i = 0; i < length; i++) {
+        var code = codeBlocks[i].getElementsByTagName('code')[0].innerText;
+        if (!codeBlocks[i].getElementsByClassName('hljs-copy')[0]) {
+            codeBlocks[i].classList.add('hljs');
+            codeBlocks[i].innerHTML = '<button class="hljs-copy">Copy</button>' + codeBlocks[i].innerHTML; 
+            codeBlocks[i].getElementsByClassName('hljs-copy')[0].addEventListener("click", (function(code) {
                 return function(event) {
                     vscode.postMessage({
                         command: 'copyToClipboard',
