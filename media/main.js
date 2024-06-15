@@ -98,16 +98,37 @@ function addMessage(sender, message) {
 }
 
 function createMessageElement(sender, message) {
-    const messageElement = document.createElement('div');
+    const cardElement = document.createElement('div');
 
-    messageElement.classList.add('message');    
+    const messageElement = document.createElement('div');
+    cardElement.appendChild(messageElement);
+
+    messageElement.classList.add('message');
     messageElement.setAttribute('data-username', sender);
     messageElement.innerHTML = marked.parse(message);
 
     renderMarkdown(messageElement);
     addCopyButtonToCodeBlocks(messageElement);
 
-    return messageElement;
+    const controlsElement = document.createElement('div');
+    cardElement.appendChild(controlsElement);
+
+    const upVoteButtonElement = document.createElement('img');
+    upVoteButtonElement.classList.add('icon');
+    upVoteButtonElement.src = window.resolveMediaFile("thumbs-up.svg");
+    controlsElement.appendChild(upVoteButtonElement);
+
+    const downVoteButtonElement = document.createElement('img');
+    downVoteButtonElement.classList.add('icon');
+    downVoteButtonElement.src = window.resolveMediaFile("thumbs-down.svg");
+    controlsElement.appendChild(downVoteButtonElement);
+    
+    const copyButtonElement = document.createElement('img');
+    copyButtonElement.classList.add('icon');
+    copyButtonElement.src = window.resolveMediaFile("copy.svg");
+    controlsElement.appendChild(copyButtonElement);
+
+    return cardElement;
 }
 
 function appendMessageElement(messageElement) {

@@ -20,7 +20,7 @@ export default class AssistantChatViewProvider implements vscode.WebviewViewProv
         webviewView.webview.options = {
             enableScripts: true,
             localResourceRoots: [
-				this._extensionUri
+                vscode.Uri.joinPath(this._extensionUri, 'media')				
 			],
         };
 
@@ -41,6 +41,8 @@ export default class AssistantChatViewProvider implements vscode.WebviewViewProv
         const highlightScriptUrl = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'highlight.min.js'));
         const atomCssUrl = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'atom-one-dark.min.css'));
 
+        const mediaUrl = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media'));
+
         return `<!DOCTYPE html>
         <html lang="en">
         <head>
@@ -53,6 +55,12 @@ export default class AssistantChatViewProvider implements vscode.WebviewViewProv
             <script src="${highlightScriptUrl}"></script>
             <script src="${markedScriptUrl}"></script>
             <script src="${mainScriptUrl}"></script>
+
+            <script>
+                window.resolveMediaFile = (fileName) => {
+                    return "${mediaUrl}/" + fileName;
+                }
+            </script>
         </head>
         <body>
             <div id="chatbox"></div>
