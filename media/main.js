@@ -62,12 +62,12 @@ function updateSubmitButton(disabled) {
 }
 
 function addPendingMessage() {
-    const messageElement = createMessageElement("Assistant", true);
-    appendMessageElement(messageElement);
-}
+    const cardElement = document.createElement('div');
+    cardElement.classList.add('card');
 
-function addPendingMessage() {
     const messageElement = document.createElement('div');
+    cardElement.appendChild(messageElement);
+
     messageElement.setAttribute('data-username', "Assistant");
     messageElement.classList.add('message');
     messageElement.classList.add('pending');
@@ -78,7 +78,7 @@ function addPendingMessage() {
             <div class="dot"></div>
         </div>
     `;
-    chatbox.appendChild(messageElement);
+    chatbox.appendChild(cardElement);
     chatbox.scrollTop = chatbox.scrollHeight;
 }
 
@@ -99,6 +99,7 @@ function addMessage(sender, message) {
 
 function createMessageElement(sender, message) {
     const cardElement = document.createElement('div');
+    cardElement.classList.add('card');
 
     const messageElement = document.createElement('div');
     cardElement.appendChild(messageElement);
@@ -127,6 +128,12 @@ function createMessageElement(sender, message) {
         const copyButtonElement = document.createElement('img');
         copyButtonElement.classList.add('icon');
         copyButtonElement.src = window.resolveMediaFile("copy.svg");
+        copyButtonElement.addEventListener('click', function(event) {
+            vscode.postMessage({
+                command: 'copyToClipboard',
+                text: message
+            });
+        });
         controlsElement.appendChild(copyButtonElement);
     }
 
