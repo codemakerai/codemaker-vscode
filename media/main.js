@@ -110,23 +110,25 @@ function createMessageElement(sender, message) {
     renderMarkdown(messageElement);
     addCopyButtonToCodeBlocks(messageElement);
 
-    const controlsElement = document.createElement('div');
-    cardElement.appendChild(controlsElement);
+    if (isAssistant(sender)) {
+        const controlsElement = document.createElement('div');
+        cardElement.appendChild(controlsElement);
 
-    const upVoteButtonElement = document.createElement('img');
-    upVoteButtonElement.classList.add('icon');
-    upVoteButtonElement.src = window.resolveMediaFile("thumbs-up.svg");
-    controlsElement.appendChild(upVoteButtonElement);
+        const upVoteButtonElement = document.createElement('img');
+        upVoteButtonElement.classList.add('icon');
+        upVoteButtonElement.src = window.resolveMediaFile("thumbs-up.svg");
+        controlsElement.appendChild(upVoteButtonElement);
 
-    const downVoteButtonElement = document.createElement('img');
-    downVoteButtonElement.classList.add('icon');
-    downVoteButtonElement.src = window.resolveMediaFile("thumbs-down.svg");
-    controlsElement.appendChild(downVoteButtonElement);
-    
-    const copyButtonElement = document.createElement('img');
-    copyButtonElement.classList.add('icon');
-    copyButtonElement.src = window.resolveMediaFile("copy.svg");
-    controlsElement.appendChild(copyButtonElement);
+        const downVoteButtonElement = document.createElement('img');
+        downVoteButtonElement.classList.add('icon');
+        downVoteButtonElement.src = window.resolveMediaFile("thumbs-down.svg");
+        controlsElement.appendChild(downVoteButtonElement);
+        
+        const copyButtonElement = document.createElement('img');
+        copyButtonElement.classList.add('icon');
+        copyButtonElement.src = window.resolveMediaFile("copy.svg");
+        controlsElement.appendChild(copyButtonElement);
+    }
 
     return cardElement;
 }
@@ -168,4 +170,8 @@ function addCopyButtonToCodeBlocks(element) {
             })(code));
         }
     }
+}
+
+function isAssistant(sender) {
+    return sender === 'Assistant';
 }
