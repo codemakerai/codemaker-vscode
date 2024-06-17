@@ -201,3 +201,7 @@ Updated extension description.
 ## Version: 1.43.0
 
 * Configurable API client endpoints
+
+## Version: 1.44.0
+
+* Changes to Assistant UI
