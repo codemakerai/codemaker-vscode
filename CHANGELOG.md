@@ -205,3 +205,7 @@ Updated extension description.
 ## Version: 1.44.0
 
 * Changes to Assistant UI
+
+## Version: 1.45.0
+
+* Assistant feedback
