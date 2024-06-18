@@ -121,7 +121,19 @@ function createMessageElement(sender, message) {
 
         const upVoteButtonElement = document.createElement('img');
         upVoteButtonElement.classList.add('icon');
-        upVoteButtonElement.src = window.resolveMediaFile("thumbs-up.svg");
+        upVoteButtonElement.src = window.resolveMediaFile("thumbs-up-off.svg");        
+        controlsElement.appendChild(upVoteButtonElement);
+
+        const downVoteButtonElement = document.createElement('img');
+        downVoteButtonElement.classList.add('icon');
+        downVoteButtonElement.src = window.resolveMediaFile("thumbs-down-off.svg");
+        controlsElement.appendChild(downVoteButtonElement);
+        
+        const copyButtonElement = document.createElement('img');
+        copyButtonElement.classList.add('icon');
+        copyButtonElement.src = window.resolveMediaFile("copy.svg");        
+        controlsElement.appendChild(copyButtonElement);
+
         upVoteButtonElement.addEventListener('click', function(event) {
             vscode.postMessage({
                 command: 'assistantFeedback',
@@ -129,12 +141,9 @@ function createMessageElement(sender, message) {
                 messageId: message.messageId,
                 vote: "UP_VOTE"
             });
+            upVoteButtonElement.src = window.resolveMediaFile("thumbs-up.svg");
+            downVoteButtonElement.src = window.resolveMediaFile("thumbs-down-off.svg");
         });
-        controlsElement.appendChild(upVoteButtonElement);
-
-        const downVoteButtonElement = document.createElement('img');
-        downVoteButtonElement.classList.add('icon');
-        downVoteButtonElement.src = window.resolveMediaFile("thumbs-down.svg");
         downVoteButtonElement.addEventListener('click', function(event) {
             vscode.postMessage({
                 command: 'assistantFeedback',
@@ -142,19 +151,15 @@ function createMessageElement(sender, message) {
                 messageId: message.messageId,
                 vote: "DOWN_VOTE"
             });
+            upVoteButtonElement.src = window.resolveMediaFile("thumbs-up-off.svg");
+            downVoteButtonElement.src = window.resolveMediaFile("thumbs-down.svg");            
         });
-        controlsElement.appendChild(downVoteButtonElement);
-        
-        const copyButtonElement = document.createElement('img');
-        copyButtonElement.classList.add('icon');
-        copyButtonElement.src = window.resolveMediaFile("copy.svg");
         copyButtonElement.addEventListener('click', function(event) {
             vscode.postMessage({
                 command: 'copyToClipboard',
                 text: message.message
             });
         });
-        controlsElement.appendChild(copyButtonElement);
     }
 
     return cardElement;
