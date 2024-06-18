@@ -2,12 +2,14 @@ import * as vscode from 'vscode';
 import CodemakerService from '../service/codemakerService';
 import { isFileSupported } from '../utils/languageUtils';
 import { Configuration } from '../configuration/configuration';
+import { Vote } from 'codemaker-sdk';
 
 enum CommandType {
     alert = 'alert',
     copyToClipboard = 'copyToClipboard',
     assistantRequest = 'assistantRequest',
     assistantRespondAdded = 'assistantRespondAdded',
+    assistantFeedback = 'assistantFeedback',
     assistantError = 'assistantError',
 }
 
@@ -74,5 +76,19 @@ class AssistantRequestCommand implements ICommand {
     }
 }
 
-export { CommandType, ICommand, AlertCommand, CopyToClipboardCommand, AssistantRequestCommand };
+class AssistantFeedbackCommand implements ICommand {
+
+    constructor(private readonly _codemakerService: CodemakerService) {}
+
+    async execute(message: any, webviewView: vscode.WebviewView) {
+        try {
+            const {sessionId, messageId, vote} = message;
+            await this._codemakerService.registerAssistantFeedback(sessionId, messageId, vote);
+        } catch (error) {
+            console.error('Failed to register assistant feedback ', error);
+        }
+    }
+}
+
+export { CommandType, ICommand, AlertCommand, CopyToClipboardCommand, AssistantRequestCommand, AssistantFeedbackCommand };
 

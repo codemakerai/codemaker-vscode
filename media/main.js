@@ -8,10 +8,10 @@ function handleEvent(event) {
     const message = event.data;
     switch (message.command) {
         case 'assistantRespondAdded':
-            handleAssistantResponse(message.result.message);
+            handleAssistantResponse(message.result);
             break;
         case 'assistantError':
-            handleAssistantResponse(message.error);
+            handleAssistantError(message.error);
             break;
     }
     updateSubmitButton(false);
@@ -36,7 +36,7 @@ function handleSubmit(e, inputField) {
     e.preventDefault();
     const message = inputField.value;
     if (message.trim()) {
-        addMessage('User', message);
+        addMessage('User', {message});
         vscode.postMessage({
             command: 'assistantRequest',
             text: message
@@ -47,12 +47,16 @@ function handleSubmit(e, inputField) {
     addPendingMessage();
 }
 
-function handleAssistantResponse(completionResult) {
-    if (completionResult) {
-        addMessage('Assistant', completionResult);
+function handleAssistantResponse(completion) {
+    if (completion) {
+        addMessage('Assistant', completion);
     } else {
-        addMessage('Assistant', 'No response from Assistant');
+        addMessage('Assistant', {message: 'No response from Assistant'});
     }
+}
+
+function handleAssistantError(error) {
+    addMessage('Assistant', {message: error});
 }
 
 function updateSubmitButton(disabled) {
@@ -106,7 +110,7 @@ function createMessageElement(sender, message) {
 
     messageElement.classList.add('message');
     messageElement.setAttribute('data-username', sender);
-    messageElement.innerHTML = marked.parse(message);
+    messageElement.innerHTML = marked.parse(message.message);
 
     renderMarkdown(messageElement);
     addCopyButtonToCodeBlocks(messageElement);
@@ -118,11 +122,27 @@ function createMessageElement(sender, message) {
         const upVoteButtonElement = document.createElement('img');
         upVoteButtonElement.classList.add('icon');
         upVoteButtonElement.src = window.resolveMediaFile("thumbs-up.svg");
+        upVoteButtonElement.addEventListener('click', function(event) {
+            vscode.postMessage({
+                command: 'assistantFeedback',
+                sessionId: message.sessionId,
+                messageId: message.messageId,
+                vote: "UP_VOTE"
+            });
+        });
         controlsElement.appendChild(upVoteButtonElement);
 
         const downVoteButtonElement = document.createElement('img');
         downVoteButtonElement.classList.add('icon');
         downVoteButtonElement.src = window.resolveMediaFile("thumbs-down.svg");
+        downVoteButtonElement.addEventListener('click', function(event) {
+            vscode.postMessage({
+                command: 'assistantFeedback',
+                sessionId: message.sessionId,
+                messageId: message.messageId,
+                vote: "DOWN_VOTE"
+            });
+        });
         controlsElement.appendChild(downVoteButtonElement);
         
         const copyButtonElement = document.createElement('img');
@@ -131,7 +151,7 @@ function createMessageElement(sender, message) {
         copyButtonElement.addEventListener('click', function(event) {
             vscode.postMessage({
                 command: 'copyToClipboard',
-                text: message
+                text: message.message
             });
         });
         controlsElement.appendChild(copyButtonElement);

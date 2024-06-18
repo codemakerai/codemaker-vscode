@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 import * as path from 'node:path';
 import * as fs from 'node:fs';
 import { TextDecoder, TextEncoder } from 'util';
-import { Client, ProcessRequest, CompletionRequest, PredictRequest, Language, Mode, Modify, DiscoverContextRequest, CreateContextRequest, RegisterContextRequest, SourceContext, DiscoverContextResponse, AssistantCodeCompletionRequest, AssistantCompletionRequest, AssistantCodeCompletionResponse, AssistantCompletionResponse } from 'codemaker-sdk';
+import { ProcessRequest, CompletionRequest, PredictRequest, Language, Mode, Modify, DiscoverContextRequest, CreateContextRequest, RegisterContextRequest, SourceContext, DiscoverContextResponse, AssistantCodeCompletionRequest, AssistantCompletionRequest, Vote, RegisterAssistantFeedbackRequest } from 'codemaker-sdk';
 import { Configuration } from '../configuration/configuration';
 import { languageFromFile, isFileSupported } from '../utils/languageUtils';
 import { CodeSnippetContext } from 'codemaker-sdk';
@@ -123,6 +123,18 @@ class CodemakerService {
         }
 
         return response;
+    }
+
+    /**
+     * Registers assistant feedback.
+     * 
+     * @param sessionId session id
+     * @param messageId message id
+     * @param vote upvote or down vote
+     * @returns 
+     */
+    public async registerAssistantFeedback(sessionId: string, messageId: string, vote: Vote) {
+        return this.getClient().registerAssistantFeedback(this.createRegisterAssistantFeedbackRequest(sessionId, messageId, vote));
     }
 
     /**
@@ -429,6 +441,14 @@ class CodemakerService {
                 contextId,
                 model
             }
+        };
+    }
+
+    private createRegisterAssistantFeedbackRequest(sessionId: string, messageId: string, vote: Vote): RegisterAssistantFeedbackRequest {
+        return {
+            sessionId,
+            messageId,
+            vote
         };
     }
 }
