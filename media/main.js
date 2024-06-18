@@ -131,7 +131,7 @@ function createMessageElement(sender, message) {
         
         const copyButtonElement = document.createElement('img');
         copyButtonElement.classList.add('icon');
-        copyButtonElement.src = window.resolveMediaFile("copy.svg");        
+        copyButtonElement.src = window.resolveMediaFile("copy-off.svg");
         controlsElement.appendChild(copyButtonElement);
 
         upVoteButtonElement.addEventListener('click', function(event) {
@@ -159,6 +159,10 @@ function createMessageElement(sender, message) {
                 command: 'copyToClipboard',
                 text: message.message
             });
+            copyButtonElement.src = window.resolveMediaFile("copy.svg");
+            setTimeout(function() {
+                copyButtonElement.src = window.resolveMediaFile("copy-off.svg");
+            }, 500);
         });
     }
 
@@ -197,7 +201,7 @@ function addCopyButtonToCodeBlocks(element) {
                     setTimeout(function() {
                         button.innerHTML = "";
                         button.classList.remove('hljs-copied');
-                    }, 1000); 
+                    }, 1000);
                 };
             })(code));
         }
