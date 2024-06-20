@@ -209,3 +209,7 @@ Updated extension description.
 ## Version: 1.45.0
 
 * Assistant feedback
+
+## Version: 1.46.0
+
+* Assistant speech
