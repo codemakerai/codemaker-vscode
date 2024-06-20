@@ -4,7 +4,7 @@ import CommandHandler from './commandHandler';
 
 export default class AssistantChatViewProvider implements vscode.WebviewViewProvider {
     private _view?: vscode.WebviewView;
-    private _commandHandler: CommandHandler
+    private _commandHandler: CommandHandler;
 
     constructor(private readonly _extensionUri: vscode.Uri, codemakerService: CodemakerService) {
         this._commandHandler = new CommandHandler(codemakerService);
