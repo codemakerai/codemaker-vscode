@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 import * as path from 'node:path';
 import * as fs from 'node:fs';
 import { TextDecoder, TextEncoder } from 'util';
-import { ProcessRequest, CompletionRequest, PredictRequest, Language, Mode, Modify, DiscoverContextRequest, CreateContextRequest, RegisterContextRequest, SourceContext, DiscoverContextResponse, AssistantCodeCompletionRequest, AssistantCompletionRequest, Vote, RegisterAssistantFeedbackRequest } from 'codemaker-sdk';
+import { ProcessRequest, CompletionRequest, PredictRequest, Language, Mode, Modify, DiscoverContextRequest, CreateContextRequest, RegisterContextRequest, SourceContext, DiscoverContextResponse, AssistantCodeCompletionRequest, AssistantCompletionRequest, AssistantSpeechRequest, Vote, RegisterAssistantFeedbackRequest } from 'codemaker-sdk';
 import { Configuration } from '../configuration/configuration';
 import { languageFromFile, isFileSupported } from '../utils/languageUtils';
 import { CodeSnippetContext } from 'codemaker-sdk';
@@ -123,6 +123,16 @@ class CodemakerService {
         }
 
         return response;
+    }
+
+    /**
+     * Assistant speech.
+     * 
+     * @param message chat message
+     * @returns 
+     */
+    public async assistantSpeech(message: string) {
+        return this.getClient().assistantSpeech(this.createAssistantSpeechRequest(message));
     }
 
     /**
@@ -441,6 +451,12 @@ class CodemakerService {
                 contextId,
                 model
             }
+        };
+    }
+
+    private createAssistantSpeechRequest(message: string): AssistantSpeechRequest {
+        return {
+            message
         };
     }
 

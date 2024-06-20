@@ -8,7 +8,9 @@ enum CommandType {
     alert = 'alert',
     copyToClipboard = 'copyToClipboard',
     assistantRequest = 'assistantRequest',
-    assistantRespondAdded = 'assistantRespondAdded',
+    assistantResponse = 'assistantResponse',
+    assistantSpeechRequest = 'assistantSpeechRequest',
+    assistantSpeechResponse = 'assistantSpeechResponse',
     assistantFeedback = 'assistantFeedback',
     assistantError = 'assistantError',
 }
@@ -36,7 +38,7 @@ class AssistantRequestCommand implements ICommand {
     async execute(message: any, webviewView: vscode.WebviewView) {
         if (!Configuration.apiKey()) {
             webviewView.webview.postMessage({
-                command: CommandType.assistantRespondAdded,
+                command: CommandType.assistantResponse,
                 result: {
                     message: "To use Assistant features, please first set the API Key in the Extension Settings." +
                         "\nYou can create free account [here](https://portal.codemaker.ai/#/register)."
@@ -54,7 +56,7 @@ class AssistantRequestCommand implements ICommand {
                 const result = await this._codemakerService.assistantCompletion(message.text);
 
                 webviewView.webview.postMessage({
-                    command: CommandType.assistantRespondAdded,
+                    command: CommandType.assistantResponse,
                     result: result,
                 });
             } else {
@@ -63,7 +65,7 @@ class AssistantRequestCommand implements ICommand {
                 const output = await this._codemakerService.assistantCodeCompletion(message.text, path);
         
                 webviewView.webview.postMessage({
-                    command: CommandType.assistantRespondAdded,
+                    command: CommandType.assistantResponse,
                     result: output,
                 });
             }
@@ -72,6 +74,25 @@ class AssistantRequestCommand implements ICommand {
                 command: CommandType.assistantError,
                 error: 'Assistant could not complete this request. Please try again.',
             });
+        }
+    }
+}
+
+class AssistantSpeechCommand implements ICommand {
+
+    constructor(private readonly _codemakerService: CodemakerService) {}
+
+    async execute(message: any, webviewView: vscode.WebviewView) {
+        try {
+            const response = await this._codemakerService.assistantSpeech(message.message);            
+            const audio = response.audio.toString('base64');
+            webviewView.webview.postMessage({
+                command: CommandType.assistantSpeechResponse,
+                id: message.id,
+                audio: audio,
+            });
+        } catch (error) {
+            console.error('Failed to register assistant feedback ', error);
         }
     }
 }
@@ -90,5 +111,5 @@ class AssistantFeedbackCommand implements ICommand {
     }
 }
 
-export { CommandType, ICommand, AlertCommand, CopyToClipboardCommand, AssistantRequestCommand, AssistantFeedbackCommand };
+export { CommandType, ICommand, AlertCommand, CopyToClipboardCommand, AssistantRequestCommand, AssistantSpeechCommand, AssistantFeedbackCommand };
 

@@ -1,5 +1,5 @@
 import CodemakerService from '../service/codemakerService';
-import { CommandType, ICommand, AlertCommand, AssistantRequestCommand, AssistantFeedbackCommand, CopyToClipboardCommand } from './command';
+import { CommandType, ICommand, AlertCommand, AssistantRequestCommand, AssistantSpeechCommand, AssistantFeedbackCommand, CopyToClipboardCommand } from './command';
 
 export default class CommandHandler {
 
@@ -10,6 +10,7 @@ export default class CommandHandler {
         this.commands.set(CommandType.alert.toString(), new AlertCommand());
         this.commands.set(CommandType.copyToClipboard.toString(), new CopyToClipboardCommand());
         this.commands.set(CommandType.assistantRequest.toString(), new AssistantRequestCommand(this._codemakerService));
+        this.commands.set(CommandType.assistantSpeechRequest.toString(), new AssistantSpeechCommand(this._codemakerService));
         this.commands.set(CommandType.assistantFeedback.toString(), new AssistantFeedbackCommand(this._codemakerService));
     }
 

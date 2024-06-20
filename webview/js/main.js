@@ -1,5 +1,7 @@
 const vscode = window.acquireVsCodeApi();
 
+const promises = new Map();
+
 window.addEventListener('message', handleEvent);
 
 document.addEventListener('DOMContentLoaded', initializeChat);
@@ -7,11 +9,14 @@ document.addEventListener('DOMContentLoaded', initializeChat);
 function handleEvent(event) {
     const message = event.data;
     switch (message.command) {
-        case 'assistantRespondAdded':
+        case 'assistantResponse':
             handleAssistantResponse(message.result);
             break;
         case 'assistantError':
             handleAssistantError(message.error);
+            break;
+        case 'assistantSpeechResponse':
+            handleAssistantSpeechResponse(message.id, message.audio);
             break;
     }
     updateSubmitButton(false);
@@ -53,6 +58,22 @@ function handleAssistantResponse(completion) {
     } else {
         addMessage('Assistant', {message: 'No response from Assistant'});
     }
+}
+
+function handleAssistantSpeechResponse(id, audio) {
+    const buffer = Uint8Array.from(atob(audio), c => c.charCodeAt(0));
+    const url = window.URL.createObjectURL(new Blob([buffer], { type: 'audio/mp3' }));
+    const player = new Audio(url);
+    player.autoplay = true;
+    player.addEventListener('ended', () => {
+        const promise = promises.get(id);
+        if (promise) {
+            promises.delete(id);
+            promise();
+        }
+        window.URL.revokeObjectURL(url);
+    });
+    player.play();
 }
 
 function handleAssistantError(error) {
@@ -119,6 +140,11 @@ function createMessageElement(sender, message) {
         const controlsElement = document.createElement('div');
         cardElement.appendChild(controlsElement);
 
+        const equalizerButtonElement = document.createElement('img');
+        equalizerButtonElement.classList.add('icon');
+        equalizerButtonElement.src = window.resolveMediaFile("equalizer.svg");
+        controlsElement.appendChild(equalizerButtonElement);
+
         const upVoteButtonElement = document.createElement('img');
         upVoteButtonElement.classList.add('icon');
         upVoteButtonElement.src = window.resolveMediaFile("thumbs-up-off.svg");
@@ -134,6 +160,22 @@ function createMessageElement(sender, message) {
         copyButtonElement.src = window.resolveMediaFile("copy-off.svg");
         controlsElement.appendChild(copyButtonElement);
 
+        equalizerButtonElement.addEventListener('click', function(event) {
+            const id = message.messageId;
+            vscode.postMessage({
+                command: 'assistantSpeechRequest',
+                id: id,
+                message: message.message,
+            });
+            equalizerButtonElement.src = window.resolveMediaFile("pause.svg");
+            
+            const promise = new Promise((resolve, reject) => {
+                promises.set(id, resolve);
+            });
+            promise.then(() => {
+                equalizerButtonElement.src = window.resolveMediaFile("equalizer.svg");
+            });
+        });
         upVoteButtonElement.addEventListener('click', function(event) {
             vscode.postMessage({
                 command: 'assistantFeedback',
