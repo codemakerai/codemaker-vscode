@@ -61,19 +61,27 @@ function handleAssistantResponse(completion) {
 }
 
 function handleAssistantSpeechResponse(id, audio) {
-    const buffer = Uint8Array.from(atob(audio), c => c.charCodeAt(0));
-    const url = window.URL.createObjectURL(new Blob([buffer], { type: 'audio/mp3' }));
-    const player = new Audio(url);
-    player.autoplay = true;
-    player.addEventListener('ended', () => {
+    const resolvePromise = () => {
         const promise = promises.get(id);
         if (promise) {
             promises.delete(id);
             promise();
         }
-        window.URL.revokeObjectURL(url);
-    });
-    player.play();
+    };
+
+    try {
+        const buffer = Uint8Array.from(atob(audio), c => c.charCodeAt(0));
+        const url = window.URL.createObjectURL(new Blob([buffer], { type: 'audio/mp3' }));
+        const player = new Audio(url);
+        player.autoplay = true;
+        player.addEventListener('ended', () => {
+            resolvePromise();
+            window.URL.revokeObjectURL(url);
+        });
+        player.play();
+    } catch (error) {
+        resolvePromise();
+    }
 }
 
 function handleAssistantError(error) {
