@@ -121,7 +121,7 @@ function createMessageElement(sender, message) {
 
         const upVoteButtonElement = document.createElement('img');
         upVoteButtonElement.classList.add('icon');
-        upVoteButtonElement.src = window.resolveMediaFile("thumbs-up-off.svg");        
+        upVoteButtonElement.src = window.resolveMediaFile("thumbs-up-off.svg");
         controlsElement.appendChild(upVoteButtonElement);
 
         const downVoteButtonElement = document.createElement('img');

@@ -20,7 +20,7 @@ export default class AssistantChatViewProvider implements vscode.WebviewViewProv
         webviewView.webview.options = {
             enableScripts: true,
             localResourceRoots: [
-                vscode.Uri.joinPath(this._extensionUri, 'media')				
+                vscode.Uri.joinPath(this._extensionUri, 'webview')				
 			],
         };
 
@@ -35,13 +35,13 @@ export default class AssistantChatViewProvider implements vscode.WebviewViewProv
     private _getHtmlForWebview(webview: vscode.Webview) {
         
         // Local path to main script run in the webview
-        const mainScriptUrl = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'main.js'));
-        const mainCssUrl = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'main.css'));
-        const markedScriptUrl = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'marked.min.js'));
-        const highlightScriptUrl = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'highlight.min.js'));
-        const atomCssUrl = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'atom-one-dark.min.css'));
+        const mainScriptUrl = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'webview', 'js', 'main.js'));
+        const mainCssUrl = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'webview', 'css', 'main.css'));
+        const markedScriptUrl = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'webview', 'js', 'marked.min.js'));
+        const highlightScriptUrl = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'webview', 'js', 'highlight.min.js'));
+        const atomCssUrl = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'webview', 'css', 'atom-one-dark.min.css'));
 
-        const mediaUrl = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media'));
+        const mediaUrl = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'webview', 'media'));
 
         return `<!DOCTYPE html>
         <html lang="en">
