@@ -70,7 +70,7 @@ button:hover {
 .hljs-copy {
     float: right;
     cursor: pointer;
-    background-image: url('copy-icon.svg'); 
+    background-image: url('../media/copy-icon.svg'); 
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain; 
