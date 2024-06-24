@@ -213,3 +213,7 @@ Updated extension description.
 ## Version: 1.46.0
 
 * Assistant speech
+
+## Version: 1.47.0
+
+* Assistant CodeLens
