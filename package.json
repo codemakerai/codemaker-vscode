@@ -89,29 +89,35 @@
           "default": true,
           "order": 4
         },
+        "codemaker.enableAssistantCodeLens": {
+          "description": "Enable assistant code lens.",
+          "type": "boolean",
+          "default": true,
+          "order": 5
+        },
         "codemaker.allowLocalContext": {
           "description": "Allow local context search.",
           "type": "boolean",
           "default": false,
-          "order": 5
+          "order": 6
         },
         "codemaker.enableCodeActions": {
           "description": "Enable code actions",
           "type": "boolean",
           "default": true,
-          "order": 6
+          "order": 7
         },
         "codemaker.enablePredictiveGeneration": {
           "description": "Enable predictive generation",
           "type": "boolean",
           "default": false,
-          "order": 7
+          "order": 8
         },
         "codemaker.enableExtendedSourceContext": {
           "description": "Enable extended source context",
           "type": "boolean",
           "default": false,
-          "order": 8
+          "order": 9
         },
         "codemaker.extendedSourceContextDepth": {
           "description": "Extended source context maximum depth",
@@ -122,18 +128,18 @@
             2,
             3
           ],
-          "order": 9
+          "order": 10
         },
         "codemaker.enableSyntaxAutocorrection": {
           "description": "Enable syntax autocorrection",
           "type": "boolean",
           "default": false,
-          "order": 10
+          "order": 11
         },
         "codemaker.endpoint": {
           "markdownDescription": "CodeMaker AI Endpoint.",
           "type": "string",
-          "order": 11
+          "order": 12
         }
       }
     },
@@ -264,6 +270,18 @@
       {
         "command": "extension.ai.codemaker.generate.inline.code",
         "title": "Inline code"
+      },
+      {
+        "command": "extension.ai.codemaker.assistant.explain",
+        "title": "Explain code"
+      },
+      {
+        "command": "extension.ai.codemaker.assistant.review",
+        "title": "Review code"
+      },
+      {
+        "command": "extension.ai.codemaker.assistant.test",
+        "title": "Test code"
       }
     ],
     "keybindings": [

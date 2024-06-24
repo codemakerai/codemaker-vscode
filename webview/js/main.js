@@ -9,6 +9,9 @@ document.addEventListener('DOMContentLoaded', initializeChat);
 function handleEvent(event) {
     const message = event.data;
     switch (message.command) {
+        case 'assistantChat':
+            handleAssistantChat(message.prompt);
+            break;
         case 'assistantResponse':
             handleAssistantResponse(message.result);
             break;
@@ -19,7 +22,7 @@ function handleEvent(event) {
             handleAssistantSpeechResponse(message.id, message.audio);
             break;
     }
-    updateSubmitButton(false);
+    eanbleSubmitButton(true);
 }
 
 function initializeChat() {
@@ -39,17 +42,27 @@ function initializeChat() {
 
 function handleSubmit(e, inputField) {
     e.preventDefault();
-    const message = inputField.value;
-    if (message.trim()) {
-        addMessage('User', {message});
-        vscode.postMessage({
-            command: 'assistantRequest',
-            text: message
-        });
-        updateSubmitButton(true);
+    const message = inputField.value.trim();    
+    if (!message) {
+        return;
     }
     inputField.value = '';
+
+    sendMessage(message);
+}
+
+function sendMessage(message) {
+    addMessage('User', {message});
+    vscode.postMessage({
+        command: 'assistantRequest',
+        text: message
+    });
+    eanbleSubmitButton(false);
     addPendingMessage();
+}
+
+function handleAssistantChat(message) {
+    sendMessage(message);
 }
 
 function handleAssistantResponse(completion) {
@@ -88,10 +101,10 @@ function handleAssistantError(error) {
     addMessage('Assistant', {message: error});
 }
 
-function updateSubmitButton(disabled) {
+function eanbleSubmitButton(enabled) {
     const submitButton = document.querySelector('#submitButton');
-    submitButton.disabled = disabled;
-    submitButton.innerHTML = disabled ? "..." : "Send";
+    submitButton.disabled = !enabled;
+    submitButton.innerHTML = !enabled ? "..." : "Send";
 }
 
 function addPendingMessage() {

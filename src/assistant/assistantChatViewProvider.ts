@@ -24,14 +24,19 @@ export default class AssistantChatViewProvider implements vscode.WebviewViewProv
 			],
         };
 
-        webviewView.webview
-
         webviewView.webview.onDidReceiveMessage(
             async message => {
                 await this._commandHandler.handleCommand(message.command, message, webviewView);
             }
         );
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
+    }
+
+    public assistantChat(message: string) {        
+        this._view?.webview.postMessage({
+            command: 'assistantChat',
+            prompt: message
+        });
     }
 
     private _getHtmlForWebview(webview: vscode.Webview) {

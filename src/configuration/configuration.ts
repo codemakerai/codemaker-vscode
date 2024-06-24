@@ -52,6 +52,10 @@ export class Configuration {
         return this.get('codemaker.enableAssistantActions');
     }
 
+    static isAssistantCodeLensEnabled(): boolean {
+        return this.get('codemaker.enableAssistantCodeLens');
+    }
+
     static getEndpoint(): string {
         return this.get('codemaker.endpoint');
     }

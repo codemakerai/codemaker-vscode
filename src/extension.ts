@@ -17,6 +17,7 @@ import AssistantChatViewProvider from './assistant/assistantChatViewProvider';
 import { Configuration } from './configuration/configuration';
 
 let statusBar: CodemakerStatusbar;
+let assistantChatViewProvider: AssistantChatViewProvider;
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -24,15 +25,18 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "CodeMaker" is now active!');
+	console.log('CodeMake AI extension activated');
 
 	const codemakerService = new CodemakerService();
-	statusBar = new CodemakerStatusbar(context);
 
-	registerDiagnostics(context);
+	statusBar = new CodemakerStatusbar(context);
+	assistantChatViewProvider = new AssistantChatViewProvider(context.extensionUri, codemakerService);
+
+	registerDiagnostics(context, codemakerService);
 	registerActions(context, codemakerService);
 	registerCompletionProvider(context, codemakerService);
 	registerCodeAction(context, codemakerService);
+	registerCodeLens(context, codemakerService);
 	registerPredictiveGeneration(context, codemakerService);
 	registerAutoCorrection(context, codemakerService);
 	registerAssistantChatView(context, codemakerService);
@@ -52,7 +56,7 @@ function errorHandler(action: string, err: any) {
 	}
 }
 
-function registerDiagnostics(context: vscode.ExtensionContext) {
+function registerDiagnostics(context: vscode.ExtensionContext, codemakerService: CodemakerService) {
 	const diagnosticColection = vscode.languages.createDiagnosticCollection("ai.codemaker.codepath");
 	context.subscriptions.push(diagnosticColection);
 	subscribeToDocumentChanges(context, diagnosticColection);
@@ -199,6 +203,48 @@ function registerActions(context: vscode.ExtensionContext, codemakerService: Cod
 			.finally(() => statusBar.reset());
 	}));
 
+	context.subscriptions.push(vscode.commands.registerCommand('extension.ai.codemaker.assistant.explain', (name) => {		
+		if (!name) {
+			return;
+		}
+		
+		const editor = vscode.window.activeTextEditor;
+		if (!editor || !editor.document) {
+			return;
+		}
+		
+		vscode.commands.executeCommand("assistantChatView.focus");
+		assistantChatViewProvider.assistantChat(`Explain ${name} method.`);
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('extension.ai.codemaker.assistant.review', (name) => {		
+		if (!name) {
+			return;
+		}
+		
+		const editor = vscode.window.activeTextEditor;
+		if (!editor || !editor.document) {
+			return;
+		}
+		
+		vscode.commands.executeCommand("assistantChatView.focus");
+		assistantChatViewProvider.assistantChat(`Review ${name} method.`);
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('extension.ai.codemaker.assistant.test', (name) => {		
+		if (!name) {
+			return;
+		}
+		
+		const editor = vscode.window.activeTextEditor;
+		if (!editor || !editor.document) {
+			return;
+		}
+		
+		vscode.commands.executeCommand("assistantChatView.focus");
+		assistantChatViewProvider.assistantChat(`Test ${name} method.`);
+	}));
+
 	context.subscriptions.push(vscode.commands.registerCommand('extension.ai.codemaker.completion.import', completionImports));
 }
 
@@ -232,6 +278,36 @@ function registerCodeAction(context: vscode.ExtensionContext, service: Codemaker
 	);
 }
 
+function registerCodeLens(context: vscode.ExtensionContext, service: CodemakerService) {		
+	context.subscriptions.push(
+		vscode.languages.registerCodeLensProvider('*', new AssistantCodeLens(
+			{
+				title: 'Unit Test',
+				tooltip: 'Unit tests the code',
+				command: 'extension.ai.codemaker.assistant.test',
+			}
+		))
+	);
+	context.subscriptions.push(
+		vscode.languages.registerCodeLensProvider('*', new AssistantCodeLens(
+			{
+				title: 'Review',
+				tooltip: 'Rewviews the code',
+				command: 'extension.ai.codemaker.assistant.review',
+			}
+		))
+	);
+	context.subscriptions.push(
+		vscode.languages.registerCodeLensProvider('*', new AssistantCodeLens(
+			{
+				title: 'Explain',
+				tooltip: 'Explains the code',
+				command: 'extension.ai.codemaker.assistant.explain',
+			}
+		))
+	);
+}
+
 function registerPredictiveGeneration(context: vscode.ExtensionContext, codemakerService: CodemakerService) {
 	const predictor = new Predictor(codemakerService);
 	predictor.subscribeToDucumentChanges(context);
@@ -243,7 +319,6 @@ function registerAutoCorrection(context: vscode.ExtensionContext, codemakerServi
 }
 
 function registerAssistantChatView(context: vscode.ExtensionContext,  codemakerService: CodemakerService) {	
-	const assistantChatViewProvider = new AssistantChatViewProvider(context.extensionUri, codemakerService);
     context.subscriptions.push(
         vscode.window.registerWebviewViewProvider("assistantChatView", assistantChatViewProvider)
     );
@@ -320,6 +395,61 @@ export class EditMethodCodeAction implements vscode.CodeActionProvider {
 		action.command = { command: 'extension.ai.codemaker.edit.code', title: 'Edit code with prompt', tooltip: 'This will edit code using provided prompt.' };
 		action.isPreferred = true;
 		return action;
+	}
+}
+
+export class AssistantCodeLens implements vscode.CodeLensProvider {
+
+	private command: vscode.Command;
+
+	private codeLenses: vscode.CodeLens[] = [];
+
+	private symbols: vscode.DocumentSymbol[] = [];
+
+	private _onDidChangeCodeLenses: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
+
+	constructor(command: vscode.Command) {
+		this.command = command;
+	}
+
+	public readonly onDidChangeCodeLenses: vscode.Event<void> = this._onDidChangeCodeLenses.event;
+	
+	resolveCodeLens?(codeLens: vscode.CodeLens, token: vscode.CancellationToken) {
+		if (!Configuration.isAssistantCodeLensEnabled()) {
+			return null;
+		}
+
+		const symbol = this.symbols.find(symbol => symbol.range.start.line === codeLens.range.start.line);
+
+		codeLens.command = {
+			...this.command,
+			arguments: [symbol?.name]
+		};
+		return codeLens;
+	}
+
+	async provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken) {
+		this.symbols = [];
+
+		if (!Configuration.isAssistantCodeLensEnabled()) {
+			return [];
+		}
+
+		const symbols = await vscode.commands.executeCommand<vscode.DocumentSymbol[]>(
+			'vscode.executeDocumentSymbolProvider',
+			document.uri
+		);
+		if (!symbols) {
+			return [];
+		}
+		
+		this.symbols = symbols.flatMap(symbol => [symbol, ...symbol.children])
+			.filter(symbol => symbol.kind === vscode.SymbolKind.Function 
+				|| symbol.kind === vscode.SymbolKind.Constructor 
+				|| symbol.kind === vscode.SymbolKind.Method);
+
+		return this.symbols			
+			.map(symbol => new vscode.CodeLens(document.lineAt(symbol.range.start.line).range));
 	}
 }
 
