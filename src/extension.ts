@@ -213,8 +213,9 @@ function registerActions(context: vscode.ExtensionContext, codemakerService: Cod
 			return;
 		}
 		
-		vscode.commands.executeCommand("assistantChatView.focus");
-		assistantChatViewProvider.assistantChat(`Explain ${name} method.`);
+		vscode.commands.executeCommand("assistantChatView.focus").then(() => {
+			assistantChatViewProvider.assistantChat(`Explain ${name} method.`);
+		});
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('extension.ai.codemaker.assistant.review', (name) => {		
@@ -227,8 +228,9 @@ function registerActions(context: vscode.ExtensionContext, codemakerService: Cod
 			return;
 		}
 		
-		vscode.commands.executeCommand("assistantChatView.focus");
-		assistantChatViewProvider.assistantChat(`Review ${name} method.`);
+		vscode.commands.executeCommand("assistantChatView.focus").then(() => {
+			assistantChatViewProvider.assistantChat(`Review ${name} method.`);
+		});		
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('extension.ai.codemaker.assistant.test', (name) => {		
@@ -241,8 +243,9 @@ function registerActions(context: vscode.ExtensionContext, codemakerService: Cod
 			return;
 		}
 		
-		vscode.commands.executeCommand("assistantChatView.focus");
-		assistantChatViewProvider.assistantChat(`Test ${name} method.`);
+		vscode.commands.executeCommand("assistantChatView.focus").then(() => {
+			assistantChatViewProvider.assistantChat(`Test ${name} method.`);
+		});		
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('extension.ai.codemaker.completion.import', completionImports));
