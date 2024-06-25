@@ -25,8 +25,7 @@ function handleEvent(event) {
     eanbleSubmitButton(true);
 }
 
-function initializeChat() {
-    const chatbox = document.querySelector('#chatbox');
+function initializeChat() {    
     const inputForm = document.querySelector('#inputForm');
     const inputField = document.querySelector('#inputField');
 
@@ -124,6 +123,7 @@ function addPendingMessage() {
             <div class="dot"></div>
         </div>
     `;
+    const chatbox = document.querySelector('#chatbox');
     chatbox.appendChild(cardElement);
     chatbox.scrollTop = chatbox.scrollHeight;
 }
@@ -182,12 +182,7 @@ function createMessageElement(sender, message) {
         controlsElement.appendChild(copyButtonElement);
 
         equalizerButtonElement.addEventListener('click', function(event) {
-            const id = message.messageId;
-            vscode.postMessage({
-                command: 'assistantSpeechRequest',
-                id: id,
-                message: message.message,
-            });
+            const id = message.messageId;            
             equalizerButtonElement.src = window.resolveMediaFile("pause.svg");
             
             const promise = new Promise((resolve, reject) => {
@@ -195,6 +190,12 @@ function createMessageElement(sender, message) {
             });
             promise.then(() => {
                 equalizerButtonElement.src = window.resolveMediaFile("equalizer.svg");
+            });
+
+            vscode.postMessage({
+                command: 'assistantSpeechRequest',
+                id: id,
+                message: message.message,
             });
         });
         upVoteButtonElement.addEventListener('click', function(event) {
