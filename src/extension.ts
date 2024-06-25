@@ -229,7 +229,7 @@ function registerActions(context: vscode.ExtensionContext, codemakerService: Cod
 		}
 		
 		vscode.commands.executeCommand("assistantChatView.focus").then(() => {
-			assistantChatViewProvider.assistantChat(`Review ${name} method.`);
+			assistantChatViewProvider.assistantChat(`Code review ${name} method.`);
 		});		
 	}));
 
@@ -246,6 +246,21 @@ function registerActions(context: vscode.ExtensionContext, codemakerService: Cod
 		vscode.commands.executeCommand("assistantChatView.focus").then(() => {
 			assistantChatViewProvider.assistantChat(`Test ${name} method.`);
 		});		
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('extension.ai.codemaker.assistant.bugs', (name) => {		
+		if (!name) {
+			return;
+		}
+		
+		const editor = vscode.window.activeTextEditor;
+		if (!editor || !editor.document) {
+			return;
+		}
+		
+		vscode.commands.executeCommand("assistantChatView.focus").then(() => {
+			assistantChatViewProvider.assistantChat(`Find errors in ${name} method.`);
+		});
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('extension.ai.codemaker.completion.import', completionImports));
@@ -281,7 +296,16 @@ function registerCodeAction(context: vscode.ExtensionContext, service: Codemaker
 	);
 }
 
-function registerCodeLens(context: vscode.ExtensionContext, service: CodemakerService) {		
+function registerCodeLens(context: vscode.ExtensionContext, service: CodemakerService) {	
+	context.subscriptions.push(
+		vscode.languages.registerCodeLensProvider('*', new AssistantCodeLens(
+			{
+				title: 'Find Bugs',
+				tooltip: 'Find bugs in the code',
+				command: 'extension.ai.codemaker.assistant.bugs',
+			}
+		))
+	);
 	context.subscriptions.push(
 		vscode.languages.registerCodeLensProvider('*', new AssistantCodeLens(
 			{
@@ -295,7 +319,7 @@ function registerCodeLens(context: vscode.ExtensionContext, service: CodemakerSe
 		vscode.languages.registerCodeLensProvider('*', new AssistantCodeLens(
 			{
 				title: 'Review',
-				tooltip: 'Rewviews the code',
+				tooltip: 'Reviews the code',
 				command: 'extension.ai.codemaker.assistant.review',
 			}
 		))
@@ -404,8 +428,6 @@ export class EditMethodCodeAction implements vscode.CodeActionProvider {
 export class AssistantCodeLens implements vscode.CodeLensProvider {
 
 	private command: vscode.Command;
-
-	private codeLenses: vscode.CodeLens[] = [];
 
 	private symbols: vscode.DocumentSymbol[] = [];
 
