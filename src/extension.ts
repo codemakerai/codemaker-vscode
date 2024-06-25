@@ -347,7 +347,11 @@ function registerAutoCorrection(context: vscode.ExtensionContext, codemakerServi
 
 function registerAssistantChatView(context: vscode.ExtensionContext,  codemakerService: CodemakerService) {	
     context.subscriptions.push(
-        vscode.window.registerWebviewViewProvider("assistantChatView", assistantChatViewProvider)
+        vscode.window.registerWebviewViewProvider("assistantChatView", assistantChatViewProvider, {
+			webviewOptions: {
+				retainContextWhenHidden: true,
+			}
+		})
     );
 }
 
