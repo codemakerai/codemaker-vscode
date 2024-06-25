@@ -217,3 +217,7 @@ Updated extension description.
 ## Version: 1.47.0
 
 * Assistant CodeLens
+
+## Version: 1.48.0
+
+* Assistant refiments
