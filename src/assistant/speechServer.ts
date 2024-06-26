@@ -26,16 +26,13 @@ export default class SpeechServer {
                 res.write(result.audio);
                 res.end();
             }).catch((err) => {
-                console.log(err);
                 res.writeHead(500);
                 res.end();
             });
         };
 
         this.server = http.createServer(requestListener);
-        this.server.listen(this.port, this.host, () => {
-            console.log(`Server is running on http://${this.host}:${this.port}`);
-        });
+        this.server.listen(this.port, this.host);
     }
 
     url() {
