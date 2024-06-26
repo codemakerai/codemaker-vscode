@@ -1,7 +1,5 @@
 const vscode = window.acquireVsCodeApi();
 
-const assistantPlaybacks = new Map();
-
 window.addEventListener('message', handleEvent);
 
 document.addEventListener('DOMContentLoaded', initializeChat);
@@ -17,9 +15,6 @@ function handleEvent(event) {
             break;
         case 'assistantError':
             handleAssistantError(message.error);
-            break;
-        case 'assistantSpeechResponse':
-            handleAssistantSpeechResponse(message.id, message.audio);
             break;
     }
     eanbleSubmitButton(true);
@@ -69,42 +64,6 @@ function handleAssistantResponse(completion) {
         addMessage('Assistant', completion);
     } else {
         addMessage('Assistant', {message: 'No response from Assistant'});
-    }
-}
-
-function handleAssistantSpeechResponse(id, audio) {
-    const resolvePromise = () => {
-        const playback = assistantPlaybacks.get(id);
-        if (playback) {
-            assistantPlaybacks.delete(id);
-            playback.complete();
-        }
-    };
-
-    try {
-        const playback = assistantPlaybacks.get(id);
-        if (!playback) {
-            return;
-        }
-
-        const buffer = Uint8Array.from(atob(audio), c => c.charCodeAt(0));
-        const url = window.URL.createObjectURL(new Blob([buffer], { type: 'audio/mp3' }));
-        const player = new Audio(url);
-        player.autoplay = true;
-        ['ended'].forEach(event => {
-            player.addEventListener(event, () => {
-                resolvePromise();
-                window.URL.revokeObjectURL(url);
-            });
-        });
-        player.play();
-        playback.cancelled.then(() => {
-            player.pause();
-            resolvePromise();
-            window.URL.revokeObjectURL(url);
-        });
-    } catch (error) {
-        resolvePromise();
     }
 }
 
@@ -193,41 +152,25 @@ function createMessageElement(sender, message) {
         copyButtonElement.src = window.resolveMediaFile("copy-off.svg");
         controlsElement.appendChild(copyButtonElement);
 
-        equalizerButtonElement.addEventListener('click', function(event) {
-            const id = message.messageId;
+        let audio = null;
+        equalizerButtonElement.addEventListener('click', function(event) {            
+            if (!audio) {
+                audio = new Audio(`${window.speachEndpoint}?input=${message.message}`);
+                audio.autoplay = true;
+                ['pause', 'ended'].forEach(event => {
+                    audio.addEventListener(event, () => {
+                        audio = null;
+                        equalizerButtonElement.src = window.resolveMediaFile("equalizer.svg");
+                    });
+                });
+                audio.play();
 
-            const audioPlayback = assistantPlaybacks.get(id);
-            if (audioPlayback) {
-                audioPlayback.cancellation();
-                return;
+                equalizerButtonElement.src = window.resolveMediaFile("pause.svg");
+            } else {
+                audio.pause();                
             }
-
-            equalizerButtonElement.src = window.resolveMediaFile("pause.svg");
-            
-            let complete;
-            const completePromise = new Promise((resolve, reject) => {
-                complete = resolve;
-            }).then(() => {                
-                equalizerButtonElement.src = window.resolveMediaFile("equalizer.svg");
-            });
-
-            let cancellation;
-            let cancelled = new Promise((resolve, reject) => {
-                cancellation = resolve;
-            });
-
-            assistantPlaybacks.set(id, {
-                complete,
-                cancellation,
-                cancelled
-            });
-
-            vscode.postMessage({
-                command: 'assistantSpeechRequest',
-                id: id,
-                message: message.message,
-            });
         });
+
         upVoteButtonElement.addEventListener('click', function(event) {
             vscode.postMessage({
                 command: 'assistantFeedback',

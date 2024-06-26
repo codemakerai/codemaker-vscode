@@ -1,13 +1,17 @@
 import * as vscode from 'vscode';
 import CodemakerService from '../service/codemakerService';
 import CommandHandler from './commandHandler';
+import SpeechServer from './speechServer';
 
 export default class AssistantChatViewProvider implements vscode.WebviewViewProvider {
     private _view?: vscode.WebviewView;
     private _commandHandler: CommandHandler;
+    private _speechServer: SpeechServer;
 
     constructor(private readonly _extensionUri: vscode.Uri, codemakerService: CodemakerService) {
         this._commandHandler = new CommandHandler(codemakerService);
+        this._speechServer = new SpeechServer(codemakerService);
+        this._speechServer.start();
     }
 
     public resolveWebviewView(
@@ -64,6 +68,8 @@ export default class AssistantChatViewProvider implements vscode.WebviewViewProv
             <script src="${mainScriptUrl}"></script>
 
             <script>
+                window.speachEndpoint = "${this._speechServer.url()}";
+
                 window.resolveMediaFile = (fileName) => {
                     return "${mediaUrl}/" + fileName;
                 }
