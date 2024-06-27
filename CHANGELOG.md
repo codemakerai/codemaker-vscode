@@ -225,3 +225,7 @@ Updated extension description.
 ## Version: 1.49.0
 
 * Improved Assistant speech
+
+## Version: 1.50.0
+
+* Encoding handling in Assistant speech
