@@ -2,7 +2,6 @@ import * as http from 'http';
 import {parse}  from 'url';
 
 import CodemakerService from '../service/codemakerService';
-import availablePort from '../net/socket';
 
 export default class SpeechServer {
 
