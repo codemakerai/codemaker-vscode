@@ -2,6 +2,7 @@ import * as http from 'http';
 import {parse}  from 'url';
 
 import CodemakerService from '../service/codemakerService';
+import availablePort from '../net/socket';
 
 export default class SpeechServer {
 
@@ -9,7 +10,7 @@ export default class SpeechServer {
 
     private readonly host = 'localhost';
 
-    private port: number = 52010;
+    private port: number = 52020;
 
     private server?: http.Server;
 
@@ -20,7 +21,9 @@ export default class SpeechServer {
     start() {
         const requestListener = (req: http.IncomingMessage, res: http.ServerResponse) => {
             const url = parse(req.url!, true);
-            this.codemakerSerivce.assistantSpeech(url.query['input'] as string).then((result) => {                                
+            const input = Buffer.from(url.query['input'] as string, 'base64url').toString('utf-8');
+
+            this.codemakerSerivce.assistantSpeech(input).then((result) => {                                
                 res.setHeader('Content-Type', 'audio/mp3');
                 res.writeHead(200);
                 res.write(result.audio);

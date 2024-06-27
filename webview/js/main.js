@@ -155,7 +155,8 @@ function createMessageElement(sender, message) {
         let audio = null;
         equalizerButtonElement.addEventListener('click', function(event) {            
             if (!audio) {
-                audio = new Audio(`${window.speachEndpoint}?input=${message.message}`);
+                const input = encodeBase64url(message.message);
+                audio = new Audio(`${window.speachEndpoint}?input=${input}`);
                 audio.autoplay = true;
                 ['pause', 'ended'].forEach(event => {
                     audio.addEventListener(event, () => {
@@ -247,4 +248,13 @@ function addCopyButtonToCodeBlocks(element) {
 
 function isAssistant(sender) {
     return sender === 'Assistant';
+}
+
+function encodeBase64url(input) {
+    const encoded = new TextEncoder().encode(input);
+    const bytes = Array.from(encoded, (byte) =>
+        String.fromCodePoint(byte),
+    ).join("");
+    const base64Encoded = btoa(bytes);
+    return base64Encoded.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
