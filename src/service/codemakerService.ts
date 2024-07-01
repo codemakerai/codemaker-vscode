@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 import * as path from 'node:path';
 import * as fs from 'node:fs';
 import { TextDecoder, TextEncoder } from 'util';
-import { ProcessRequest, CompletionRequest, PredictRequest, Language, Mode, Modify, DiscoverContextRequest, CreateContextRequest, RegisterContextRequest, SourceContext, DiscoverContextResponse, AssistantCodeCompletionRequest, AssistantCompletionRequest, AssistantSpeechRequest, Vote, RegisterAssistantFeedbackRequest } from 'codemaker-sdk';
+import { ProcessRequest, CompletionRequest, PredictRequest, Language, Mode, Modify, DiscoverContextRequest, CreateContextRequest, RegisterContextRequest, SourceContext, DiscoverContextResponse, AssistantCodeCompletionRequest, AssistantCompletionRequest, AssistantSpeechRequest, Vote, RegisterAssistantFeedbackRequest, LanguageCode } from 'codemaker-sdk';
 import { Configuration } from '../configuration/configuration';
 import { languageFromFile, isFileSupported } from '../utils/languageUtils';
 import { CodeSnippetContext } from 'codemaker-sdk';
@@ -95,7 +95,8 @@ class CodemakerService {
      * @returns 
      */
     public async assistantCompletion(message: string) {
-        return this.getClient().assistantCompletion(this.createAssistantCompletionRequest(message));
+        const language = Configuration.assistantLanguage();
+        return this.getClient().assistantCompletion(this.createAssistantCompletionRequest(message, language));
     }
 
     /**
@@ -434,9 +435,12 @@ class CodemakerService {
         };
     }
 
-    private createAssistantCompletionRequest(message: string): AssistantCompletionRequest {
+    private createAssistantCompletionRequest(message: string, language?: LanguageCode): AssistantCompletionRequest {
         return {
-            message
+            message,
+            options: {
+                language: language
+            }
         };
     }
 

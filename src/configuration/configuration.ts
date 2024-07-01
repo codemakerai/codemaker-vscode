@@ -1,5 +1,6 @@
 // Copyright 2023 CodeMaker AI Inc. All rights reserved.
 
+import { LanguageCode } from 'codemaker-sdk';
 import * as vscode from 'vscode';
 
 export class Configuration {
@@ -46,6 +47,14 @@ export class Configuration {
 
     static getExtendedSourceContextDepth(): number {
         return this.get('codemaker.extendedSourceContextDepth');
+    }
+
+    static assistantLanguage(): LanguageCode | undefined {
+        const language = this.get<string>('codemaker.assistantLanguage');
+        if (language === "default") {
+            return undefined;
+        }
+        return language as LanguageCode;
     }
 
     static isAssistantActionsEnabled(): boolean {

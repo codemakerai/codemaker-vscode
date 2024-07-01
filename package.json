@@ -82,42 +82,62 @@
           "type": "boolean",
           "default": false,
           "order": 3
+        }, 
+        "codemaker.assistantLanguage": {
+          "description": "Assistant language.",
+          "type": "string",
+          "default": "default",
+          "enum": [
+            "default",
+            "EN",
+            "ES",
+            "PT",
+            "JP",
+            "VI",
+            "TR",
+            "KO",
+            "DE",
+            "FR",
+            "PL",
+            "ZN"
+          ],
+          "order": 4
         },
         "codemaker.enableAssistantActions": {
           "description": "Enable assistant contextual operations.",
           "type": "boolean",
           "default": true,
-          "order": 4
+          "order": 5
         },
         "codemaker.enableAssistantCodeLens": {
           "description": "Enable assistant code lens.",
           "type": "boolean",
           "default": true,
-          "order": 5
+          "order": 6
         },
         "codemaker.allowLocalContext": {
           "description": "Allow local context search.",
           "type": "boolean",
           "default": false,
-          "order": 6
+          "order": 7
         },
         "codemaker.enableCodeActions": {
           "description": "Enable code actions",
           "type": "boolean",
           "default": true,
-          "order": 7
+          "order": 8
         },
         "codemaker.enablePredictiveGeneration": {
           "description": "Enable predictive generation",
           "type": "boolean",
           "default": false,
-          "order": 8
+          "order": 9
         },
         "codemaker.enableExtendedSourceContext": {
           "description": "Enable extended source context",
           "type": "boolean",
           "default": false,
-          "order": 9
+          "order": 10
         },
         "codemaker.extendedSourceContextDepth": {
           "description": "Extended source context maximum depth",
@@ -128,18 +148,18 @@
             2,
             3
           ],
-          "order": 10
+          "order": 11
         },
         "codemaker.enableSyntaxAutocorrection": {
           "description": "Enable syntax autocorrection",
           "type": "boolean",
           "default": false,
-          "order": 11
+          "order": 12
         },
         "codemaker.endpoint": {
           "markdownDescription": "CodeMaker AI Endpoint.",
           "type": "string",
-          "order": 12
+          "order": 13
         }
       }
     },
