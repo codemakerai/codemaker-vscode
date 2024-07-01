@@ -229,3 +229,7 @@ Updated extension description.
 ## Version: 1.50.0
 
 * Encoding handling in Assistant speech
+
+## Version: 1.51.0
+
+* Assistant language configuration option
