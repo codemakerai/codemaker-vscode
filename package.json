@@ -82,7 +82,7 @@
           "type": "boolean",
           "default": false,
           "order": 3
-        }, 
+        },
         "codemaker.assistantLanguage": {
           "description": "Assistant language.",
           "type": "string",
@@ -327,7 +327,7 @@
     "test": "node ./out/test/runTest.js"
   },
   "dependencies": {
-    "codemaker-sdk": "^2.22.0"
+    "codemaker-sdk": "^2.23.0"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
