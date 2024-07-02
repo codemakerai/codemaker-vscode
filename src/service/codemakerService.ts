@@ -95,8 +95,8 @@ class CodemakerService {
      * @returns 
      */
     public async assistantCompletion(message: string) {
-        const language = Configuration.assistantLanguage();
-        return this.getClient().assistantCompletion(this.createAssistantCompletionRequest(message, language));
+        const textLanguage = Configuration.assistantLanguage();
+        return this.getClient().assistantCompletion(this.createAssistantCompletionRequest(message, textLanguage));
     }
 
     /**
@@ -109,6 +109,7 @@ class CodemakerService {
      * @returns 
      */
     public async assistantCodeCompletion(message: string, path: vscode.Uri) {
+        const textLanguage = Configuration.assistantLanguage();
         const model = Configuration.model();
         
         const language = languageFromFile(path.path);
@@ -116,7 +117,7 @@ class CodemakerService {
 
         const contextId = await this.registerContext(language, path);
 
-        const response = await this.getClient().assistantCodeCompletion(this.createAssistantCodeCompletionRequest(message, language, source, contextId, model));
+        const response = await this.getClient().assistantCodeCompletion(this.createAssistantCodeCompletionRequest(message, language, source, contextId, model, textLanguage));
 
         if (response.output.source !== null && response.output.source.length !== 0) {
             const output = response.output.source;
@@ -444,7 +445,7 @@ class CodemakerService {
         };
     }
 
-    private createAssistantCodeCompletionRequest(message: string, language: Language, source: string, contextId?: string, model?: string): AssistantCodeCompletionRequest {
+    private createAssistantCodeCompletionRequest(message: string, language: Language, source: string, contextId?: string, model?: string, textLanguage?: LanguageCode): AssistantCodeCompletionRequest {
         return {
             message,
             language,
@@ -453,7 +454,8 @@ class CodemakerService {
             },
             options: {
                 contextId,
-                model
+                model,
+                language: textLanguage
             }
         };
     }
