@@ -9,10 +9,9 @@
     "vscode": "^1.77.0"
   },
   "categories": [
-    "Snippets",
-    "Testing",
+    "AI",
+    "Machine Learning",    
     "Programming Languages",
-    "Machine Learning",
     "Other"
   ],
   "keywords": [
