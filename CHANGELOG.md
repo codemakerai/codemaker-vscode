@@ -233,3 +233,11 @@ Updated extension description.
 ## Version: 1.51.0
 
 * Assistant language configuration option
+
+## Version: 1.52.0
+
+* Maintenance release
+
+## Version: 1.53.0
+
+* System language support
