@@ -9,6 +9,16 @@ export class Configuration {
         return this.get<string>('codemaker.apiKey').trim();
     }
 
+    static language(): LanguageCode | undefined {
+        let language = this.get<string>('codemaker.language');
+        if (!language || language === "DEFAULT") {
+            return undefined;
+        } else if (language === "SYSTEM") {
+            language = vscode.env.language.substring(0, 2).toUpperCase();            
+        }
+        return language as LanguageCode;
+    }
+
     static model(): string | undefined {
         const model = this.get<string>('codemaker.model');
         if (model === "default") {
@@ -47,14 +57,6 @@ export class Configuration {
 
     static getExtendedSourceContextDepth(): number {
         return this.get('codemaker.extendedSourceContextDepth');
-    }
-
-    static assistantLanguage(): LanguageCode | undefined {
-        const language = this.get<string>('codemaker.assistantLanguage');
-        if (language === "default") {
-            return undefined;
-        }
-        return language as LanguageCode;
     }
 
     static isAssistantActionsEnabled(): boolean {

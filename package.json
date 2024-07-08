@@ -64,34 +64,13 @@
           "type": "string",
           "order": 0
         },
-        "codemaker.model": {
-          "description": "Model name.",
+        "codemaker.language": {
+          "description": "Language.",
           "type": "string",
-          "default": "default",
+          "default": "SYSTEM",
           "enum": [
-            "default",
-            "user-model"
-          ],
-          "order": 1
-        },
-        "codemaker.enableAutocomplete": {
-          "description": "Enable autocompletion.",
-          "type": "boolean",
-          "default": false,
-          "order": 2
-        },
-        "codemaker.allowMultiLineAutocomplete": {
-          "description": "Allow multi line autocomplete.",
-          "type": "boolean",
-          "default": false,
-          "order": 3
-        },
-        "codemaker.assistantLanguage": {
-          "description": "Assistant language.",
-          "type": "string",
-          "default": "default",
-          "enum": [
-            "default",
+            "SYSTEM",
+            "DEFAULT",
             "EN",
             "ES",
             "PT",
@@ -104,6 +83,28 @@
             "PL",
             "ZN"
           ],
+          "order": 1
+        },
+        "codemaker.model": {
+          "description": "Model name.",
+          "type": "string",
+          "default": "default",
+          "enum": [
+            "default",
+            "user-model"
+          ],
+          "order": 2
+        },
+        "codemaker.enableAutocomplete": {
+          "description": "Enable autocompletion.",
+          "type": "boolean",
+          "default": false,
+          "order": 3
+        },
+        "codemaker.allowMultiLineAutocomplete": {
+          "description": "Allow multi line autocomplete.",
+          "type": "boolean",
+          "default": false,
           "order": 4
         },
         "codemaker.enableAssistantActions": {

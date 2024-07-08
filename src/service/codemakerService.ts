@@ -95,7 +95,7 @@ class CodemakerService {
      * @returns 
      */
     public async assistantCompletion(message: string) {
-        const textLanguage = Configuration.assistantLanguage();
+        const textLanguage = Configuration.language();
         return this.getClient().assistantCompletion(this.createAssistantCompletionRequest(message, textLanguage));
     }
 
@@ -109,7 +109,7 @@ class CodemakerService {
      * @returns 
      */
     public async assistantCodeCompletion(message: string, path: vscode.Uri) {
-        const textLanguage = Configuration.assistantLanguage();
+        const textLanguage = Configuration.language();
         const model = Configuration.model();
         
         const language = languageFromFile(path.path);
