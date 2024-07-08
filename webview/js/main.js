@@ -164,7 +164,10 @@ function createMessageElement(sender, message) {
                         equalizerButtonElement.src = window.resolveMediaFile("equalizer.svg");
                     });
                 });
-                audio.play();
+                audio.play().catch(() => {
+                    audio = null;
+                    equalizerButtonElement.src = window.resolveMediaFile("equalizer.svg");
+                });
 
                 equalizerButtonElement.src = window.resolveMediaFile("pause.svg");
             } else {
@@ -178,7 +181,8 @@ function createMessageElement(sender, message) {
             togglePlay();
         });
 
-        if (message.autoplay) {
+        const isUserActive = navigator.userActivation && navigator.userActivation.isActive;
+        if (message.autoplay && isUserActive) {
             togglePlay();
         }
 
