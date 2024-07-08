@@ -59,6 +59,10 @@ export class Configuration {
         return this.get('codemaker.extendedSourceContextDepth');
     }
 
+    static isAssistantMuted(): boolean {
+        return this.get('codemaker.muteAssistant');
+    }
+
     static isAssistantActionsEnabled(): boolean {
         return this.get('codemaker.enableAssistantActions');
     }

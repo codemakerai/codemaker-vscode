@@ -46,15 +46,19 @@ class AssistantRequestCommand implements ICommand {
 
         try {
             const isAssistantActionsEnabled = Configuration.isAssistantActionsEnabled();
+            const autoplay = !Configuration.isAssistantMuted();
 
             const editor = vscode.window.activeTextEditor;
 
             if (!isAssistantActionsEnabled || !editor || !isFileSupported(editor.document.fileName)) {
-                const result = await this._codemakerService.assistantCompletion(message.text);
+                const output = await this._codemakerService.assistantCompletion(message.text);
 
                 webviewView.webview.postMessage({
                     command: CommandType.assistantResponse,
-                    result: result,
+                    result: {
+                        ...output,
+                        autoplay
+                    },
                 });
             } else {
                 const path = editor.document.uri;
@@ -63,7 +67,10 @@ class AssistantRequestCommand implements ICommand {
         
                 webviewView.webview.postMessage({
                     command: CommandType.assistantResponse,
-                    result: output,
+                    result: {
+                        ...output,
+                        autoplay
+                    },
                 });
             }
         } catch (error) {

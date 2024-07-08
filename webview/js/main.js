@@ -153,12 +153,12 @@ function createMessageElement(sender, message) {
         controlsElement.appendChild(copyButtonElement);
 
         let audio = null;
-        equalizerButtonElement.addEventListener('click', function(event) {            
+        function togglePlay() {
             if (!audio) {
                 const input = encodeBase64url(message.message);
                 audio = new Audio(`${window.speachEndpoint}?input=${input}`);
                 audio.autoplay = true;
-                ['pause', 'ended'].forEach(event => {
+                ['ended'].forEach(event => {
                     audio.addEventListener(event, () => {
                         audio = null;
                         equalizerButtonElement.src = window.resolveMediaFile("equalizer.svg");
@@ -168,9 +168,19 @@ function createMessageElement(sender, message) {
 
                 equalizerButtonElement.src = window.resolveMediaFile("pause.svg");
             } else {
-                audio.pause();                
+                audio.pause();
+                audio = null;
+                equalizerButtonElement.src = window.resolveMediaFile("equalizer.svg");
             }
+        }
+
+        equalizerButtonElement.addEventListener('click', function(event) {            
+            togglePlay();
         });
+
+        if (message.autoplay) {
+            togglePlay();
+        }
 
         upVoteButtonElement.addEventListener('click', function(event) {
             vscode.postMessage({
