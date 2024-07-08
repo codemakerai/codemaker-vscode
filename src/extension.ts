@@ -14,6 +14,7 @@ import { CodemakerStatusbar, StatusBarStatus } from './vscode/statusBar';
 import { isComment } from './utils/editorUtils';
 import { Corrector } from './correction/corrector';
 import AssistantChatViewProvider from './assistant/assistantChatViewProvider';
+import * as prompts from './assistant/prompts';
 import { Configuration } from './configuration/configuration';
 
 let statusBar: CodemakerStatusbar;
@@ -214,7 +215,7 @@ function registerActions(context: vscode.ExtensionContext, codemakerService: Cod
 		}
 		
 		vscode.commands.executeCommand("assistantChatView.focus").then(() => {
-			assistantChatViewProvider.assistantChat(`Explain ${name} method.`);
+			assistantChatViewProvider.assistantChat(prompts.explain(Configuration.language(), name));
 		});
 	}));
 
@@ -229,7 +230,7 @@ function registerActions(context: vscode.ExtensionContext, codemakerService: Cod
 		}
 		
 		vscode.commands.executeCommand("assistantChatView.focus").then(() => {
-			assistantChatViewProvider.assistantChat(`Code review ${name} method.`);
+			assistantChatViewProvider.assistantChat(prompts.review(Configuration.language(), name));
 		});		
 	}));
 
@@ -244,7 +245,7 @@ function registerActions(context: vscode.ExtensionContext, codemakerService: Cod
 		}
 		
 		vscode.commands.executeCommand("assistantChatView.focus").then(() => {
-			assistantChatViewProvider.assistantChat(`Test ${name} method.`);
+			assistantChatViewProvider.assistantChat(prompts.test(Configuration.language(), name));
 		});		
 	}));
 
@@ -259,7 +260,7 @@ function registerActions(context: vscode.ExtensionContext, codemakerService: Cod
 		}
 		
 		vscode.commands.executeCommand("assistantChatView.focus").then(() => {
-			assistantChatViewProvider.assistantChat(`Find errors in ${name} method.`);
+			assistantChatViewProvider.assistantChat(prompts.bugs(Configuration.language(), name));
 		});
 	}));
 
