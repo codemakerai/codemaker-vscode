@@ -338,7 +338,7 @@
     "test": "node ./out/test/runTest.js"
   },
   "dependencies": {
-    "codemaker-sdk": "^2.24.0"
+    "codemaker-sdk": "^2.25.0"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",

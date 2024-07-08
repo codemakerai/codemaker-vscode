@@ -22,13 +22,16 @@ export default class SpeechServer {
             const url = parse(req.url!, true);
             const input = Buffer.from(url.query['input'] as string, 'base64url').toString('utf-8');
 
-            this.codemakerSerivce.assistantSpeech(input).then((result) => {                                
-                res.setHeader('Content-Type', 'audio/mp3');
-                res.writeHead(200);
-                res.write(result.audio);
-                res.end();
-            }).catch((err) => {
-                res.writeHead(500);
+            res.setHeader('Content-Type', 'audio/mp3');
+
+            const stream = this.codemakerSerivce.assistantSpeechStream(input);
+            stream.on('data', (data) => {
+                res.write(data.audio);
+            });
+            stream.on('error', (e) => {
+                res.statusCode = 500;
+            });
+            stream.on('end', () => {
                 res.end();
             });
         };

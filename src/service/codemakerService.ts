@@ -138,6 +138,16 @@ class CodemakerService {
     }
 
     /**
+     * Streams Assistant speech.
+     * 
+     * @param message chat message
+     * @returns 
+     */
+    public assistantSpeechStream(message: string) {
+        return this.getClient().assistantSpeechStream(this.createAssistantSpeechRequest(message));
+    }
+
+    /**
      * Registers assistant feedback.
      * 
      * @param sessionId session id
