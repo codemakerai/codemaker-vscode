@@ -241,3 +241,7 @@ Updated extension description.
 ## Version: 1.53.0
 
 * System language support
+
+## Version: 1.54.0
+
+* Streaming API
