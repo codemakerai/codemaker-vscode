@@ -155,25 +155,20 @@ function createMessageElement(sender, message) {
         let audio = null;
         function togglePlay() {
             if (!audio) {
+                equalizerButtonElement.src = window.resolveMediaFile("pause.svg");
+
                 const input = encodeBase64url(message.message);
                 audio = new Audio(`${window.speachEndpoint}?input=${input}`);
                 audio.autoplay = true;
-                ['ended'].forEach(event => {
+                ['pause', 'error', 'ended'].forEach(event => {
                     audio.addEventListener(event, () => {
-                        audio = null;
                         equalizerButtonElement.src = window.resolveMediaFile("equalizer.svg");
+                        audio = null;
                     });
                 });
-                audio.play().catch(() => {
-                    audio = null;
-                    equalizerButtonElement.src = window.resolveMediaFile("equalizer.svg");
-                });
-
-                equalizerButtonElement.src = window.resolveMediaFile("pause.svg");
+                audio.play();
             } else {
                 audio.pause();
-                audio = null;
-                equalizerButtonElement.src = window.resolveMediaFile("equalizer.svg");
             }
         }
 
