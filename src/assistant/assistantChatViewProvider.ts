@@ -68,7 +68,7 @@ export default class AssistantChatViewProvider implements vscode.WebviewViewProv
             <script src="${mainScriptUrl}"></script>
 
             <script>
-                window.speachEndpoint = "${this._speechServer.url()}";
+                window.speechEndpoint = "${this._speechServer.url()}";
 
                 window.resolveMediaFile = (fileName) => {
                     return "${mediaUrl}/" + fileName;

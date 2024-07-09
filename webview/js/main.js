@@ -158,7 +158,7 @@ function createMessageElement(sender, message) {
                 equalizerButtonElement.src = window.resolveMediaFile("pause.svg");
 
                 const input = encodeBase64url(message.message);
-                audio = new Audio(`${window.speachEndpoint}?input=${input}`);
+                audio = new Audio(`${window.speechEndpoint}?input=${input}`);
                 audio.autoplay = true;
                 ['pause', 'error', 'ended'].forEach(event => {
                     audio.addEventListener(event, () => {

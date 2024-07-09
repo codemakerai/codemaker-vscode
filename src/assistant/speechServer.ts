@@ -9,7 +9,7 @@ export default class SpeechServer {
 
     private readonly host = 'localhost';
 
-    private port: number = 52020;
+    private port: number = this.allocatePort();
 
     private server?: http.Server;
 
@@ -42,5 +42,9 @@ export default class SpeechServer {
 
     url() {
         return `http://${this.host}:${this.port}`;
+    }
+
+    private allocatePort() {
+        return 52000 + Math.ceil(Math.random() * 1000);
     }
 }
