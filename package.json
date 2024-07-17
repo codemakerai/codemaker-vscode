@@ -332,14 +332,14 @@
     "vscode:prepublish": "npm run compile",
     "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node",
     "esbuild": "npm run esbuild-base -- --sourcemap",
-    "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",    
+    "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
     "build": "npm run esbuild",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js"
   },
   "dependencies": {
-    "codemaker-sdk": "file:../codemaker-sdk-js"
+    "codemaker-sdk": "2.26.0"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
