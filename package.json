@@ -340,7 +340,7 @@
     "test": "node ./out/test/runTest.js"
   },
   "dependencies": {
-    "codemaker-sdk": "^2.26.0"
+    "codemaker-sdk": "^2.27.0"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
@@ -351,7 +351,7 @@
     "@typescript-eslint/parser": "^5.62.0",
     "@vscode/test-electron": "^2.4.1",
     "esbuild": "^0.19.12",
-    "eslint": "^9.7.0",
+    "eslint": "^8.57.0",
     "glob": "^11.0.0",
     "mocha": "^10.6.0",
     "typescript": "^5.5.3"
