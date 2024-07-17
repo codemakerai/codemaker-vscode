@@ -249,3 +249,7 @@ Updated extension description.
 ## Version: 1.55.0
 
 * Additional languages
+
+## Version: 1.56.0
+
+* Maintenance release
