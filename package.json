@@ -3,7 +3,7 @@
   "displayName": "CodeMaker AI",
   "description": "CodeMaker AI VS Code Plugin",
   "icon": "./img/icon.png",
-  "version": "1.56.0",
+  "version": "1.57.0",
   "publisher": "codemakerai",
   "engines": {
     "vscode": "^1.91.0"
@@ -329,11 +329,12 @@
     "url": "https://github.com/codemakerai/codemaker-vscode"
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
+    "vscode:prepublish": "npm run package",
     "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node",
     "esbuild": "npm run esbuild-base -- --sourcemap",
     "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
     "build": "npm run esbuild",
+    "package": "npm run esbuild --production",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js"
