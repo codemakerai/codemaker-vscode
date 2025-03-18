@@ -3,10 +3,10 @@
   "displayName": "CodeMaker AI",
   "description": "CodeMaker AI VS Code Plugin",
   "icon": "./img/icon.png",
-  "version": "1.57.0",
+  "version": "1.58.0",
   "publisher": "codemakerai",
   "engines": {
-    "vscode": "^1.91.0"
+    "vscode": "^1.98.0"
   },
   "categories": [
     "AI",
