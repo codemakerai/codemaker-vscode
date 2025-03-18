@@ -15,14 +15,14 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 22
           cache: 'npm'
 
       - name: Install
         run: npm ci
 
       - name: Build
-        run: npm run compile
+        run: npm run build
 
       - name: Test Linux
         run: xvfb-run -a npm test
