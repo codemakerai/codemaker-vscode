@@ -335,7 +335,7 @@
     "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
     "build": "npm run esbuild",
     "package": "npm run esbuild --production",
-    "pretest": "npm run compile && npm run lint",
+    "pretest": "npm run build && npm run lint",
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js"
   },
@@ -344,16 +344,16 @@
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
-    "@types/mocha": "^10.0.7",
-    "@types/node": "^20.14.11",
-    "@types/vscode": "^1.91.0",
-    "@typescript-eslint/eslint-plugin": "^7.16.1",
-    "@typescript-eslint/parser": "^7.16.1",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^20.17.24",
+    "@types/vscode": "^1.98.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
     "@vscode/test-electron": "^2.4.1",
-    "esbuild": "^0.23.0",
-    "eslint": "^8.57.0",
-    "glob": "^11.0.0",
-    "mocha": "^10.6.0",
-    "typescript": "^5.5.3"
+    "esbuild": "^0.23.1",
+    "eslint": "^8.57.1",
+    "glob": "^11.0.1",
+    "mocha": "^10.8.2",
+    "typescript": "^5.8.2"
   }
 }
